@@ -2,28 +2,15 @@
 
 namespace PROJECT3D
 {
-    public enum UnitType
-    {
-        Warrior,
-        Mage,
-    }
-
-    public enum UnitProperty
-    {
-        None,
-        Fire,
-        Electric,
-        Ice,
-    }
-    
     public class UnitDto
     {
         public int ID;
         public string Name;
         public string PrefabKey;
         public string SpriteKey;
-        public UnitType UnitType;
-        public UnitProperty UnitProperty;
+        public string PassiveSkillID;
+        public string ESkillID;
+        public string QSkillID;
         public int MaxHealth;
         public float HealthRegeneration;
         public int Attack;
@@ -45,9 +32,10 @@ namespace PROJECT3D
         public int ID;
         public string Name;
         public Unit Unit; //몸 데이터. 유닛이아니라 GameObject나 meshRenderer로바꿔야할듯?
+        public UnitSkill PassiveSkill;
+        public UnitSkill ESkill;
+        public UnitSkill QSkill;
         public Sprite Sprite; //캐릭터 아이콘
-        public UnitType UnitType;
-        public UnitProperty UnitProperty;
         public StatClass UnitStat;
     }
 }

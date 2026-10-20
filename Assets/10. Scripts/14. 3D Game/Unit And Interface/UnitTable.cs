@@ -33,8 +33,8 @@ namespace PROJECT3D
                     Name = dto.Name,
                     Unit = unit,
                     Sprite = sprite,
-                    UnitType = dto.UnitType,
-                    UnitProperty = dto.UnitProperty,
+                    //UnitType = dto.UnitType,
+                    //UnitProperty = dto.UnitProperty,
                     UnitStat = new StatClass
                     {
                         MaxHealth = dto.MaxHealth,

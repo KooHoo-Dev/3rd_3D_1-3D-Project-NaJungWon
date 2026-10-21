@@ -380,6 +380,8 @@ GameObject:
   - component: {fileID: 108569775}
   - component: {fileID: 108569774}
   - component: {fileID: 108569776}
+  - component: {fileID: 108569778}
+  - component: {fileID: 108569779}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -417,20 +419,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7589e3f5c84745e7a6fbcd397a80df40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.PlayerController
-  Player: {fileID: 0}
+  Player: {fileID: 108569776}
   bodyRenderer: {fileID: 0}
-  walkSpeed: 4
-  runSpeed: 7
-  jumpHeight: 1.2
-  gravity: -9.81
-  cameraTransform: {fileID: 74458486}
-  mouseSensitivity: 2
-  maxLookAngle: 80
-  animator: {fileID: 0}
-  groundCheckDistance: 0.1
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 1024
+  anim: {fileID: 0}
+  movement: {fileID: 108569778}
+  cameraController: {fileID: 0}
 --- !u!143 &108569775
 CharacterController:
   m_ObjectHideFlags: 0
@@ -472,15 +465,62 @@ MonoBehaviour:
   unitDef:
     ID: 0
     Name: 
-    Unit: {fileID: 0}
-    PassiveSkillID: 
-    ESkillID: 
-    QSkillID: 
+    UnitBody: {fileID: 0}
+    PassiveSkill:
+      ID: 0
+      Name: 
+      Icon: {fileID: 0}
+      UnitSkill: {fileID: 0}
+      SkillInterval: 0
+      Description: 
+    ESkill:
+      ID: 0
+      Name: 
+      Icon: {fileID: 0}
+      UnitSkill: {fileID: 0}
+      SkillInterval: 0
+      Description: 
+    QSkill:
+      ID: 0
+      Name: 
+      Icon: {fileID: 0}
+      UnitSkill: {fileID: 0}
+      SkillInterval: 0
+      Description: 
     Sprite: {fileID: 0}
-  unitSkillInfo:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+--- !u!114 &108569778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108569772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2817c901c3b841e5ab234b96b34ede17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.CharacterController3D
+  gravity: -9.81
+  jumpHeight: 1.2
+  groundStickVelocity: -2
+--- !u!114 &108569779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108569772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae54f0891a81f8d46bf9d856417ab415, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.CameraController
+  horizontalSensitivity: 1
+  verticalSensitivity: 1
+  pitchAngleMin: -60
+  pitchAngleMax: 60
+  distance: 4
+  cameraTransform: {fileID: 74458486}
 --- !u!1 &271322511
 GameObject:
   m_ObjectHideFlags: 0

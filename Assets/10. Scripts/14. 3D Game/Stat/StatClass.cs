@@ -5,13 +5,13 @@ namespace PROJECT3D
     public enum StatType
     {
         None,
-        MaxHealth, // 최대 체력
+        MaxHp, // 최대 체력
         HealthRegeneration, // 체력 재생
-        Attack, // 공격력
+        Damage, // 공격력
         AttackInterval, //공격 속도
         Defense, // 방어력
         Speed, // 이동 속도
-        Critical, // 크리티컬 확률%
+        CritChance, // 크리티컬 확률%
         ProjectileCount, // 투사체 증가
         AttackRange, // 공격 범위 증가%
         Duration, // 지속시간 증가%
@@ -22,13 +22,13 @@ namespace PROJECT3D
     
     public class StatClass
     {
-        public int MaxHealth;
+        public int MaxHp;
         public float HealthRegeneration;
-        public int Attack;
+        public int Damage;
         public float AttackInterval;
         public int Defense;
         public float Speed;
-        public float Critical;
+        public float CritChance;
         public int ProjectileCount;
         public float AttackRange;
         public float Duration;

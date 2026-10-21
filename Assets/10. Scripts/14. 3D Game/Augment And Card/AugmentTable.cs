@@ -41,13 +41,13 @@ namespace PROJECT3D
                     NeedArousal = dto.NeedArousal,
                     AugmentStat = new StatClass
                     {
-                        MaxHealth = dto.MaxHealth,
+                        MaxHp = dto.MaxHp,
                         HealthRegeneration = dto.HealthRegeneration,
-                        Attack = dto.Attack,
+                        Damage = dto.Damage,
                         AttackInterval = dto.AttackInterval,
                         Defense = dto.Defense,
                         Speed = dto.Speed,
-                        Critical = dto.Critical,
+                        CritChance = dto.CritChance,
                         ProjectileCount = dto.ProjectileCount,
                         AttackRange = dto.AttackRange,
                         Duration = dto.Duration,

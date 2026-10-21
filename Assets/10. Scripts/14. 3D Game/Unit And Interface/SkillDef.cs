@@ -14,6 +14,7 @@ namespace PROJECT3D
         public string Name;
         public string IconKey;
         public string PrefabKey;
+        public float SkillInterval;
         public string Description;
     }
     
@@ -24,6 +25,7 @@ namespace PROJECT3D
         public string Name;
         public Sprite Icon;
         public UnitSkill UnitSkill;
+        public float SkillInterval;
         public string Description;
     }
 }

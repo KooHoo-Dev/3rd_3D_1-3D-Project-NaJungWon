@@ -29,6 +29,8 @@ namespace PROJECT3D
                 {
                     ID = dto.ID,
                     Name = dto.Name,
+                    EnemyType = dto.EnemyType,
+                    EnemyGrade = dto.EnemyGrade,
                     Enemy = enemy,
                     MaxHp =  dto.MaxHp,
                     Damage = dto.Damage,

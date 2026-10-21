@@ -2,16 +2,33 @@
 
 namespace PROJECT3D
 {
-    public abstract class Player
+    public class PlayerStat : BaseStat
     {
-        public UnitDef UnitDef;
-        public SkillInfo UnitSkillInfo;
+        
+    }
+    
+    public abstract class Player : CombatEntity
+    {
+        public PlayerStat Stat { get; set; }
+        public override BaseStat BaseStat => Stat;
+        
+        public UnitDef unitDef;
 
-        public class SkillInfo
+        //public int killCount = 0;
+
+        private void Awake()
         {
-            public UnitSkill PassiveSkill;
-            public UnitSkill ESkill;
-            public UnitSkill QSkill;
+            
+        }
+        
+        public override void TakeDamage(CombatEvent combatEvent)
+        {
+            
+        }
+
+        public override void TakeHeal(HealEvent healEvent)
+        {
+            
         }
     }
 }

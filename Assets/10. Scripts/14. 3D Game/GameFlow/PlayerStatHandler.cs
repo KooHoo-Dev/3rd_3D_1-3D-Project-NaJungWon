@@ -24,5 +24,13 @@ namespace PROJECT3D
                 Destroy(this);
             }
         }
+
+        public StatClass ApplyPlayerStatChange(StatClass baseStat)
+        {
+            StatClass changeClass = new StatClass();
+
+            
+            return changeClass;
+        }
     }
 }

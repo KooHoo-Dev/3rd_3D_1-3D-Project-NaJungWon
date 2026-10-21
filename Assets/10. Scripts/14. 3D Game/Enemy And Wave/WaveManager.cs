@@ -2,7 +2,7 @@
 
 namespace PROJECT3D
 {
-    public abstract class UnitSkillBase : MonoBehaviour
+    public class WaveManager : MonoBehaviour
     {
         
     }

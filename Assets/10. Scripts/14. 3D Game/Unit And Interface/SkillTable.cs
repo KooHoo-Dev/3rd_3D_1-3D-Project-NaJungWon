@@ -32,6 +32,7 @@ namespace PROJECT3D
                     Name = dto.Name,
                     Icon = icon,
                     UnitSkill = skill,
+                    SkillInterval = dto.SkillInterval,
                     Description = dto.Description,
                 };
             }

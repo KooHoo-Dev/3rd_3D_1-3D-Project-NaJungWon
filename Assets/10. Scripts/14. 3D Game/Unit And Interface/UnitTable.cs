@@ -15,35 +15,42 @@ namespace PROJECT3D
         
         public UnitDef Get(int id) => unitDefs[id];
 
-        public void Load()
+        public void Load(SkillTable skillTable)
         {
             unitDefs.Clear();
             string filePath = Path.Combine(Application.streamingAssetsPath, TableName);
             List<UnitDto> rows = TSVReader.ReadTable<UnitDto>(filePath);
             foreach (UnitDto dto in rows)
             {
-                Unit unit = Resources.Load<Unit>(dto.PrefabKey);
-                if(unit == null) Debug.LogWarning($"[UnitTable] {dto.PrefabKey} 경로에 파일 없음");
+                GameObject unitBody = Resources.Load<GameObject>(dto.PrefabKey);
+                if(unitBody == null) Debug.LogWarning($"[UnitTable] {dto.PrefabKey} 경로에 파일 없음");
                 Sprite sprite = Resources.Load<Sprite>(dto.SpriteKey);
                 if(sprite == null) Debug.LogWarning($"[UnitTable] {dto.PrefabKey} 경로에 파일 없음");
+                SkillDef passiveSkillDef = skillTable.Get(dto.PassiveSkillID);
+                if(passiveSkillDef == null) Debug.LogWarning($"[UnitTable] {dto.PassiveSkillID} 경로에 파일 없음");
+                SkillDef eSkillDef = skillTable.Get(dto.ESkillID);
+                if(eSkillDef == null) Debug.LogWarning($"[UnitTable] {dto.ESkillID} 경로에 파일 없음");
+                SkillDef qSkillDef = skillTable.Get(dto.QSkillID);
+                if(qSkillDef == null) Debug.LogWarning($"[UnitTable] {dto.QSkillID} 경로에 파일 없음");
                 
                 unitDefs[dto.ID] = new UnitDef()
                 {
                     ID = dto.ID,
                     Name = dto.Name,
-                    Unit = unit,
+                    UnitBody = unitBody,
                     Sprite = sprite,
-                    //UnitType = dto.UnitType,
-                    //UnitProperty = dto.UnitProperty,
+                    PassiveSkill = passiveSkillDef,
+                    ESkill = eSkillDef,
+                    QSkill = qSkillDef,
                     UnitStat = new StatClass
                     {
-                        MaxHealth = dto.MaxHealth,
+                        MaxHp = dto.MaxHp,
                         HealthRegeneration = dto.HealthRegeneration,
-                        Attack = dto.Attack,
+                        Damage = dto.Damage,
                         AttackInterval = dto.AttackInterval,
                         Defense = dto.Defense,
                         Speed = dto.Speed,
-                        Critical = dto.Critical,
+                        CritChance = dto.CritChance,
                         ProjectileCount = dto.ProjectileCount,
                         AttackRange = dto.AttackRange,
                         Duration = dto.Duration,

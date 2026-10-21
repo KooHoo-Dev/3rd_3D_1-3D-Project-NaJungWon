@@ -17,13 +17,13 @@ namespace PROJECT3D
         public string SpriteKey;
         public AugmentType Type; //증강타입
         public StatType NeedArousal; //진화시 필요 스탯
-        public int MaxHealth;
+        public int MaxHp;
         public float HealthRegeneration;
-        public int Attack;
+        public int Damage;
         public float AttackInterval;
         public int Defense;
         public float Speed;
-        public float Critical;
+        public float CritChance;
         public int ProjectileCount;
         public float AttackRange;
         public float Duration;

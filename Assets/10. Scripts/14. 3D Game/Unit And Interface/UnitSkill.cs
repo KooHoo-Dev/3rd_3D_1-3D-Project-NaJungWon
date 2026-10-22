@@ -13,7 +13,7 @@ namespace PROJECT3D
         
         public void Update()
         {
-            Timer = Mathf.Clamp(Timer, 0, skillDef.SkillInterval); //여기서 스킬쿨타임에 기본스탯 스킬쿨감 적용한 값 넣어야함
+            Timer = Mathf.Clamp(Timer, 0, skillDef.SkillStat.AttackInterval); //여기서 스킬쿨타임에 기본스탯 스킬쿨감 적용한 값 넣어야함
         }
 
         public void RequestSkill()

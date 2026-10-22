@@ -4,10 +4,6 @@ using UnityEngine.InputSystem;
 
 namespace PROJECT3D
 {
-    // # CameraController - 카메라 회전과 거리만 담당한다
-    // - 캐릭터를 따라다니는 건 부모 오브젝트(CameraPivot을 플레이어 자식으로 둠)가 담당
-    // - 마우스 회전은 "엔진 시간" 영역: 카드 선택으로 WorldClock이 정지해도 카메라는 움직여야 한다
-    // - 로컬 플레이어 전용. 리모트 플레이어 프리팹에는 붙이지 않는다
     public class CameraController : MonoBehaviour
     {
         [Header("Settings")]
@@ -21,29 +17,33 @@ namespace PROJECT3D
         [SerializeField] private Transform cameraPivot;
         [SerializeField] private Transform cameraTransform;
 
+        private Vector2 mouseDelta = Vector2.zero;
         private float angleX; // 위아래(pitch)
         private float angleY; // 좌우(yaw)
         
         public Quaternion YawRotation => Quaternion.Euler(0f, angleY, 0f);
 
-        private void Update()
-        {
-            UpdateAngle();
-        }
-
         private void LateUpdate()
         {
+            UpdateAngle();
+            mouseDelta = Vector2.zero;
+            
             ApplyRotation();
         }
-
+        
+        public void SetMouseDelta(Vector2 mouseValue)
+        {
+            mouseDelta = mouseValue;
+        }
+        
         private void UpdateAngle()
         {
-            Vector2 delta = SimpleInput.GetMouseDelta();
-            angleX -= delta.y * verticalSensitivity;
-            angleY += delta.x * horizontalSensitivity;
+            angleX -= mouseDelta.y * verticalSensitivity;
+            angleY += mouseDelta.x * horizontalSensitivity;
             angleX = Mathf.Clamp(angleX, pitchAngleMin, pitchAngleMax);
         }
 
+        
         private void ApplyRotation()
         {
             cameraPivot.rotation = Quaternion.Euler(angleX, angleY, 0f);

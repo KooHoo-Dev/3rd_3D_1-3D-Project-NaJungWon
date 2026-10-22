@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 26231239}
   - component: {fileID: 26231238}
   - component: {fileID: 26231237}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ground (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -147,11 +147,11 @@ Transform:
   m_GameObject: {fileID: 26231235}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.25881904, w: 0.9659259}
-  m_LocalPosition: {x: -27.7053, y: 1.0058999, z: -0.0000006239862}
+  m_LocalPosition: {x: -27.7053, y: 1.0058999, z: -0}
   m_LocalScale: {x: 40.998997, y: 20.379, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1017118546}
+  m_Father: {fileID: 566560097}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 30}
 --- !u!65 &26231237
 BoxCollider:
@@ -259,7 +259,7 @@ Transform:
   m_GameObject: {fileID: 74458485}
   serializedVersion: 2
   m_LocalRotation: {x: 0.2164396, y: 0, z: 0, w: 0.97629607}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -378,8 +378,8 @@ GameObject:
   m_Component:
   - component: {fileID: 108569773}
   - component: {fileID: 108569775}
-  - component: {fileID: 108569774}
   - component: {fileID: 108569776}
+  - component: {fileID: 108569774}
   - component: {fileID: 108569778}
   - component: {fileID: 108569779}
   m_Layer: 0
@@ -423,7 +423,8 @@ MonoBehaviour:
   bodyRenderer: {fileID: 0}
   anim: {fileID: 0}
   movement: {fileID: 108569778}
-  cameraController: {fileID: 0}
+  cameraController: {fileID: 108569779}
+  speed: 4
 --- !u!143 &108569775
 CharacterController:
   m_ObjectHideFlags: 0
@@ -501,8 +502,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.CharacterController3D
   gravity: -9.81
-  jumpHeight: 1.2
+  jumpHeight: 3
+  jumpCount: 0
+  maxJumpCount: 2
   groundStickVelocity: -2
+  groundCheckDistance: 0.1
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1024
 --- !u!114 &108569779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -517,10 +524,49 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.CameraController
   horizontalSensitivity: 1
   verticalSensitivity: 1
-  pitchAngleMin: -60
-  pitchAngleMax: 60
-  distance: 4
+  pitchAngleMin: -45
+  pitchAngleMax: 45
+  distance: 8
+  cameraPivot: {fileID: 1000976417}
   cameraTransform: {fileID: 74458486}
+--- !u!1 &175296118
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 175296119}
+  m_Layer: 11
+  m_Name: Obstacles
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &175296119
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175296118}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2123046923}
+  - {fileID: 983671525}
+  - {fileID: 1517515934}
+  - {fileID: 366721205}
+  - {fileID: 1396327864}
+  - {fileID: 1278997493}
+  - {fileID: 652469822}
+  m_Father: {fileID: 619408207}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &271322511
 GameObject:
   m_ObjectHideFlags: 0
@@ -660,7 +706,7 @@ GameObject:
   - component: {fileID: 354760320}
   - component: {fileID: 354760319}
   - component: {fileID: 354760318}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ground (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -675,12 +721,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 354760316}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -60, y: -5, z: 30}
   m_LocalScale: {x: 30, y: 10, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1017118546}
+  m_Father: {fileID: 566560097}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &354760318
 BoxCollider:
@@ -772,7 +818,7 @@ GameObject:
   - component: {fileID: 366721208}
   - component: {fileID: 366721207}
   - component: {fileID: 366721206}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Obstacle (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -787,12 +833,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 366721204}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -64, y: 4, z: 6}
   m_LocalScale: {x: 4, y: 8, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 619408207}
+  m_Father: {fileID: 175296119}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &366721206
 BoxCollider:
@@ -915,7 +961,7 @@ GameObject:
   - component: {fileID: 558686997}
   - component: {fileID: 558686996}
   - component: {fileID: 558686995}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ground (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -930,12 +976,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 558686993}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -30, y: -5, z: 30}
   m_LocalScale: {x: 30, y: 10, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1017118546}
+  m_Father: {fileID: 566560097}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &558686995
 BoxCollider:
@@ -1015,6 +1061,43 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 558686993}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &566560096
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 566560097}
+  m_Layer: 10
+  m_Name: Grounds
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &566560097
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 566560096}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1543523500}
+  - {fileID: 26231236}
+  - {fileID: 558686994}
+  - {fileID: 1179076884}
+  - {fileID: 354760317}
+  - {fileID: 1401977972}
+  m_Father: {fileID: 1017118546}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &619408206
 GameObject:
   m_ObjectHideFlags: 0
@@ -1044,13 +1127,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2123046923}
-  - {fileID: 983671525}
-  - {fileID: 1517515934}
-  - {fileID: 366721205}
-  - {fileID: 1396327864}
-  - {fileID: 1278997493}
-  - {fileID: 652469822}
+  - {fileID: 175296119}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &652469821
@@ -1065,7 +1142,7 @@ GameObject:
   - component: {fileID: 652469825}
   - component: {fileID: 652469824}
   - component: {fileID: 652469823}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Obstacle (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1080,12 +1157,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 652469821}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 22.5, z: -1}
   m_LocalScale: {x: 4, y: 5, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 619408207}
+  m_Father: {fileID: 175296119}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &652469823
 BoxCollider:
@@ -1177,7 +1254,7 @@ GameObject:
   - component: {fileID: 983671528}
   - component: {fileID: 983671527}
   - component: {fileID: 983671526}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Obstacle (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1192,12 +1269,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 983671524}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -21, y: 3.5, z: 22}
   m_LocalScale: {x: 2, y: 7, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 619408207}
+  m_Father: {fileID: 175296119}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &983671526
 BoxCollider:
@@ -1302,7 +1379,7 @@ Transform:
   m_GameObject: {fileID: 1000976416}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4, z: -10}
+  m_LocalPosition: {x: 0, y: 4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1338,12 +1415,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1543523500}
-  - {fileID: 26231236}
-  - {fileID: 558686994}
-  - {fileID: 1179076884}
-  - {fileID: 354760317}
-  - {fileID: 1401977972}
+  - {fileID: 566560097}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1036785964
@@ -1389,7 +1461,7 @@ GameObject:
   - component: {fileID: 1179076887}
   - component: {fileID: 1179076886}
   - component: {fileID: 1179076885}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ground (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1404,12 +1476,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1179076883}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -5, z: 30}
   m_LocalScale: {x: 30, y: 10, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1017118546}
+  m_Father: {fileID: 566560097}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1179076885
 BoxCollider:
@@ -1501,7 +1573,7 @@ GameObject:
   - component: {fileID: 1278997496}
   - component: {fileID: 1278997495}
   - component: {fileID: 1278997494}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Obstacle (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1516,12 +1588,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1278997492}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 21.5, z: 10}
   m_LocalScale: {x: 4, y: 3, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 619408207}
+  m_Father: {fileID: 175296119}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1278997494
 BoxCollider:
@@ -1645,7 +1717,7 @@ GameObject:
   - component: {fileID: 1396327867}
   - component: {fileID: 1396327866}
   - component: {fileID: 1396327865}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Obstacle (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1660,12 +1732,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1396327863}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -57, y: 0.5, z: 25}
   m_LocalScale: {x: 10, y: 1, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 619408207}
+  m_Father: {fileID: 175296119}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1396327865
 BoxCollider:
@@ -1757,7 +1829,7 @@ GameObject:
   - component: {fileID: 1401977975}
   - component: {fileID: 1401977974}
   - component: {fileID: 1401977973}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ground (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1772,12 +1844,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1401977971}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -60, y: -5, z: 0}
   m_LocalScale: {x: 30, y: 10, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1017118546}
+  m_Father: {fileID: 566560097}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1401977973
 BoxCollider:
@@ -1857,6 +1929,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1401977971}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1487420141
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1487420142}
+  - component: {fileID: 1487420143}
+  m_Layer: 0
+  m_Name: MapGrid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1487420142
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487420141}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -76, y: 0, z: -15}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1487420143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487420141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f30457f425cb4fe2a1f81dad36cc110e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MapGrid
+  width: 200
+  depth: 200
+  cellSize: 1
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 2048
+  mobHeight: 1.8
+  maxStepUp: 0.5
+  maxDropDown: 4
+  maxSlopeAngle: 40
+  rayStartHeight: 100
 --- !u!1 &1517515933
 GameObject:
   m_ObjectHideFlags: 0
@@ -1869,7 +1999,7 @@ GameObject:
   - component: {fileID: 1517515937}
   - component: {fileID: 1517515936}
   - component: {fileID: 1517515935}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Obstacle (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1884,12 +2014,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1517515933}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -34, y: 2.5, z: 34}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 619408207}
+  m_Father: {fileID: 175296119}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1517515935
 BoxCollider:
@@ -1981,7 +2111,7 @@ GameObject:
   - component: {fileID: 1543523503}
   - component: {fileID: 1543523502}
   - component: {fileID: 1543523501}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1996,12 +2126,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1543523499}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 5, z: 0}
   m_LocalScale: {x: 30, y: 30, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1017118546}
+  m_Father: {fileID: 566560097}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1543523501
 BoxCollider:
@@ -2113,6 +2243,54 @@ Transform:
   - {fileID: 2001139196}
   m_Father: {fileID: 108569773}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1861437766
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1861437767}
+  - component: {fileID: 1861437768}
+  m_Layer: 0
+  m_Name: FlowFieldManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1861437767
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1861437766}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 15, y: 13.76547, z: 12.5579}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1861437768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1861437766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82e7c28a888146a0b32b595068329ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlowFieldManager
+  grid: {fileID: 1487420143}
+  players:
+  - {fileID: 108569773}
+  rebuildInterval: 0.2
 --- !u!1001 &2001139195
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2231,7 +2409,7 @@ GameObject:
   - component: {fileID: 2123046926}
   - component: {fileID: 2123046925}
   - component: {fileID: 2123046924}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Obstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2246,12 +2424,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2123046922}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 2.5, z: 32}
   m_LocalScale: {x: 2, y: 5, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 619408207}
+  m_Father: {fileID: 175296119}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &2123046924
 BoxCollider:
@@ -2339,5 +2517,7 @@ SceneRoots:
   - {fileID: 533208294}
   - {fileID: 1017118546}
   - {fileID: 619408207}
-  - {fileID: 2030488156}
   - {fileID: 108569773}
+  - {fileID: 1487420142}
+  - {fileID: 1861437767}
+  - {fileID: 2030488156}

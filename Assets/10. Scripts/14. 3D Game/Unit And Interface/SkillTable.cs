@@ -32,7 +32,22 @@ namespace PROJECT3D
                     Name = dto.Name,
                     Icon = icon,
                     UnitSkill = skill,
-                    SkillInterval = dto.SkillInterval,
+                    SkillStat = new StatClass
+                    {
+                        MaxHp = dto.MaxHp,
+                        HealthRegeneration = dto.HealthRegeneration,
+                        Damage = dto.Damage,
+                        AttackInterval = dto.AttackInterval,
+                        Defense = dto.Defense,
+                        Speed = dto.Speed,
+                        CritChance = dto.CritChance,
+                        ProjectileCount = dto.ProjectileCount,
+                        AttackRange = dto.AttackRange,
+                        Duration = dto.Duration,
+                        AcquisitionRange = dto.AcquisitionRange,
+                        ExperienceGain = dto.ExperienceGain,
+                        GoldGain = dto.GoldGain
+                    },
                     Description = dto.Description,
                 };
             }

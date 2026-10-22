@@ -10,11 +10,5 @@ namespace PROJECT3D
         public Player Player;
         public SkinnedMeshRenderer bodyRenderer;
         public Animator anim;
-        
-        public void LockCursor()
-        {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-        }
     }
 }

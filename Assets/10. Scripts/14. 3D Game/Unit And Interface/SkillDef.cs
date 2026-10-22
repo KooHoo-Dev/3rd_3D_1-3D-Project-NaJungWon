@@ -14,7 +14,19 @@ namespace PROJECT3D
         public string Name;
         public string IconKey;
         public string PrefabKey;
-        public float SkillInterval;
+        public int MaxHp;
+        public float HealthRegeneration;
+        public int Damage;
+        public float AttackInterval;
+        public int Defense;
+        public float Speed;
+        public float CritChance;
+        public int ProjectileCount;
+        public float AttackRange;
+        public float Duration;
+        public float AcquisitionRange;
+        public float ExperienceGain;
+        public float GoldGain;
         public string Description;
     }
     
@@ -25,7 +37,7 @@ namespace PROJECT3D
         public string Name;
         public Sprite Icon;
         public UnitSkill UnitSkill;
-        public float SkillInterval;
+        public StatClass SkillStat;
         public string Description;
     }
 }

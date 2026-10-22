@@ -424,7 +424,7 @@ MonoBehaviour:
   anim: {fileID: 0}
   movement: {fileID: 108569778}
   cameraController: {fileID: 108569779}
-  speed: 4
+  speed: 5
 --- !u!143 &108569775
 CharacterController:
   m_ObjectHideFlags: 0
@@ -472,21 +472,18 @@ MonoBehaviour:
       Name: 
       Icon: {fileID: 0}
       UnitSkill: {fileID: 0}
-      SkillInterval: 0
       Description: 
     ESkill:
       ID: 0
       Name: 
       Icon: {fileID: 0}
       UnitSkill: {fileID: 0}
-      SkillInterval: 0
       Description: 
     QSkill:
       ID: 0
       Name: 
       Icon: {fileID: 0}
       UnitSkill: {fileID: 0}
-      SkillInterval: 0
       Description: 
     Sprite: {fileID: 0}
 --- !u!114 &108569778
@@ -506,10 +503,6 @@ MonoBehaviour:
   jumpCount: 0
   maxJumpCount: 2
   groundStickVelocity: -2
-  groundCheckDistance: 0.1
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 1024
 --- !u!114 &108569779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1970,9 +1963,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1487420141}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f30457f425cb4fe2a1f81dad36cc110e, type: 3}
+  m_Script: {fileID: 11500000, guid: c07dd86caf2b7024c91cdc381e03da53, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MapGrid
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.MapGrid
   width: 200
   depth: 200
   cellSize: 1
@@ -2284,9 +2277,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1861437766}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82e7c28a888146a0b32b595068329ab4, type: 3}
+  m_Script: {fileID: 11500000, guid: d659741e284446b1b0145c7c50df18cf, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FlowFieldManager
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.FlowFieldManager
   grid: {fileID: 1487420143}
   players:
   - {fileID: 108569773}

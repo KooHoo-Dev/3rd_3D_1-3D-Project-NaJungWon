@@ -8,7 +8,7 @@ namespace PROJECT3D
         Blocked,    // 그 밖의 배치 불가
     }
 
-    public enum MoveDirection
+    public enum MoveDirection //이동방향
     {
         None,
         East,
@@ -26,35 +26,19 @@ namespace PROJECT3D
     {
         public Vector2Int Coord { get; }
         public TileKind Kind;
+        public float GroundHeight; //바닥 높이
+        public Vector3 GroundNormal = Vector3.up; //바닥 경사
+        
         public int Distance = -1;
         public MoveDirection Direction = MoveDirection.None;
         
-        public float GroundHeight; //바닥 높이
-        public Vector3 GroundNormal; //바닥 경사
-
         public bool IsWalkable => Kind == TileKind.Walkable;
+        public Vector3 DirectionVector => GridDirection.ToVector(Direction);
         
         public Tile(Vector2Int coord, TileKind kind)
         {
             Coord = coord;
             Kind = kind;
-            //Unit = null;
-        }
-        
-        bool CanMove(Tile from, Tile to, float maxStepUp, float maxDropDown)
-        {
-            if (!from.IsWalkable || !to.IsWalkable)
-                return false;
-
-            float heightDifference = to.GroundHeight - from.GroundHeight;
-
-            if (heightDifference > maxStepUp)
-                return false;
-
-            if (-heightDifference > maxDropDown)
-                return false;
-
-            return true;
         }
     }
 }

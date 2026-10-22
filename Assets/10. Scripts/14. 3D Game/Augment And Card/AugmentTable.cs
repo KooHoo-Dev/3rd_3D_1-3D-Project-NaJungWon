@@ -7,7 +7,7 @@ namespace PROJECT3D
 {
     public class AugmentTable
     {
-        private const string TableName = "Table/PROJECT3D/Augments.tsv";
+        private const string TableName = "Table/PROJECT3D/augments.tsv";
 
         private Dictionary<int, AugmentDef> augmentDefs = new();
 

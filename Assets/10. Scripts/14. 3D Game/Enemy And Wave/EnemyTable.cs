@@ -7,7 +7,7 @@ namespace PROJECT3D
 {
     public class EnemyTable
     {
-        private const string TableName = "Table/PROJECT3D/Enemy.tsv";
+        private const string TableName = "Table/PROJECT3D/enemies.tsv";
         
         private Dictionary<int, EnemyDef> enemyDefs = new();
 

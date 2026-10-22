@@ -1,4 +1,3 @@
 ID	Name	EnemyType	EnemyGrade	PrefabKey	MaxHp	Damage	AttackInterval	Speed	Armor	Resist
-0				Mini Defence/Prefabs/Enemy/Enemy_00	40	Mini Defence/Prefabs/Enemy/Enemy_00_Thumbnail	10	2	0	0
-1				Mini Defence/Prefabs/Enemy/Enemy_01	60	Mini Defence/Prefabs/Enemy/Enemy_01_Thumbnail	8	3.5	0	0
-2				Mini Defence/Prefabs/Enemy/Enemy_02	300	Mini Defence/Prefabs/Enemy/Enemy_02_Thumbnail	15	1.2	10	0.2
+00	GroundDummy	Ground	Normal	PROJECT3D/Prefabs/Enemy/GroundDummyEnemy	40	1	0	3	0	0
+01	AirDummy	Air	Normal	PROJECT3D/Prefabs/Enemy/AirDummyEnemy	30	1	1	4	0	0

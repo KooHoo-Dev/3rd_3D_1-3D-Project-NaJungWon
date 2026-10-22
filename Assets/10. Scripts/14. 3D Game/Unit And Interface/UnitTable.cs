@@ -7,7 +7,7 @@ namespace PROJECT3D
 {
     public class UnitTable
     {
-        private const string TableName = "Table/PROJECT3D/Units.tsv";
+        private const string TableName = "Table/PROJECT3D/units.tsv";
         
         private Dictionary<int, UnitDef> unitDefs = new();
 

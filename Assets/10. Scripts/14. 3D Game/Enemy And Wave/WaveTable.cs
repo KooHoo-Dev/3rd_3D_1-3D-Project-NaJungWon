@@ -7,7 +7,7 @@ namespace PROJECT3D
 {
     public class WaveTable
     {
-        private const string TableName = "Table/PROJECT3D/Wave.tsv";
+        private const string TableName = "Table/PROJECT3D/waves.tsv";
         
         private Dictionary<int, WaveDef> waveDefs = new();
 
@@ -31,7 +31,6 @@ namespace PROJECT3D
                     SpawnTimer = dto.SpawnTimer,
                     EnemyDef = enemyDef,
                     Count = dto.Count,
-                    Interval = dto.Interval
                 };
             }
         }

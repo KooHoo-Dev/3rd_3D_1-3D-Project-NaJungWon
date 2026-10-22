@@ -8,7 +8,6 @@ namespace PROJECT3D
         public float SpawnTimer;
         public int EnemyID;
         public int Count;
-        public float Interval;
     }
     
     [System.Serializable]
@@ -18,6 +17,5 @@ namespace PROJECT3D
         public float SpawnTimer;
         public EnemyDef EnemyDef;
         public int Count;
-        public float Interval;
     }
 }

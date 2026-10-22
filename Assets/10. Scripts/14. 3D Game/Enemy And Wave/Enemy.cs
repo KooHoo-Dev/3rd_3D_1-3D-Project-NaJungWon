@@ -8,7 +8,7 @@ namespace PROJECT3D
         
     }
     
-    public abstract class Enemy : CombatEntity
+    public abstract partial class Enemy : CombatEntity
     {
         public EnemyStat Stat { get; set; }
         public override BaseStat BaseStat => Stat;

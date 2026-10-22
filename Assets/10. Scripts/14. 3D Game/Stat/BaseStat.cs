@@ -8,12 +8,12 @@ namespace PROJECT3D
         public StatClass userStat; //모든 스탯 총합
         //[field: SerializeField] public int MaxHp { get; private set; }
         public int Hp { get; private set; }
-        public bool isDead => (Hp <= 0);
+        public bool IsDead => (Hp <= 0);
         
         public bool ApplyDamage(int damage)
         {
             Hp = Mathf.Clamp(Hp - damage, 0, userStat.MaxHp);
-            return isDead;
+            return IsDead;
         }
 
         public void ApplyHeal(int heal)

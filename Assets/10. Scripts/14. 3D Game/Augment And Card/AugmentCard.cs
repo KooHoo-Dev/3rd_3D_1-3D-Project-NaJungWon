@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 
 namespace PROJECT3D
 {
-    public abstract class AugmentCard : MonoBehaviour
+    public abstract partial class AugmentCard : MonoBehaviour
     {
         private AugmentDef augmentDef;
 
@@ -19,11 +19,6 @@ namespace PROJECT3D
             
             if (isArousal == false) ApplyNormalState();
             else ApplyArousalState();
-        }
-
-        protected virtual void ApplyAbilityState()
-        {
-            
         }
 
         protected virtual void ApplyNormalState()

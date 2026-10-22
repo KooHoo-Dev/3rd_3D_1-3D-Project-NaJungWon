@@ -7,7 +7,7 @@ namespace PROJECT3D
 {
     public class SkillTable
     {
-        private const string TableName = "Table/PROJECT3D/Skill.tsv";
+        private const string TableName = "Table/PROJECT3D/skills.tsv";
         
         private Dictionary<int, SkillDef> skillDefs = new();
 

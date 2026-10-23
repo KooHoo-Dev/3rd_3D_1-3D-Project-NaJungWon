@@ -14,7 +14,7 @@ namespace PROJECT3D
         [field: SerializeField] public Transform HeadUpPivot { get; private set; }
         [field: SerializeField] public virtual BaseStat BaseStat { get; }
 
-        public Collider MainCollider { get; }
+        //public Collider MainCollider { get; }
         public GameObject GameObject { get; }
         
         public abstract void TakeDamage(CombatEvent combatEvent);

@@ -6,7 +6,7 @@ namespace PROJECT3D
     {
         public static PlayerStatHandler Instance;
         
-        public StatClass UnitStat; //캐릭터 기본 스탯
+        public StatClass ChrStat; //캐릭터 기본 스탯
         public StatClass AbilityStat; //능력치 증강 스탯
         public StatClass ShopStat; //상점 구매 스탯
         public StatClass SkillStat; //스킬로 인한 상승치
@@ -25,7 +25,7 @@ namespace PROJECT3D
             }
         }
 
-        public StatClass ApplyPlayerStatChange(StatClass baseStat)
+        public StatClass ApplyPlayerStatChange(StatClass unitStat)
         {
             StatClass changeClass = new StatClass();
 

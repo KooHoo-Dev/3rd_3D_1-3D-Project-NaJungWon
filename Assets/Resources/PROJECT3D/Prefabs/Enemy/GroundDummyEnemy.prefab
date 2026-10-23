@@ -104,3 +104,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.DummyEnemy
   <HeadUpPivot>k__BackingField: {fileID: 0}
+  resist: 0
+  direction: {x: 0, y: 1, z: 0}
+  separationDistance: 1.5

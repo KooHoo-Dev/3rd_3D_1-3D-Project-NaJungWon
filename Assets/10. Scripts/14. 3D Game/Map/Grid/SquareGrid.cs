@@ -71,7 +71,7 @@ namespace PROJECT3D
             return GetTileOrNull(tile.Coord + offset);
         }
 
-        // 목표가 바위 위에 있을 때 쓸 대체 칸이다. 탐색 범위 안의 평면 거리 기준이다.
+        // 목표가 장애물 위에 있을 때 쓸 대체 칸이다. 탐색 범위 안의 평면 거리 기준이다.
         public Tile FindNearestWalkable(Vector2Int coord, int radius)
         {
             Tile nearest = null;

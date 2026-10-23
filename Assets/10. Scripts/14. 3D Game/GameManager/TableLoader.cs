@@ -4,57 +4,58 @@ namespace PROJECT3D
 {
     public class TableLoader : MonoBehaviour
     {
-        private UnitTable unitTable;
-        private SkillTable skillTable;
-        private EnemyTable enemyTable;
-        private WaveTable waveTable;
-        private AugmentTable augmentTable;
-        private StructureTable structureTable;
+        public static TableLoader Instance;
+        public UnitTable UnitTable { get; private set; }
+        public SkillTable SkillTable { get; private set; }
+        public EnemyTable EnemyTable { get; private set; }
+        public WaveTable WaveTable { get; private set; }
+        public AugmentTable AugmentTable { get; private set; }
+        public StructureTable StructureTable { get; private set; }
 
         private void Awake()
         {
-            skillTable = new SkillTable();
-            skillTable.Load();
-            for (int i = 0; i < skillTable.Count; i++)
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+
+            LoadData();
+            /*
+            for (int i = 0; i < SkillTable.Count; i++)
             {
-                SkillDef def = skillTable.Get(i);
+                SkillDef def = SkillTable.Get(i);
                 Debug.Log($"[TableLoader] Selected SkillDef {def.ID}, {def.Name}, {def.UnitSkill}");
             }
-            
-            unitTable = new UnitTable();
-            unitTable.Load(skillTable);
-            for (int i = 0; i < unitTable.Count; i++)
+            for (int i = 0; i < UnitTable.Count; i++)
             {
-                UnitDef def = unitTable.Get(i);
+                UnitDef def = UnitTable.Get(i);
                 Debug.Log($"[TableLoader] Selected UnitDef {def.ID}, {def.Name}, {def.UnitStat.MaxHp}");
             }
-            
-            augmentTable = new AugmentTable();
-            augmentTable.Load();
-            for (int i = 0; i < augmentTable.Count; i++)
+            for (int i = 0; i < AugmentTable.Count; i++)
             {
-                AugmentDef def = augmentTable.Get(i);
+                AugmentDef def = AugmentTable.Get(i);
                 Debug.Log($"[TableLoader] Selected AugmentDef {def.ID}, {def.Name}, {def.Type}");
             }
-
-            enemyTable = new EnemyTable();
-            enemyTable.Load();
-
-            waveTable = new WaveTable();
-            waveTable.Load(enemyTable);
-            for (int i = 0; i < waveTable.Count; i++)
+            for (int i = 0; i < WaveTable.Count; i++)
             {
-                WaveDef def = waveTable.Get(i);
+                WaveDef def = WaveTable.Get(i);
                 Debug.Log($"[TableLoader] Selected wavDef {def.ID}, {def.SpawnTimer}, {def.EnemyDef.Name}");
             }
-            
+            */
             //structureTable = new StructureTable();
             //structureTable.Load();
         }
 
         public void LoadData()
         {
-            
+            //SkillTable = new SkillTable();
+            //SkillTable.Load();
+            //UnitTable = new UnitTable();
+            //UnitTable.Load(SkillTable);
+            //AugmentTable = new AugmentTable();
+            //AugmentTable.Load();
+            EnemyTable = new EnemyTable();
+            EnemyTable.Load();
+            WaveTable = new WaveTable();
+            WaveTable.Load(EnemyTable);
         }
     }
 }

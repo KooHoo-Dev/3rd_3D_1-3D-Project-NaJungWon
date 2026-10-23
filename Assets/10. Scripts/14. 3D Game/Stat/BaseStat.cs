@@ -5,25 +5,25 @@ namespace PROJECT3D
     [System.Serializable]
     public class BaseStat
     {
-        public StatClass userStat; //모든 스탯 총합
+        public StatClass unitStat = new StatClass(); //모든 스탯 총합
         //[field: SerializeField] public int MaxHp { get; private set; }
         public int Hp { get; private set; }
         public bool IsDead => (Hp <= 0);
         
         public bool ApplyDamage(int damage)
         {
-            Hp = Mathf.Clamp(Hp - damage, 0, userStat.MaxHp);
+            Hp = Mathf.Clamp(Hp - damage, 0, unitStat.MaxHp);
             return IsDead;
         }
 
         public void ApplyHeal(int heal)
         {
-            Hp = Mathf.Clamp(Hp + heal, 0, userStat.MaxHp);
+            Hp = Mathf.Clamp(Hp + heal, 0, unitStat.MaxHp);
         }
         
         public void ResetToFull()
         {
-            Hp = userStat.MaxHp;
+            Hp = unitStat.MaxHp;
         }
 
         public void UpdateStat()

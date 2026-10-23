@@ -73,7 +73,7 @@ namespace PROJECT3D
 
         public void RegisterMonster(IDamageable monster)
         {
-            RegisterMonster(monster.MainCollider, monster);
+            //RegisterMonster(monster.MainCollider, monster);
         }
 
         public void RegisterMonster(Collider collider, IDamageable monster)

@@ -20,11 +20,11 @@ namespace PROJECT3D
         {
             if(Instance == null) Instance = this;
             else Destroy(gameObject);
+            Field = new FlowField(grid);
         }
 
         private void Start()
         {
-            Field = new FlowField(grid);
             grid.OnGridChanged += RequestRebuild;
             Rebuild();
         }

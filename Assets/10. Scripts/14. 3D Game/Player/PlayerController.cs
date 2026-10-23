@@ -11,11 +11,11 @@ namespace PROJECT3D
         [SerializeField] private CharacterController3D movement;
         [SerializeField] private CameraController cameraController;
 
-        public StatClass PlayerStat => LocalPlayer.Instance.Stat.userStat; //너무 길어서 임시로 뺌
+        public StatClass PlayerStat => LocalPlayer.Instance.Stat.unitStat; //너무 길어서 임시로 뺌
         public float speed = 4f;
         
-        [Header("Settings")]
-        float Timer = WorldClock.IsInitialized? WorldClock.Instance.DeltaTime : Time.deltaTime;
+        //[Header("Settings")]
+        //float Timer = WorldClock.IsInitialized? WorldClock.Instance.DeltaTime : Time.deltaTime;
 
         private void Awake()
         {

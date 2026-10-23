@@ -9,7 +9,7 @@ namespace PROJECT3D
     
     public abstract class Player : CombatEntity
     {
-        public PlayerStat Stat { get; set; }
+        public PlayerStat Stat { get; set; } = new PlayerStat();
         public override BaseStat BaseStat => Stat;
         
         public UnitDef unitDef;

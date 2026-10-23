@@ -20,11 +20,11 @@ namespace PROJECT3D
         public LayerMask obstacleMask;
 
         [Header("몹 이동 기준")]
-        [Min(0.2f)] public float mobHeight = 1.8f;
-        [Min(0f)] public float maxStepUp = 0.5f;
-        [Min(0f)] public float maxDropDown = 4f;
+        public float mobHeight = 1.8f;
+        public float maxStepUp = 1f;
+        public float maxDropDown = 4f;
         [Range(0f, 89f)] public float maxSlopeAngle = 40f;
-        [Min(1f)] public float rayStartHeight = 100f;
+        public float rayStartHeight = 100f;
 
         private void Awake()
         {

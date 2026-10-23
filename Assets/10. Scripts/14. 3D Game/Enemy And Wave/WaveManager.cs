@@ -72,18 +72,14 @@ namespace PROJECT3D
         
         private void StartWave()
         {
-            // 무한루프 방지용 임시 코드
-            int index = 0;
             while (true)
             {
-                if (index == 5) break;
                 if (nextWaveIndex == waveDefs.Count) return;
                 WaveDef def = waveDefs[nextWaveIndex];
                 if (elapsed <= def.SpawnTimer) return;
                 
                 SpawnWave(def);
                 nextWaveIndex++;
-                index++;
             }
         }
 

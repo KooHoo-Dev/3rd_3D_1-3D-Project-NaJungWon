@@ -23,7 +23,7 @@ namespace PROJECT3D
         public Vector3 direction;
 
         [Header("이동 설정")] 
-        public float YOffset { get; private set; }
+        [SerializeField] public float yOffset = 1f;
         [SerializeField] private float separationDistance = 1.5f; // 몹끼리 멀어지는 거리
         // 나중에 EnemyManager같은걸로 빼는게 좋을듯? 임시
         private static readonly List<Enemy> activeEnemies = new List<Enemy>(); 

@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5305659928367231414
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8899302501097440409}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8899302501097440409
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5305659928367231414}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1777939108994723881}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5595359127334959600
 GameObject:
   m_ObjectHideFlags: 0
@@ -12,6 +43,8 @@ GameObject:
   - component: {fileID: 7427231572661711720}
   - component: {fileID: 6724015408486290712}
   - component: {fileID: 1074493280710534452}
+  - component: {fileID: 387689740328126941}
+  - component: {fileID: 4083012008444268696}
   m_Layer: 0
   m_Name: AirDummyEnemy
   m_TagString: Untagged
@@ -28,10 +61,13 @@ Transform:
   m_GameObject: {fileID: 5595359127334959600}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.29564, y: 25.16, z: -3.68454}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 7154893047362719013}
+  - {fileID: 3269949745386298223}
+  - {fileID: 8899302501097440409}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7427231572661711720
@@ -100,7 +136,120 @@ MonoBehaviour:
   m_GameObject: {fileID: 5595359127334959600}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9aa0159d08442ac92369cf049678498, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ad840343ecc4402a650bc0b01a57f60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.AirDummyEnemy
-  <HeadUpPivot>k__BackingField: {fileID: 0}
+  <HeadUpPivot>k__BackingField: {fileID: 7154893047362719013}
+  hurtRadius: 0.5
+  hurtHalfHeight: 0.5
+  hurtGizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  <HitPivot>k__BackingField: {fileID: 3269949745386298223}
+  resist: 0
+  deathParticle: {fileID: 0}
+--- !u!114 &387689740328126941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5595359127334959600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a71588945ab14363a1cbd04a0364e446, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.AirNormal
+  separationDistance: 1.5
+  attackRange: 3
+  yOffset: 2
+  snapRayHeight: 2
+  snapRayDistance: 10
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  riseDuration: 1
+  SpawnRiseDone: 0
+  hoverHeight: 5
+  abovePlayer: 2
+  flyClearance: 1
+  heightSpeedRatio: 2
+  lookAhead: 1
+  surfaceRayHeight: 50
+  surfaceMask:
+    serializedVersion: 2
+    m_Bits: 3072
+--- !u!114 &4083012008444268696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5595359127334959600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44733b0bd2ac4dfaa864c530814fe67e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.SingleShot
+  firePoint: {fileID: 8899302501097440409}
+  projectilePrefab: {fileID: 7502496136243878170, guid: 9a210c14a393152449c4c38b945106b5, type: 3}
+--- !u!1 &5798878201409943661
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7154893047362719013}
+  m_Layer: 0
+  m_Name: HeadUpPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7154893047362719013
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5798878201409943661}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1777939108994723881}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8543369592110764639
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3269949745386298223}
+  m_Layer: 0
+  m_Name: HitPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3269949745386298223
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8543369592110764639}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1777939108994723881}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

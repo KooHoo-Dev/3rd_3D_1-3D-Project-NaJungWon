@@ -88,15 +88,14 @@ namespace PROJECT3D
             EnemyDef def = wave.EnemyDef;
             for (int i = 0; i < wave.Count; i++)
             {
-                Enemy enemy = Instantiate(def.Enemy);
-                TrySpawnPosition(enemy, out Vector3 spawnPosition);
-                enemy.Init(def, flowField.GetDirection(spawnPosition));
-                enemy.transform.position = spawnPosition;
+                TrySpawnPosition(out Vector3 spawnPosition);
+                Enemy enemy = Instantiate(def.Enemy, spawnPosition, Quaternion.identity);
+                enemy.Init(def);
             }
         }
 
         // 스폰 좌표 지정
-        private bool TrySpawnPosition(Enemy enemy ,out Vector3 position)
+        private bool TrySpawnPosition(out Vector3 position)
         {
             for (int i = 0; i < maxTryCount; i++)
             {
@@ -110,7 +109,7 @@ namespace PROJECT3D
                 Tile tile = mapGrid.Grid.GetTileOrNull(candidate);
                 if (tile == null || tile.IsWalkable == false) continue;
 
-                candidate.y = tile.GroundHeight; //바닥좌표 + 몹 y좌표 높이 넣어야함 + 다른 이동에서도 y수치를 GroundHeight + 몹y Offset넣어야할듯
+                candidate.y = tile.GroundHeight;
 
                 // 3. 이미 생성된 몹과 겹치는지 확인
                 if (IsOverlappingEnemies(candidate))

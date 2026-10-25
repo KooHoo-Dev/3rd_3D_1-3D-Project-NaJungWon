@@ -20,7 +20,6 @@ namespace PROJECT3D
     {
         public int Damage { get; set; }
         public Vector3 HitPosition { get; set; }
-        //public Collider Collider { get; set; }
         public override EventType Type => EventType.Combat;
     }
 

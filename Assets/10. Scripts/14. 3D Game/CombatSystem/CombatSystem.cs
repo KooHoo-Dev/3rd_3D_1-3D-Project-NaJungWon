@@ -12,7 +12,7 @@ namespace PROJECT3D
 
         [Header("적 판정")]
         [Tooltip("총·유탄이 맞힐 적의 레이어 이름. Project Settings > Tags and Layers의 이름과 같아야 합니다")]
-        [SerializeField] private string enemyLayerName = "Enemy";
+        [SerializeField] private LayerMask enemyLayer;
 
         public static CombatSystem Instance { get; private set; }
 
@@ -34,8 +34,8 @@ namespace PROJECT3D
             }
 
             Instance = this;
-            EnemyMask = LayerMask.GetMask(enemyLayerName);
-            if (EnemyMask == 0) Debug.LogWarning($"{enemyLayerName} 레이어가 없어 총·유탄이 아무것도 맞히지 못합니다");
+            EnemyMask = enemyLayer;
+            if (EnemyMask == 0) Debug.LogWarning($"{enemyLayer} 레이어가 없어 총·유탄이 아무것도 맞히지 못합니다");
         }
 
         private void OnDestroy()
@@ -71,6 +71,24 @@ namespace PROJECT3D
             }
         }
 
+        // 데미지 보내기 창구
+        public void SendDamage(CombatEntity sender, CombatEntity receiver, int damage, Vector3 hitPosition)
+        {
+            if (sender == null || receiver == null)
+            {
+                Debug.LogWarning($"[CombatSystem] : sender 존재 여부 : {sender != null}, receiver 존재 여부 : {receiver != null}");
+                return;
+            }
+
+            CombatEvent combatEvent = new CombatEvent();
+            combatEvent.Sender = sender;
+            combatEvent.Receiver = receiver;
+            combatEvent.Damage = damage;
+            combatEvent.HitPosition = hitPosition;
+
+            AddInGameEvent(combatEvent);
+        }
+        
         public void RegisterMonster(IDamageable monster)
         {
             //RegisterMonster(monster.MainCollider, monster);

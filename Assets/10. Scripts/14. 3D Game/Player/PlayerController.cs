@@ -12,6 +12,14 @@ namespace PROJECT3D
         [SerializeField] private CameraController cameraController;
 
         public StatClass PlayerStat => LocalPlayer.Instance.Stat.unitStat; //너무 길어서 임시로 뺌
+        
+        [Header("스킬")]
+        [SerializeField] private UnitSkill eSkill;
+        [SerializeField] private UnitSkill qSkill;
+
+        // 스킬 사용 중이면 이동/점프/다른 스킬을 막는다
+        private bool IsCasting => (eSkill != null && eSkill.IsCasting) || (qSkill != null && qSkill.IsCasting);
+        
         public float speed = 4f;
         
         //[Header("Settings")]
@@ -19,6 +27,8 @@ namespace PROJECT3D
 
         private void Awake()
         {
+            eSkill = LocalPlayer.Instance.unitDef.ESkill.UnitSkill;
+            qSkill = LocalPlayer.Instance.unitDef.QSkill.UnitSkill;
             LockCursor();
         }
         
@@ -32,6 +42,11 @@ namespace PROJECT3D
 
         private void UpdateMovement()
         {
+            if (IsCasting)
+            {
+                movement.SetValue(Vector2.zero, speed, cameraController.YawRotation);
+                return;
+            }
             Vector2 inputAxis = SimpleInput.GetMoveAxisRaw();
             movement.SetValue(inputAxis, speed, cameraController.YawRotation);
             if (SimpleInput.GetKeyDown(Key.Space)) movement.RequestJump();
@@ -46,16 +61,12 @@ namespace PROJECT3D
 
         private void UpdateSkillInput()
         {
-            if (SimpleInput.GetKeyDown(Key.E))
-            {
-                // E스킬
-                
-            }
+            if (IsCasting) return;
 
-            if (SimpleInput.GetKeyDown(Key.Q))
-            {
-                // Q스킬
-            }
+            Vector3 aimDirection = cameraController.YawRotation * Vector3.forward;
+
+            if (SimpleInput.GetKeyDown(Key.E)) eSkill.TryUse(aimDirection);
+            if (SimpleInput.GetKeyDown(Key.Q)) qSkill.TryUse(aimDirection);
         }
 
         private void UpdateAnimation()

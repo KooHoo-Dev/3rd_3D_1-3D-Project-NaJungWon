@@ -1,4 +1,4 @@
-ID	Name	PrefabKey	IconKey	MaxHealth	HealthRegeneration	Damage	SkillInterval	Defense	Speed	CritChance	ProjectileCount	AttackRange	Duration	AcquisitionRange	ExperienceGain	GoldGain	Description
+ID	Name	PrefabKey	IconKey	MaxHp	HealthRegeneration	Damage	AttackInterval	Defense	Speed	CritChance	ProjectileCount	AttackRange	Duration	AcquisitionRange	ExperienceGain	GoldGain	Description
 1	0	8	0.8	0	0	0	0	0	0	0	0	0	0	0	0	0	0
 2	1	6	0.6	0	0	0	0	0	0	0	0	0	0	0	0	0	0
 3	2	5	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0

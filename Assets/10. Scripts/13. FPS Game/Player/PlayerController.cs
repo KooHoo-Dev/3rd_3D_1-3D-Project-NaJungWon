@@ -18,6 +18,8 @@ namespace Study3D.FpsGame.Player
     public partial class PlayerController : MonoBehaviour
     {
         private static readonly int Fire = Animator.StringToHash("Fire");
+        private static readonly int Swap = Animator.StringToHash("Swap");
+        private static readonly int Reload = Animator.StringToHash("Reload");
 
         [Header("이동")] 
         [SerializeField] private float walkSpeed = 4f;
@@ -147,7 +149,7 @@ namespace Study3D.FpsGame.Player
             // 발사 하는 버튼
             if(SimpleInput.GetMouseButton(SimpleInput.MouseButton.Left))
             {
-                bool successFire = LocalPlayer.localPlayer.Fire();
+                bool successFire = Player.LocalPlayer.Fire();
                 
                 // 발사 성공일 경우
                 if (successFire)
@@ -159,8 +161,36 @@ namespace Study3D.FpsGame.Player
                 }
             }
 
+            // 발사 버튼을 뗀 순간 (Railgun처럼 떼야 발사되는 무기용)
+            if (SimpleInput.GetMouseButtonUp(SimpleInput.MouseButton.Left))
+            {
+                if (Player.LocalPlayer.ReleaseFire())
+                {
+                    animator.ResetTrigger(Fire);
+                    animator.SetTrigger(Fire);
+                }
+            }
+
             // 재장전
-            if (SimpleInput.GetKeyDown(Key.R)) LocalPlayer.localPlayer.RequestReload();
+            if (SimpleInput.GetKeyDown(Key.R)) Player.LocalPlayer.RequestReload();
+            
+           
         }
+        
+        // 델리게이트를 연동하는 교안이어서 아래 함수가 있는거였습니다.
+        // 여러분은 델리게이트를 학습하셨으니 아래처럼 구현하지 않으셔도 됩니다.
+        private void PlayWeaponChangeAnimation()
+        {
+            animator.ResetTrigger(Swap);
+            animator.SetTrigger(Swap);
+        }
+        
+        private void PlayReloadAnimation()
+        {
+            animator.ResetTrigger(Reload);
+            animator.SetTrigger(Reload);
+        }
+        
+        
     }
 }

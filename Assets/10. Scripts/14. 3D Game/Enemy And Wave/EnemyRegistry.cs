@@ -1,0 +1,148 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace PROJECT3D
+{
+    // 살아 있는 몹 "명부" + 공간 격자(Spatial Grid).
+    // 몹을 '칸(cell)'별 리스트로 나눠 담아 두고, 주변 칸만 검사.
+    public static class EnemyRegistry
+    {
+        // 칸 크기. separationDistance(1.5)보다 크게 잡으면 주변 9칸만 보면 된다.
+        // MapGrid의 칸(지형용)과는 다른, 몹 검색 전용 칸이다.
+        private const float CellSize = 2f;
+
+        // 칸 좌표 → 그 칸에 있는 몹들
+        private static readonly Dictionary<Vector2Int, List<Enemy>> cells = new Dictionary<Vector2Int, List<Enemy>>();
+
+        // FindNearest에서 후보를 담아 둘 리스트 (매번 new 하지 않고 재사용)
+        private static List<Enemy> nearestBuffer = new List<Enemy>();
+        
+        // 등록된 몹 중 '몹 위치(피벗)에서 피격 원통의 가장 먼 모서리까지' 가장 긴 거리.
+        // 격자는 피벗 위치로 나뉘어 있어서, 공격 판정 때 이만큼 넉넉하게 후보를 가져와야
+        // 몸이 크거나 HitPivot이 피벗에서 떨어진 몹을 놓치지 않는다.
+        private static float maxHitReach = 0f;
+
+        // 월드 좌표 → 칸 좌표 (높이는 무시하고 x, z만 쓴다)
+        public static Vector2Int ToCell(Vector3 position)
+        {
+            return new Vector2Int(Mathf.FloorToInt(position.x / CellSize),
+                                  Mathf.FloorToInt(position.z / CellSize));
+        }
+
+        // 몹이 태어날 때(OnEnable) 명부에 올린다
+        public static void Register(Enemy enemy)
+        {
+            enemy.RegistryCell = ToCell(enemy.transform.position);
+            GetOrCreateCell(enemy.RegistryCell).Add(enemy);
+
+            // 피벗 → 원통 중심 거리 + 원통 중심 → 가장 먼 모서리 거리(√(반경² + 절반높이²))
+            float offset = (enemy.HitCenter - enemy.transform.position).magnitude;
+            float corner = Mathf.Sqrt(enemy.HurtRadius * enemy.HurtRadius + enemy.HurtHalfHeight * enemy.HurtHalfHeight);
+            if (offset + corner > maxHitReach) maxHitReach = offset + corner;
+        }
+
+        // 몹이 사라질 때(OnDisable) 명부에서 뺀다
+        public static void Unregister(Enemy enemy)
+        {
+            if (cells.TryGetValue(enemy.RegistryCell, out List<Enemy> list))
+                list.Remove(enemy);
+        }
+
+        // 몹이 움직인 뒤 매 프레임 불러준다. 칸이 바뀌었을 때만 옮겨 담는다.
+        public static void UpdateCell(Enemy enemy)
+        {
+            Vector2Int now = ToCell(enemy.transform.position);
+            if (now == enemy.RegistryCell) return; // 같은 칸이면 할 일 없음
+
+            Unregister(enemy);
+            enemy.RegistryCell = now;
+            GetOrCreateCell(now).Add(enemy);
+        }
+
+        // center에서 radius 안에 '몹 위치(피벗)'가 있는 몹들을 result에 담는다. (분리 이동 등 위치 기준용)
+        public static void FindInRange(Vector3 center, float radius, ref List<Enemy> result)
+        {
+            result.Clear();
+
+            float sqrRadius = radius * radius;
+            int cellRange = Mathf.CeilToInt(radius / CellSize); // 몇 칸 옆까지 볼지
+            Vector2Int centerCell = ToCell(center);
+
+            for (int x = -cellRange; x <= cellRange; x++)
+            {
+                for (int z = -cellRange; z <= cellRange; z++)
+                {
+                    Vector2Int cell = new Vector2Int(centerCell.x + x, centerCell.y + z);
+                    if (cells.TryGetValue(cell, out List<Enemy> list) == false) continue;
+
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        // 높이까지 포함한 거리라서, 높이가 다른 공중몹과 지상몹은 서로 밀어내지 않는다
+                        if ((list[i].transform.position - center).sqrMagnitude <= sqrRadius)
+                            result.Add(list[i]);
+                    }
+                }
+            }
+        }
+
+        // 공격 범위(center, radius, 모양)가 '피격 원통'에 닿는 살아 있는 몹들을 result에 담는다. (공격 판정용)
+        // 투사체, 범위 공격, 장판 등 몹을 때리는 쪽은 전부 이걸 쓴다.
+        public static void FindHitTargets(Vector3 center, float radius, HitShape info, float height, ref List<Enemy> result)
+        {
+            // 1. 넉넉하게 후보를 가져온다 (몸 크기 + 기둥 높이만큼 더)
+            float searchRadius = radius + maxHitReach;
+            if (info == HitShape.Column) searchRadius += height;
+            FindInRange(center, searchRadius, ref result);
+
+            // 2. 실제로 피격 원통에 닿는 몹만 남긴다 (뒤에서부터 지워야 순서가 안 꼬인다)
+            for (int i = result.Count - 1; i >= 0; i--)
+            {
+                Enemy enemy = result[i];
+                if (enemy.Stat.IsDead || enemy.IsHitBy(center, radius, info, height) == false)
+                    result.RemoveAt(i);
+            }
+        }
+        
+        // center에서 radius 안의 가장 가까운 살아 있는 몹. exclude에 든 몹(이미 맞힌 몹 등)은 건너뛴다. 없으면 null.
+        // 타겟팅 공격의 첫 대상 찾기 / 대상이 죽었을 때 다시 찾기에 쓴다.
+        public static Enemy FindNearest(Vector3 center, float radius, HashSet<CombatEntity> exclude)
+        {
+            FindInRange(center, radius, ref nearestBuffer);
+
+            Enemy nearest = null;
+            float min = float.MaxValue;
+
+            for (int i = 0; i < nearestBuffer.Count; i++)
+            {
+                Enemy enemy = nearestBuffer[i];
+                if (enemy.Stat.IsDead) continue;
+                if (exclude != null && exclude.Contains(enemy)) continue;
+
+                float distance = (enemy.transform.position - center).sqrMagnitude;
+                if (distance < min)
+                {
+                    min = distance;
+                    nearest = enemy;
+                }
+            }
+
+            return nearest;
+        }
+
+        // 판을 다시 시작할 때 명부를 비운다
+        public static void Clear()
+        {
+            cells.Clear();
+            maxHitReach = 0f;
+        }
+
+        private static List<Enemy> GetOrCreateCell(Vector2Int cell)
+        {
+            if (cells.TryGetValue(cell, out List<Enemy> list)) return list;
+
+            list = new List<Enemy>();
+            cells[cell] = list;
+            return list;
+        }
+    }
+}

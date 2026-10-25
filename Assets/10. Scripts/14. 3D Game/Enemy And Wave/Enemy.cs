@@ -10,114 +10,84 @@ namespace PROJECT3D
         
     }
     
-    public abstract partial class Enemy : CombatEntity
+    // 몹 본체 : 스탯(표), 체력, 피격/사망 처리, 풀 귀환.
+    // 이동 - EnemyControllerBase 자식, 공격 - EnemyAttack 자식, 사망 효과 - EnemyDeath 자식이 실행
+    public class Enemy : CombatEntity, IObjectPoolItem
     {
         // BaseStat을 Player/Enemy를 나누는게 좋을듯?
         public EnemyStat Stat { get; set; } = new EnemyStat();
 
         public StatClass Unit => Stat.unitStat;
         public override BaseStat BaseStat => Stat;
-        
+
         private EnemyDef enemyDef;
         public float resist;
-        public Vector3 direction;
 
-        [Header("이동 설정")] 
-        [SerializeField] public float yOffset = 1f;
-        [SerializeField] private float separationDistance = 1.5f; // 몹끼리 멀어지는 거리
-        // 나중에 EnemyManager같은걸로 빼는게 좋을듯? 임시
-        private static readonly List<Enemy> activeEnemies = new List<Enemy>(); 
+        [Header("연출")]
+        [SerializeField] private ParticleEffect deathParticle; // 몹 공통 사망 연출 (없으면 생략)
 
-        public void Init(EnemyDef def, Vector3 targetDirection)
+        public EnemyControllerBase Controller { get; private set; }
+        public bool Ready => enemyDef != null;
+        public Vector2Int RegistryCell { get; set; } // EnemyRegistry가 쓰는 '지금 들어 있는 칸' (Spartial Grid용)
+
+        // 풀이 넣어 주는 값 (프리팹 이름)
+        public string Key { get; set; }
+
+        private EnemyDeath[] deathEffects; // 죽을 때 실행할 효과들
+        
+        public void Init(EnemyDef def) //레벨디자인 할거면 여기에 게임 시간 경과당 배율이 있으면 될듯? (배율은 json으로 관리)
         {
-            //StatClass unit = Stat.unitStat;
             Unit.MaxHp = def.MaxHp;
             Unit.Damage = def.Damage;
             Unit.AttackInterval = def.AttackInterval;
             Unit.Speed = def.Speed;
             Unit.Defense = def.Armor;
             resist = def.Resist;
-            direction = targetDirection;
+            Stat.ResetToFull();
+            
+            enemyDef = def;
         }
 
-        protected virtual void OnEnable() => activeEnemies.Add(this);
-        protected virtual void OnDisable() => activeEnemies.Remove(this);
-        
-        protected void Update()
+        public void Awake()
         {
-            Move(Time.deltaTime);
-            /* 임시코드
-            if ((transform.position - target).sqrMagnitude < 0.1f)
-            {
-                TakeDamage(
-                    new CombatEvent()
-                    {
-                        Damage = 0,
-                        HitPosition = (transform.position - target).normalized,
-                        Receiver = this,
-                        Sender = LocalPlayer.Instance,
-                    }
-                );
-            }
-            */
+            Controller = GetComponent<EnemyControllerBase>();
+            deathEffects = GetComponents<EnemyDeath>(); // 여러 개면 전부 가져옴
         }
         
-        protected virtual void Move(float deltaTime)   // 자식이 override할 통로
-        {
-            direction = GetChaseDirection() + GetSeparationDirection();
-            if (direction.sqrMagnitude < 0.1f) return;
-            transform.position += direction.normalized * (Unit.Speed * deltaTime);
-            SnapToGround();
-        }
-        
-        // 흐름장에서 지금 서 있는 칸의 추격 방향을 가져온다
-        private Vector3 GetChaseDirection()
-        {
-            FlowField field = FlowFieldManager.Instance.Field;
-            if (field == null) return Vector3.zero;
-
-            Vector3 chase = field.GetDirection(transform.position);
-            chase.y = 0f; // 좌우 이동만 하고, 높이는 SnapToGround에서 맞춘다
-            return chase;
-        }
-
-        // 주변 몹에게서 멀어지는 방향. 가까이 있을수록 세게 밀어낸다 (separate패턴 예시)
-        private Vector3 GetSeparationDirection()
-        {
-            Vector3 sum = Vector3.zero;
-
-            foreach (Enemy other in activeEnemies)
-            {
-                if (other == this) continue;
-
-                Vector3 toOther = transform.position - other.transform.position;
-                toOther.y = 0f;
-
-                float distance = toOther.magnitude;
-                if (distance > 0f && distance < separationDistance)
-                    sum += toOther * (1f - distance / separationDistance);
-            }
-
-            return sum;
-        }
-
-        // 지상 몹이 계단·경사를 따라가도록 바닥 높이에 붙히는데 현재 부드러운처리없어서 이상함
-        private void SnapToGround()
-        {
-            MapGrid mapGrid = MapGrid.Instance;
-
-            Tile tile = mapGrid.Grid.GetTileOrNull(transform.position);
-            if (tile == null || tile.IsWalkable == false) return;
-
-            Vector3 position = transform.position;
-            position.y = tile.GroundHeight;
-            transform.position = position;
-        }
-
         public override void TakeDamage(CombatEvent combatEvent)
+        {
+            if (Stat.IsDead) return; // 이미 죽었으면 무시
+
+            int damage = CalculateFinalDamage(combatEvent.Damage); // 받는 쪽 보정 (방어력 등은 나중에 여기서)
+            if (Stat.ApplyDamage(damage)) Die();
+        }
+
+        public override void TakeHeal(HealEvent healEvent)
         {
             
         }
-        
+
+        // 사망 처리
+        private void Die()
+        {
+            ObjectPoolManager.PlayEffect(deathParticle, transform.position);
+
+            foreach (EnemyDeath effect in deathEffects)
+                effect.Apply();
+
+            ReturnToPool();
+        }
+
+        public void ReturnToPool()
+        {
+            // 풀에서 꺼낸 몹이 아니면(Instantiate로 만든 몹) 그냥 끈다
+            if (ObjectPoolManager.Instance == null || string.IsNullOrEmpty(Key))
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            ObjectPoolManager.Instance.ReturnToPool(this);
+        }
     }
 }

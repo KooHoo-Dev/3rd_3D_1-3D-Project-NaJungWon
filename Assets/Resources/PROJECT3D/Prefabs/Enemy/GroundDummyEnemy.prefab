@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7909555713337010850}
   - component: {fileID: 266917686803369023}
   - component: {fileID: 2071006028851073037}
+  - component: {fileID: 5594281047183515772}
   - component: {fileID: 1443468649450734428}
   m_Layer: 0
   m_Name: GroundDummyEnemy
@@ -28,10 +29,12 @@ Transform:
   m_GameObject: {fileID: 1236897912583747199}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.96422, y: 21, z: 0.06184}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1583284967456906878}
+  - {fileID: 929301673925798654}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &266917686803369023
@@ -91,6 +94,25 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5594281047183515772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1236897912583747199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ad840343ecc4402a650bc0b01a57f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.Enemy
+  <HeadUpPivot>k__BackingField: {fileID: 1583284967456906878}
+  hurtRadius: 0.5
+  hurtHalfHeight: 1
+  hurtGizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  <HitPivot>k__BackingField: {fileID: 929301673925798654}
+  resist: 0
+  deathParticle: {fileID: 0}
 --- !u!114 &1443468649450734428
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,10 +122,78 @@ MonoBehaviour:
   m_GameObject: {fileID: 1236897912583747199}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: abfe4c1ae59b40f28e12cd140bc49117, type: 3}
+  m_Script: {fileID: 11500000, guid: 8814495c8bcc462d9ada59f33b7a4870, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.DummyEnemy
-  <HeadUpPivot>k__BackingField: {fileID: 0}
-  resist: 0
-  direction: {x: 0, y: 0, z: 0}
   separationDistance: 1.5
+  attackRange: 0
+  yOffset: 1
+  snapRayHeight: 2
+  snapRayDistance: 5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  riseDuration: 1
+  SpawnRiseDone: 0
+--- !u!1 &2222552771618764481
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 929301673925798654}
+  m_Layer: 0
+  m_Name: HitPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &929301673925798654
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2222552771618764481}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7909555713337010850}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7917219658200442733
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1583284967456906878}
+  m_Layer: 0
+  m_Name: HeadUpPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1583284967456906878
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7917219658200442733}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7909555713337010850}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

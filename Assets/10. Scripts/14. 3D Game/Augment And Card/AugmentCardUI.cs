@@ -11,7 +11,7 @@ namespace PROJECT3D
     {
         [SerializeField] private GameObject[] cardCase; //AugmentType 순서. 0: 무기 1: 능력치 2: 특수
         [SerializeField] private Button button;
-        [SerializeField] private Image cardIcon;
+        [SerializeField] private Image[] cardIcon; //케이스와 동일
         [SerializeField] private Image arousalEffect; //진화시 카드장식
         [SerializeField] private TMP_Text nameText;
         [SerializeField] private TMP_Text levelText;
@@ -26,9 +26,9 @@ namespace PROJECT3D
             for (int i = 0; i < cardCase.Length; i++)
             {
                 cardCase[i].SetActive(i == (int)def.Type);
+                cardIcon[i].sprite = def.Sprite;
             }
-
-            cardIcon.sprite = def.Sprite;
+            
             nameText.text = def.Name;
 
             if (offer.Kind == OfferKind.Arousal)

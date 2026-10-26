@@ -66,7 +66,7 @@ namespace PROJECT3D
         private void Update()
         {
             if (mapGrid == null || LocalPlayer.Instance == null) return;
-            elapsed += Time.deltaTime;
+            elapsed += WorldClock.Instance.DeltaTime;
             StartWave();
         }
         

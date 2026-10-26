@@ -34,7 +34,7 @@ namespace PROJECT3D
             // 시간 기준 : 시간이 다 되면 귀환
             if (remainTime > 0f)
             {
-                remainTime -= Time.deltaTime;
+                remainTime -= WorldClock.Instance.DeltaTime;
                 if (remainTime <= 0f) ReturnToPool();
                 return;
             }

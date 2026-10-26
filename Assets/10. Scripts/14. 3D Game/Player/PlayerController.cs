@@ -32,8 +32,20 @@ namespace PROJECT3D
             LockCursor();
         }
         
+        private void OnEnable()
+        {
+            WorldClock.Instance.OnPauseChanged += HandlePauseChanged;
+        }
+
+        private void OnDisable()
+        {
+            // 게임 종료 중에는 WorldClock이 먼저 사라졌을 수 있다
+            if (WorldClock.IsInitialized) WorldClock.Instance.OnPauseChanged -= HandlePauseChanged;
+        }
+        
         private void Update()
         {
+            if (WorldClock.Instance.IsPaused) return;
             UpdateMovement();
             UpdateCameraRotate();
             UpdateSkillInput();
@@ -74,10 +86,22 @@ namespace PROJECT3D
             
         }
         
+        private void HandlePauseChanged(bool isPaused)
+        {
+            if (isPaused) UnlockCursor();
+            else LockCursor();
+        }
+        
         private void LockCursor()
         {
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
+        }
+        
+        private void UnlockCursor()
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
         }
     }
 }

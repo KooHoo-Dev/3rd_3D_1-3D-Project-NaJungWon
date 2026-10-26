@@ -35,7 +35,7 @@ namespace PROJECT3D
 
         private void Update()
         {
-            timer += Time.deltaTime;
+            timer += WorldClock.Instance.DeltaTime;
 
             if (timer >= nextHitTime)
             {

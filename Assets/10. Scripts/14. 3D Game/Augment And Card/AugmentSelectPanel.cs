@@ -44,13 +44,13 @@ namespace PROJECT3D
             }
 
             gameObject.SetActive(true);
-            Time.timeScale = 0f; // 고르는 동안 게임 정지 - 이것도 나중에 게임시작 기준으로 바꿔야함.
+            WorldClock.Instance.Pause(); // 고르는 동안 게임 시간 정지
         }
 
         public void Close()
         {
             gameObject.SetActive(false);
-            Time.timeScale = 1f; // 이하동문
+            WorldClock.Instance.Resume();
         }
 
         // 카드를 클릭했을 때

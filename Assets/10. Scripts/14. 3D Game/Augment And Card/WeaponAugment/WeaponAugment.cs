@@ -35,7 +35,7 @@ namespace PROJECT3D
         {
             if (levelData == null) return; //아직 초기화 전
 
-            timer += Time.deltaTime;
+            timer += WorldClock.Instance.DeltaTime;
             if (timer < levelData.AugmentLevelStat.AttackInterval) return;
 
             timer = 0f;

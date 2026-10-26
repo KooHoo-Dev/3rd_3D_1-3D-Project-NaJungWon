@@ -53,10 +53,10 @@ namespace PROJECT3D
             moveZ = SmoothAxis(moveZ, inputRaw.y);
             
             Vector3 moveVector = movementRotation * new Vector3(moveX, 0f, moveZ);
-            controller.Move(moveVector * (speed * Time.deltaTime));
+            controller.Move(moveVector * (speed * WorldClock.Instance.DeltaTime));
 
-            velocity.y += gravity * Time.deltaTime;
-            controller.Move(velocity * Time.deltaTime);
+            velocity.y += gravity * WorldClock.Instance.DeltaTime;
+            controller.Move(velocity * WorldClock.Instance.DeltaTime);
             
             // controller의 isGrounded는 마지막 Move 적용 기준이라
             // 마지막 수직이동 바로 뒤에 읽어야 합니다.
@@ -78,7 +78,7 @@ namespace PROJECT3D
             // 아래값은 보간 속도(?)를 의미한다고 생각하시면 됩니다. 댐핑값
             const float AXIS_SPEED = 3f;
             if (target != 0f && current * target < 0f) current = 0f;
-            return Mathf.MoveTowards(current, target, AXIS_SPEED * Time.deltaTime);
+            return Mathf.MoveTowards(current, target, AXIS_SPEED * WorldClock.Instance.DeltaTime);
         }
 
         public void ResetVerticalVelocity()

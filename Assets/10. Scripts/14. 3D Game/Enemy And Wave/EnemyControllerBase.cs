@@ -112,7 +112,7 @@ namespace PROJECT3D
             {
                 IsMoving = false;
 
-                attackTimer -= Time.deltaTime;
+                attackTimer -= WorldClock.Instance.DeltaTime;
                 if (attackTimer <= 0f)
                 {
                     attackTimer = 1f / Enemy.Unit.AttackInterval; // AttackInterval = 초당 공격 횟수
@@ -121,7 +121,7 @@ namespace PROJECT3D
             }
             else
             {
-                Move(Time.deltaTime);
+                Move(WorldClock.Instance.DeltaTime);
             }
 
             UpdateHeight();

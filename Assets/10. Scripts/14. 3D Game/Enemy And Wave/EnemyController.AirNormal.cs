@@ -77,7 +77,7 @@ namespace PROJECT3D
         protected override void UpdateHeight()
         {
             Vector3 position = transform.position;
-            position.y = Mathf.MoveTowards(position.y, GetTargetHeight(), Enemy.Unit.Speed * heightSpeedRatio * Time.deltaTime);
+            position.y = Mathf.MoveTowards(position.y, GetTargetHeight(), Enemy.Unit.Speed * heightSpeedRatio * WorldClock.Instance.DeltaTime);
             transform.position = position;
         }
 

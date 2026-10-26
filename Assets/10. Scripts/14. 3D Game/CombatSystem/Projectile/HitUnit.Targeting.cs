@@ -58,7 +58,7 @@ namespace PROJECT3D
             Vector3 toTarget = target.HitCenter - transform.position;
             if (toTarget.sqrMagnitude > 0.01f)
                 transform.rotation = Quaternion.LookRotation(toTarget);
-            transform.position = Vector3.MoveTowards(transform.position, target.HitCenter, speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, target.HitCenter, speed * WorldClock.Instance.DeltaTime);
 
             if (IsTouching(target) == false) return;
 

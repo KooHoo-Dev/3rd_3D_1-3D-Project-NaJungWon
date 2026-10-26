@@ -37,7 +37,7 @@ namespace PROJECT3D
 
         private void Update()
         {
-            float step = speed * Time.deltaTime;
+            float step = speed * WorldClock.Instance.DeltaTime;
 
             // 이번 프레임에 지나갈 구간에 지형/장애물이 있으면 사라진다
             if (Physics.Raycast(transform.position, direction, out RaycastHit hit, step, blockMask, QueryTriggerInteraction.Ignore))

@@ -18,7 +18,7 @@ namespace PROJECT3D
 
         protected virtual void Update()
         {
-            if (cooldownTimer > 0f) cooldownTimer -= Time.deltaTime;
+            if (cooldownTimer > 0f) cooldownTimer -= WorldClock.Instance.DeltaTime;
         }
 
         // 키 입력이 들어왔을 때 부른다. aimDirection = 화면이 바라보는 수평 방향. 쿨타임 중이면 false

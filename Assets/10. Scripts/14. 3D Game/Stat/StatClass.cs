@@ -35,5 +35,22 @@ namespace PROJECT3D
         public float AcquisitionRange;
         public float ExperienceGain;
         public float GoldGain;
+
+        public void Add(StatClass other)
+        {
+            MaxHp += other.MaxHp;
+            HealthRegeneration += other.HealthRegeneration;
+            Damage += other.Damage;
+            AttackInterval += other.AttackInterval;
+            Defense += other.Defense;
+            Speed += other.Speed;
+            CritChance += other.CritChance;
+            ProjectileCount += other.ProjectileCount;
+            AttackRange += other.AttackRange;
+            Duration += other.Duration;
+            AcquisitionRange += other.AcquisitionRange;
+            ExperienceGain += other.ExperienceGain;
+            GoldGain += other.GoldGain;
+        }
     }
 }

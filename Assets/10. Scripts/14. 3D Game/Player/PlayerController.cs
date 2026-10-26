@@ -27,8 +27,8 @@ namespace PROJECT3D
 
         private void Awake()
         {
-            eSkill = LocalPlayer.Instance.unitDef.ESkill.UnitSkill;
-            qSkill = LocalPlayer.Instance.unitDef.QSkill.UnitSkill;
+            //eSkill = LocalPlayer.Instance.unitDef.ESkill.UnitSkill;
+            //qSkill = LocalPlayer.Instance.unitDef.QSkill.UnitSkill;
             LockCursor();
         }
         

@@ -8,7 +8,7 @@ namespace PROJECT3D
         private CombatEntity owner;
 
         [Header("스킬 공통 (임시 값)")] 
-        [SerializeField] private List<AugmentType> useValueType = new List<AugmentType>(); //사용하는 계수값
+        [SerializeField] private List<StatType> useValueType = new List<StatType>(); //사용하는 계수값
         [SerializeField] protected int damage = 50;
         [SerializeField] private float cooldown = 5f;
         private float cooldownTimer;                     // 남은 쿨타임

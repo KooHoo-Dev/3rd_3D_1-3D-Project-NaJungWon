@@ -10,6 +10,7 @@ namespace PROJECT3D
 
         protected override void Use(Vector3 aimDirection)
         {
+            Debug.Log($"[ProjectileSkill] {Owner.GameObject.name}가 투사체 발사 스킬을 사용!");
             FireHit(projectilePrefab, aimDirection, damage);
         }
     }

@@ -57,7 +57,7 @@ namespace PROJECT3D
         public override void TakeDamage(CombatEvent combatEvent)
         {
             if (Stat.IsDead) return; // 이미 죽었으면 무시
-
+            Debug.Log($"[Enemy]: {combatEvent.Receiver.GameObject.name}가 {combatEvent.Sender.GameObject.name}에게 {combatEvent.Damage}를 입음!");
             int damage = CalculateFinalDamage(combatEvent.Damage); // 받는 쪽 보정 (방어력 등은 나중에 여기서)
             if (Stat.ApplyDamage(damage)) Die();
         }
@@ -70,7 +70,7 @@ namespace PROJECT3D
         // 사망 처리
         private void Die()
         {
-            ObjectPoolManager.PlayEffect(deathParticle, transform.position);
+            if(deathEffects != null) ObjectPoolManager.PlayEffect(deathParticle, transform.position);
 
             foreach (EnemyDeath effect in deathEffects)
                 effect.Apply();

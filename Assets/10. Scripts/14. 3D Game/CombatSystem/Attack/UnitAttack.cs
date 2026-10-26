@@ -2,19 +2,17 @@
 
 namespace PROJECT3D
 {
-    // 몹/플레이어 공격의 공통 부모. (FPS Game의 Weapon처럼 공통 도우미를 모아 둔 곳)
+    // 몹/플레이어 공격의 공통 부모.
     //  - 주인(CombatEntity)과 주인 능력치
     //  - 발사 위치 / 조준 방향 (대상의 몸 중심 HitCenter)
-    //  - HitUnit 생성 입구 FireHit 하나 (논타겟/타겟팅/소환 공통. 능력치 보너스도 여기서 넘긴다)
-    //  - 바로 데미지 주기
+    //  - HitUnit 생성 입구 FireHit 하나 (논타겟/타겟팅/소환 공통)
     // 자식 : EnemyAttack(몹 공격 패턴), AugmentCard(증강), UnitSkill(스킬)
     public abstract class UnitAttack : MonoBehaviour
     {
         [Header("공통 공격 설정")]
         [SerializeField] protected Transform firePoint; // 발사 위치. 없으면 이 오브젝트 위치
 
-        // 주인 : 같은 오브젝트(몹) 또는 부모(플레이어 아래 붙는 증강/스킬)에서 찾는다
-        // (Action Platformer HitBox의 GetComponentInParent와 같은 방식)
+        // 주인 : 같은 오브젝트(몹) 또는 부모(플레이어)에서 찾는다
         protected CombatEntity Owner { get; private set; }
 
         // 주인의 능력치 (몹/플레이어 공통)

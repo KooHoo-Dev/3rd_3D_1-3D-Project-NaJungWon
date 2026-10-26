@@ -13,6 +13,7 @@ namespace PROJECT3D
 
         protected override void Use(Vector3 aimDirection)
         {
+            Debug.Log($"[AreaSkill] {Owner.GameObject.name}가 범위스킬을 사용!");
             Vector3 center = Owner.transform.position + aimDirection * forwardDistance;
             FireHit(zonePrefab, center, aimDirection, damage);
         }

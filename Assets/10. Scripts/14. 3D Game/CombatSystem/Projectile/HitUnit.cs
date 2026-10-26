@@ -10,6 +10,7 @@ namespace PROJECT3D
     // 자식 : NonTargetHit(논타겟 직진), TargetingHit(타겟 추적), SummonHit(지정 위치 소환)
     public abstract class HitUnit : MonoBehaviour, IObjectPoolItem
     {
+        protected CombatEntity owner;
         public string Key { get; set; }
         public GameObject GameObject => gameObject;
 
@@ -20,7 +21,6 @@ namespace PROJECT3D
         [SerializeField] private ParticleEffect impactEffect;   // 맞은 자리에 터뜨릴 이펙트 (없으면 생략)
         [SerializeField] private Color rangeGizmoColor = Color.yellow;
 
-        protected CombatEntity owner;
         protected int damage;
         protected float currentHitRadius;        // 이번 생성의 반경 (범위 증가 적용 후)
 

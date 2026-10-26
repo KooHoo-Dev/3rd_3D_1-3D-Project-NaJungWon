@@ -1,0 +1,16 @@
+ID	Level	MaxHp	HealthRegeneration	Damage	AttackInterval	Defense	Speed	CritChance	ProjectileCount	AttackRange	Duration	AcquisitionRange	ExperienceGain	GoldGain
+100	1	0	0	10	1	0	0	0	1	0	0	0	0	0
+100	2	0	0	15	1	0	0	0	1	0	0	0	0	0
+100	3	0	0	20	0.9	0	0	0	2	0	0	0	0	0
+100	4	0	0	25	0.9	0	0	0	2	0	0	0	0	0
+100	5	0	0	30	0.8	0	0	0	3	0	0	0	0	0
+200	1	0	0	5	0	0	0	0	0	0	0	0	0	0
+200	2	0	0	10	0	0	0	0	0	0	0	0	0	0
+200	3	0	0	15	0	0	0	0	0	0	0	0	0	0
+200	4	0	0	20	0	0	0	0	0	0	0	0	0	0
+200	5	0	0	25	0	0	0	0	0	0	0	0	0	0
+201	1	0	0	0	0	0	0.5	0	0	0	0	0	0	0
+201	2	0	0	0	0	0	1	0	0	0	0	0	0	0
+201	3	0	0	0	0	0	1.5	0	0	0	0	0	0	0
+201	4	0	0	0	0	0	2	0	0	0	0	0	0	0
+201	5	0	0	0	0	0	2.5	0	0	0	0	0	0	0

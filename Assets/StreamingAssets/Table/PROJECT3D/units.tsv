@@ -1,2 +1,2 @@
 ID	Name	PrefabKey	SpriteKey	PassiveSkillID	ESkillID	QSkillID	MaxHP	HealthRegeneration	Damage	AttackInterval	AttackRange	Defense	Speed	CritChance	ProjectileCount	Duration	AcquisitionRange	ExperienceGain	GoldGain
-0	전사	PROJECT3D/Prefabs/Unit/Warrior_Model	PROJECT3D/Prefabs/Unit/Warrior_Icon	01	02	03	500	0.5	20	1	3	10	5	0.2	1	0	0	0	0
+0	전사	PROJECT3D/Prefabs/Unit/Warrior_Model	PROJECT3D/Sprites/Unit/Warrior_Icon	01	00	02	500	0.5	20	1	3	10	5	0.2	1	0	0	0	0

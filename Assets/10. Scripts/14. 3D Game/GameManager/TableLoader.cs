@@ -10,6 +10,7 @@ namespace PROJECT3D
         public EnemyTable EnemyTable { get; private set; }
         public WaveTable WaveTable { get; private set; }
         public AugmentTable AugmentTable { get; private set; }
+        public AugmentLevelTable AugmentLevelTable { get; private set; }
         public StructureTable StructureTable { get; private set; }
 
         private void Awake()
@@ -46,12 +47,14 @@ namespace PROJECT3D
 
         public void LoadData()
         {
-            //SkillTable = new SkillTable();
-            //SkillTable.Load();
-            //UnitTable = new UnitTable();
-            //UnitTable.Load(SkillTable);
-            //AugmentTable = new AugmentTable();
-            //AugmentTable.Load();
+            SkillTable = new SkillTable();
+            SkillTable.Load();
+            UnitTable = new UnitTable();
+            UnitTable.Load(SkillTable);
+            AugmentTable = new AugmentTable();
+            AugmentTable.Load();
+            AugmentLevelTable = new AugmentLevelTable();
+            AugmentLevelTable.Load();
             EnemyTable = new EnemyTable();
             EnemyTable.Load();
             WaveTable = new WaveTable();

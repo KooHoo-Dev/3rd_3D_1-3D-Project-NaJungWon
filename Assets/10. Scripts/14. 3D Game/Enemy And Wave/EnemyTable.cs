@@ -34,7 +34,7 @@ namespace PROJECT3D
                     Enemy = enemy,
                     MaxHp =  dto.MaxHp,
                     Damage = dto.Damage,
-                    AttackInterval = dto.AttackInterval,
+                    AttackSpeed = dto.AttackSpeed,
                     Speed = dto.Speed,
                     Armor = dto.Armor,
                     Resist = dto.Resist

@@ -10,6 +10,8 @@ namespace PROJECT3D
         [SerializeField] private CharacterController3D movement;
         [SerializeField] private CameraController cameraController;
 
+        [SerializeField] private Transform SkillPivot; //스킬 생성 좌표
+
         public StatClass PlayerStat => Player.Stat.unitStat; //너무 길어서 임시로 뺌
         
         [Header("스킬")]
@@ -19,17 +21,40 @@ namespace PROJECT3D
         // 스킬 사용 중이면 이동/점프/다른 스킬을 막는다
         private bool IsCasting => (eSkill != null && eSkill.IsCasting) || (qSkill != null && qSkill.IsCasting);
         
-        public float speed = 4f;
-        
-        private void Awake()
+        // 플레이어 데이터가 다 들어간 뒤 PlayerTester가 호출
+        public void Init(Player player)
         {
-            Player = GetComponentInParent<Player>(); //플레이어 정보를 비동기로 정보가 다 Init된 다음에 가져오도록 바꿀것
-            //speed = PlayerStat.Speed;
-            //eSkill = Player.unitDef.ESkill.UnitSkill;
-            //qSkill = Player.unitDef.QSkill.UnitSkill;
+            Player = player;
+            if (PlayerStat.Speed == 0) Debug.Log($"[PlayerController] PlayerStat.Speed가 0임");
+            
+            // 표에 스킬 프리팹 없으면 인스펙터에 넣은 스킬 그대로 (테스트용)
+            UnitDef def = player.unitDef;
+            
+            if (def.ESkill == null || def.ESkill.UnitSkill == null)
+            {
+                if(def.ESkill == null) Debug.Log($"[PlayerController] def.Eskill이 null임");
+                else if(def.ESkill.UnitSkill == null) Debug.Log($"[PlayerController] def.Eskill.UnitSkill이 null임");
+            }
+            else
+            {
+                eSkill = Instantiate(def.ESkill.UnitSkill, SkillPivot);
+                eSkill.Init(def.ESkill);
+            }
+            
+            if (def.QSkill == null || def.QSkill.UnitSkill == null)
+            {
+                if(def.QSkill == null) Debug.Log($"[PlayerController] def.QSkill이 null임");
+                else if(def.QSkill.UnitSkill == null) Debug.Log($"[PlayerController] def.QSkill.UnitSkill이 null임");
+            }
+            else
+            {
+                qSkill = Instantiate(def.QSkill.UnitSkill, SkillPivot);
+                qSkill.Init(def.QSkill);
+            }
+            
             LockCursor();
         }
-        
+
         private void OnEnable()
         {
             WorldClock.Instance.OnPauseChanged += HandlePauseChanged;
@@ -54,11 +79,11 @@ namespace PROJECT3D
         {
             if (IsCasting)
             {
-                movement.SetValue(Vector2.zero, speed, cameraController.YawRotation);
+                movement.SetValue(Vector2.zero, PlayerStat.Speed, cameraController.YawRotation);
                 return;
             }
             Vector2 inputAxis = SimpleInput.GetMoveAxisRaw();
-            movement.SetValue(inputAxis, speed, cameraController.YawRotation);
+            movement.SetValue(inputAxis, PlayerStat.Speed, cameraController.YawRotation);
             if (SimpleInput.GetKeyDown(Key.Space)) movement.RequestJump();
         }
 

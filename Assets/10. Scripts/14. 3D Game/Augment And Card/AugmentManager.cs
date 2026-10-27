@@ -35,12 +35,18 @@ namespace PROJECT3D
         [SerializeField] private int maxAbilityCount = 6;
         [SerializeField] private int specialCardCount = 2; // 전부 고른 뒤 나오는 특수카드 수
 
-        public List<OwnedAugment> OwnedAugments => ownedAugments;
         private List<OwnedAugment> ownedAugments = new List<OwnedAugment>();
+        public List<OwnedAugment> OwnedAugments => ownedAugments;
         
         // 증강을 얻거나 레벨업, 진화했을 때 알려주는 이벤트 (슬롯 UI 갱신용)
         public event Action OnAugmentChanged;
 
+        public void Init(Player player, Transform root)
+        {
+            this.player = player;
+            weaponRoot = root;
+        }
+        
         #region 카드 만들기
 
         // 레벨업했을 때 보여줄 카드 (새 증강 + 레벨업. 진화는 상자에서만)
@@ -252,7 +258,7 @@ namespace PROJECT3D
                 total.Add(owned.GetLevelData().AugmentLevelStat);
             }
 
-            PlayerStatHandler.Instance.AbilityStat = total;
+            player.StatHandler.SetAbilityStat(total);
         }
 
         private bool HasAugment(int id)

@@ -34,25 +34,23 @@ namespace PROJECT3D
 
         private bool spawnFinished;
         
-        // 자리가 부족해서 생성하지 못한 몹 (매 프레임 다시 시도) 이게 필요하다함
+        // 자리가 부족해서 생성하지 못한 몹 (매 프레임 다시 시도) 이게 필요하다함.
         private readonly List<EnemyDef> pendingEnemyDefs = new();
-        // 이미 생성된 몹 목록 (스폰 겹침 검사에 사용. 나중에 몹이 죽으면 여기서도 제거)
-        // 아마 나중에 지우고 풀링시스템으로 다시쓸듯?
-        private readonly List<Enemy> spawnedEnemies = new();
         
-        private void Start()
+        private List<Enemy> nearEnemies = new List<Enemy>(); // 겹침 검사용 (재사용)
+        
+        // 테이블/맵/흐름장이 준비된 뒤 GameManager가 호출
+        public void Init(MapGrid map, FlowField field)
         {
-            //test용 임시 코드
-            mapGrid = MapGrid.Instance;
-            flowField = FlowFieldManager.Instance.Field;
+            mapGrid = map;
+            flowField = field;
             enemyTable = TableLoader.Instance.EnemyTable;
             waveTable = TableLoader.Instance.WaveTable;
-            
-            TableLoader.Instance.LoadData();
-            
+
+            waveDefs.Clear();
             for (int i = 0; i < waveTable.Count; i++)
                 waveDefs.Add(waveTable.Get(i));
-
+            
             for (int i = 0; i < waveDefs.Count; i++)
             {
                 Debug.Log($"waveDefs{i}번 정보 : " +
@@ -65,7 +63,7 @@ namespace PROJECT3D
         
         private void Update()
         {
-            if (mapGrid == null || LocalPlayer.Instance == null) return;
+            if (IsWaveActive == false || LocalPlayer.Instance == null) return;
             elapsed += WorldClock.Instance.DeltaTime;
             StartWave();
         }
@@ -82,15 +80,29 @@ namespace PROJECT3D
                 nextWaveIndex++;
             }
         }
+        
+        public void StartWaves()
+        {
+            elapsed = 0f;
+            nextWaveIndex = 0;
+            IsWaveActive = true;
+        }
 
         private void SpawnWave(WaveDef wave)
         {
             EnemyDef def = wave.EnemyDef;
             for (int i = 0; i < wave.Count; i++)
             {
-                TrySpawnPosition(out Vector3 spawnPosition);
-                Enemy enemy = Instantiate(def.Enemy, spawnPosition, Quaternion.identity);
+                // 자리를 못 찾으면 이번 몹은 건너뛴다 (원래는 (0,0,0)에 생성되던 문제)
+                if (TrySpawnPosition(out Vector3 spawnPosition) == false) continue;
+
+                // 풀에서 꺼내기 → 위치/데이터 넣기 → 켜기
+                Enemy enemy = ObjectPoolManager.Instance.GetObjectOrNull(def.Enemy.gameObject) as Enemy;
+                if (enemy == null) Debug.LogWarning("[WaveManager] 생성하려는 enemy가 존재하지 않습니다.");
+
+                enemy.transform.position = spawnPosition;
                 enemy.Init(def);
+                enemy.gameObject.SetActive(true);
             }
         }
 
@@ -102,6 +114,7 @@ namespace PROJECT3D
                 // 1. 플레이어 주변 일정 범위에서 후보 위치를 뽑기
                 float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
                 float distance = Random.Range(minSpawnDistance, maxSpawnDistance);
+                
                 // 멀티가 아닌 싱글기준코드라 수정해야할듯
                 Vector3 candidate = LocalPlayer.Instance.transform.position + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * distance;
 
@@ -123,16 +136,11 @@ namespace PROJECT3D
             return false;
         }
         
+        // 주변에 살아 있는 몹이 있는지 (공간 격자 명부로 주변 칸만 검사)
         private bool IsOverlappingEnemies(Vector3 position)
         {
-            for (int i = 0; i < spawnedEnemies.Count; i++)
-            {
-                Vector3 toOther = spawnedEnemies[i].transform.position - position;
-                if (toOther.sqrMagnitude < minEnemyGap * minEnemyGap)
-                    return true;
-            }
-
-            return false;
+            EnemyRegistry.FindInRange(position, minEnemyGap, ref nearEnemies);
+            return nearEnemies.Count > 0;
         }
     }
 }

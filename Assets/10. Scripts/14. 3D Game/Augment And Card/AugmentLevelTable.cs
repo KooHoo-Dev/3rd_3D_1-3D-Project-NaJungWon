@@ -41,7 +41,7 @@ namespace PROJECT3D
                 stat.MaxHp = dto.MaxHp;
                 stat.HealthRegeneration = dto.HealthRegeneration;
                 stat.Damage = dto.Damage;
-                stat.AttackInterval = dto.AttackInterval;
+                stat.AttackSpeed = dto.AttackSpeed;
                 stat.Defense = dto.Defense;
                 stat.Speed = dto.Speed;
                 stat.CritChance = dto.CritChance;

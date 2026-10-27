@@ -17,7 +17,7 @@ namespace PROJECT3D
         public int MaxHp;
         public float HealthRegeneration;
         public int Damage;
-        public float AttackInterval;
+        public float Cooldown; // 쿨타임 (스킬용)
         public int Defense;
         public float Speed;
         public float CritChance;
@@ -38,6 +38,7 @@ namespace PROJECT3D
         public Sprite Icon;
         public UnitSkill UnitSkill;
         public StatClass SkillStat;
+        public float Cooldown; // 쿨타임(초). 공속과 따로
         public string Description;
     }
 }

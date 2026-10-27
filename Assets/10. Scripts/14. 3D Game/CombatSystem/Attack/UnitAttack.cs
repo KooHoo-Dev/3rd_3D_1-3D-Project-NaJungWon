@@ -14,16 +14,45 @@ namespace PROJECT3D
 
         // 주인 : 같은 오브젝트(몹) 또는 부모(플레이어)에서 찾는다
         protected CombatEntity Owner { get; private set; }
-
-        // 주인의 능력치 (몹/플레이어 공통)
-        protected StatClass OwnerStat => Owner.BaseStat.unitStat;
+        protected StatClass OwnerStat => Owner.BaseStat.unitStat; // 주인의 능력치 (몹/플레이어 공통)
 
         protected Vector3 FirePosition => firePoint != null ? firePoint.position : transform.position;
 
-        // 능력치 배율 (몹은 범위/지속시간 능력치가 0이라 1배)
-        protected float RangeRate => 1f + OwnerStat.AttackRange / 100f;
-        protected float DurationRate => 1f + OwnerStat.Duration / 100f;
+        [Header("데미지 계수")]
+        [SerializeField] protected StatType mainStat = StatType.Damage; // 데미지에 쓰는 스탯 (기본 공격력)
+        [SerializeField] protected float damageRatio = 1f;              // 메인스탯 계수 (1 = 100%)
 
+        // 이 공격 자체의 수치 (무기증강 = 레벨 수치, 스킬 = 스킬 테이블 수치). 몹 공격은 비어 있음(전부 0)
+        protected StatClass AttackStat { get; private set; } = new StatClass();
+
+        public void SetAttackStat(StatClass stat)
+        {
+            if (stat == null) AttackStat = new StatClass();
+            else AttackStat = stat;
+        }
+        
+        #region 최종 스탯 수치 (기본 스탯 + 주인 스탯)
+        
+        protected int GetDamage() // 공격력 : 공격 기본 데미지 + 주인 메인스탯 × 계수
+        {
+            float damage = AttackStat.Damage + OwnerStat.Get(mainStat) * damageRatio;
+            return Mathf.RoundToInt(damage);
+        }
+
+        // 공격속도 : 공격 공속(초당 횟수) × 주인 공속 배율
+        protected float GetAttackSpeed() => AttackStat.AttackSpeed * OwnerStat.AttackSpeed;
+        
+        // 투사체 개수 : 공격 개수 + 주인 추가 개수
+        protected int GetProjectileCount() => AttackStat.ProjectileCount + OwnerStat.ProjectileCount;
+
+        // 공격범위 배율 : 1 + (공격 범위% + 주인 범위%) / 100
+        protected float RangeRate => 1f + (AttackStat.AttackRange + OwnerStat.AttackRange) / 100f;
+
+        // 지속시간 배율 : 1 + (공격 지속% + 주인 지속%) / 100
+        protected float DurationRate => 1f + (AttackStat.Duration + OwnerStat.Duration) / 100f;
+
+        #endregion
+        
         protected virtual void Awake()
         {
             Owner = GetComponentInParent<CombatEntity>();

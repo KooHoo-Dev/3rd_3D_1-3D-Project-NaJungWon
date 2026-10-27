@@ -18,7 +18,7 @@
             MaxLevel = TableLoader.Instance.AugmentLevelTable.GetMaxLevel(def.ID);
             Level = 0;
             IsArousal = false;
-
+            if (Weapon != null) Weapon.SetMainStat(def.MainStat);
             LevelUp(); // 1레벨로 시작
         }
 

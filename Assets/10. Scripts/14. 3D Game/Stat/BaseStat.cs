@@ -6,7 +6,7 @@ namespace PROJECT3D
     public class BaseStat
     {
         public StatClass unitStat = new StatClass(); //모든 스탯 총합
-        //[field: SerializeField] public int MaxHp { get; private set; }
+
         public int Hp { get; private set; }
         public bool IsDead => (Hp <= 0);
         

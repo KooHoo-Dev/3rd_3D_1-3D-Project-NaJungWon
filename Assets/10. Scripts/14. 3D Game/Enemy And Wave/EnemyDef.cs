@@ -25,7 +25,7 @@ namespace PROJECT3D
         public string PrefabKey;
         public int MaxHp;
         public int Damage;
-        public float AttackInterval;
+        public float AttackSpeed;
         public float Speed;
         public int Armor;
         public float Resist; //밀림 정도
@@ -41,7 +41,7 @@ namespace PROJECT3D
         public Enemy Enemy;
         public int MaxHp;
         public int Damage;
-        public float AttackInterval;
+        public float AttackSpeed;
         public float Speed;
         public int Armor;
         public float Resist;

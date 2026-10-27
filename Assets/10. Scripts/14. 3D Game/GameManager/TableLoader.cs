@@ -18,7 +18,23 @@ namespace PROJECT3D
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
 
-            LoadData();
+            //LoadData();
+        }
+
+        public void LoadData()
+        {
+            SkillTable = new SkillTable();
+            SkillTable.Load();
+            UnitTable = new UnitTable();
+            UnitTable.Load(SkillTable);
+            AugmentTable = new AugmentTable();
+            AugmentTable.Load();
+            AugmentLevelTable = new AugmentLevelTable();
+            AugmentLevelTable.Load();
+            EnemyTable = new EnemyTable();
+            EnemyTable.Load();
+            WaveTable = new WaveTable();
+            WaveTable.Load(EnemyTable);
             /*
             for (int i = 0; i < SkillTable.Count; i++)
             {
@@ -43,22 +59,6 @@ namespace PROJECT3D
             */
             //structureTable = new StructureTable();
             //structureTable.Load();
-        }
-
-        public void LoadData()
-        {
-            SkillTable = new SkillTable();
-            SkillTable.Load();
-            UnitTable = new UnitTable();
-            UnitTable.Load(SkillTable);
-            AugmentTable = new AugmentTable();
-            AugmentTable.Load();
-            AugmentLevelTable = new AugmentLevelTable();
-            AugmentLevelTable.Load();
-            EnemyTable = new EnemyTable();
-            EnemyTable.Load();
-            WaveTable = new WaveTable();
-            WaveTable.Load(EnemyTable);
         }
     }
 }

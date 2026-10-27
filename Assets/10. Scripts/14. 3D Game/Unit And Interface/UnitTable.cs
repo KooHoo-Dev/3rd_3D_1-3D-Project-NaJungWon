@@ -47,7 +47,7 @@ namespace PROJECT3D
                         MaxHp = dto.MaxHp,
                         HealthRegeneration = dto.HealthRegeneration,
                         Damage = dto.Damage,
-                        AttackInterval = dto.AttackInterval,
+                        AttackSpeed = dto.AttackSpeed,
                         Defense = dto.Defense,
                         Speed = dto.Speed,
                         CritChance = dto.CritChance,

@@ -39,7 +39,7 @@ namespace PROJECT3D
         {
             Unit.MaxHp = def.MaxHp;
             Unit.Damage = def.Damage;
-            Unit.AttackInterval = def.AttackInterval;
+            Unit.AttackSpeed = def.AttackSpeed;
             Unit.Speed = def.Speed;
             Unit.Defense = def.Armor;
             resist = def.Resist;
@@ -70,10 +70,11 @@ namespace PROJECT3D
         // 사망 처리
         private void Die()
         {
-            if(deathEffects != null) ObjectPoolManager.PlayEffect(deathParticle, transform.position);
-
-            foreach (EnemyDeath effect in deathEffects)
-                effect.Apply();
+            if(deathEffects == null)
+            {
+                ObjectPoolManager.PlayEffect(deathParticle, transform.position);
+                foreach (EnemyDeath effect in deathEffects) effect.Apply();
+            }
 
             ReturnToPool();
         }

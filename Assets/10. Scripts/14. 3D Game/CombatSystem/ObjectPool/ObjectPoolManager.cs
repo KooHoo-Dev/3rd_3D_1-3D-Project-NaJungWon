@@ -114,7 +114,9 @@ namespace PROJECT3D
                 return;
             }
 
-            Transform poolParent = data.Parent == null ? transform : data.Parent;
+            // 부모를 따로 지정하지 않았으면 "프리팹이름.Pool" 오브젝트를 만들어 그 아래에 모으기 (편의성 용)
+            Transform poolParent = data.Parent;
+            if (poolParent == null) poolParent = CreatePoolParent(data.Prefab.name);
             objectPoolDic.Add(data.Key, new ObjectPool(data.Prefab, poolParent, data.ExpandSize, data.Key));
         }
 
@@ -140,12 +142,20 @@ namespace PROJECT3D
                     return null;
                 }
 
-                objectPoolDic.Add(key, new ObjectPool(prefab, transform, defaultExpandSize, key));
+                Transform poolParent = CreatePoolParent(key);
+                objectPoolDic.Add(key, new ObjectPool(prefab, poolParent, defaultExpandSize, key));
             }
 
             return objectPoolDic[key].Get();
         }
 
+        private Transform CreatePoolParent(string objectName)
+        {
+            GameObject poolParent = new GameObject($"{objectName}.Pool");
+            poolParent.transform.SetParent(transform, false);
+            return poolParent.transform;
+        }
+        
         // 아이템을 입력받아서 해당 아이템을 관리하는 풀에 집어넣는 함수
         public void ReturnToPool(IObjectPoolItem item)
         {

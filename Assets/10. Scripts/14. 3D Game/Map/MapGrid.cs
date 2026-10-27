@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 
 namespace PROJECT3D
 {
@@ -25,12 +27,16 @@ namespace PROJECT3D
         public float maxDropDown = 4f;
         [Range(0f, 89f)] public float maxSlopeAngle = 40f;
         public float rayStartHeight = 100f;
+        
+        [Header("굽기")]
+        // 한 프레임에 굽는 줄 수 (크면 빨리 끝나지만 화면이 멈칫한다고 한다.)
+        [SerializeField] private int rowsPerFrame = 20; 
 
         private void Awake()
         {
             Instance = this;
             Grid = new SquareGrid(width, depth, cellSize, transform.position);
-            BakeAll();
+            //BakeAll();
         }
 
         private void OnDestroy()
@@ -38,7 +44,7 @@ namespace PROJECT3D
             if (Instance == this) Instance = null;
         }
 
-        public void BakeAll()
+        public void BakeAll() //내부 테스트용
         {
             if (Grid == null) return;
             Physics.SyncTransforms();
@@ -48,6 +54,23 @@ namespace PROJECT3D
                 {
                     BakeTile(Grid.GetTileOrNull(x, z));
                 }
+            }
+            OnGridChanged?.Invoke();
+        }
+        
+        public async UniTask BakeAllAsync(CancellationToken token)
+        {
+            if (Grid == null) return;
+            Physics.SyncTransforms();
+
+            for (int z = 0; z < Grid.Depth; z++)
+            {
+                for (int x = 0; x < Grid.Width; x++)
+                {
+                    BakeTile(Grid.GetTileOrNull(x, z));
+                }
+
+                if ((z + 1) % rowsPerFrame == 0) await UniTask.Yield(token);
             }
             OnGridChanged?.Invoke();
         }

@@ -1,4 +1,4 @@
-ID	Name	PrefabKey	IconKey	MaxHp	HealthRegeneration	Damage	AttackInterval	Defense	Speed	CritChance	ProjectileCount	AttackRange	Duration	AcquisitionRange	ExperienceGain	GoldGain	Description
+ID	Name	PrefabKey	IconKey	MaxHp	HealthRegeneration	Damage	Cooldown	Defense	Speed	CritChance	ProjectileCount	AttackRange	Duration	AcquisitionRange	ExperienceGain	GoldGain	Description
 00	대쉬	PROJECT3D/Prefabs/Skill/Skill_Dash	""	0	0	30	5	0	0	0	0	0	0	0	0	0	0
 01	검기	PROJECT3D/Prefabs/Skill/Skill_Slash	""	0	0	40	7	0	0	0	0	0	0	0	0	0	0
 02	폭발	PROJECT3D/Prefabs/Skill/Skill_AreaBomb	""	0	0	50	10	0	0	0	0	0	0	0	0	0	0

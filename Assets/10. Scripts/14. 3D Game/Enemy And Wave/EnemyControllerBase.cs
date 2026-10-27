@@ -108,14 +108,14 @@ namespace PROJECT3D
             if (SpawnRiseDone == false) return; // 출현 연출(DoTween) 중에는 대기
 
             // 공격 컴포넌트가 있는 몹이 사거리 안에 들어오면 멈춰서 공격
-            if (attack != null && Enemy.Unit.AttackInterval > 0f && IsTargetInAttackRange())
+            if (attack != null && Enemy.Unit.AttackSpeed > 0f && IsTargetInAttackRange())
             {
                 IsMoving = false;
 
                 attackTimer -= WorldClock.Instance.DeltaTime;
                 if (attackTimer <= 0f)
                 {
-                    attackTimer = 1f / Enemy.Unit.AttackInterval; // AttackInterval = 초당 공격 횟수
+                    attackTimer = 1f / Enemy.Unit.AttackSpeed; // 초당 공격 횟수
                     ProcessAttack();
                 }
             }

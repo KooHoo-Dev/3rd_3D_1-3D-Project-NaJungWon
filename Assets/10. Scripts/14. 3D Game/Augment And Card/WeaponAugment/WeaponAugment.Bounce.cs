@@ -18,8 +18,8 @@ namespace PROJECT3D
 
             int count = bounceCount;
             if (isArousal) count = arousalBounceCount;
-
-            for (int i = 0; i < GetProjectileCount(); i++)
+            int projectileCount = Mathf.RoundToInt(GetStat(StatType.ProjectileCount));
+            for (int i = 0; i < projectileCount; i++)
             {
                 HitUnit hit = FireHit(projectilePrefab, GetAimDirection(target), GetDamage());
                 if (hit == null) continue;

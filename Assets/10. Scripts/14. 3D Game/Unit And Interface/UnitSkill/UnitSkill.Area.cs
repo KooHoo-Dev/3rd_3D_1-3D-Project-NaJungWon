@@ -15,7 +15,7 @@ namespace PROJECT3D
         {
             Debug.Log($"[AreaSkill] {Owner.GameObject.name}가 범위스킬을 사용!");
             Vector3 center = Owner.transform.position + aimDirection * forwardDistance;
-            FireHit(zonePrefab, center, aimDirection, damage);
+            FireHit(zonePrefab, center, aimDirection, GetDamage());
         }
     }
 }

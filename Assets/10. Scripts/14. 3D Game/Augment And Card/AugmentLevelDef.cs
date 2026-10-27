@@ -9,7 +9,7 @@ namespace PROJECT3D
         public int MaxHp;
         public float HealthRegeneration;
         public int Damage;
-        public float AttackInterval;
+        public float AttackSpeed;
         public int Defense;
         public float Speed;
         public float CritChance;

@@ -10,15 +10,21 @@ namespace PROJECT3D
         [SerializeField] private Player playerPrefab;
         [SerializeField] private Transform startPosition;
         [SerializeField] private int testUnitID = 0;
-
-        private void Start()
+        [Header("테스트용 상점 스탯 (로비 상점이 생기면 지울 것)")]
+        [SerializeField] private StatClass testShopStat = new StatClass();
+        
+        // 플레이어 생성 → 유닛 데이터 넣기 → 컨트롤러에 플레이어 넘기기
+        public Player SpawnPlayer()
         {
             UnitDef unitDef = TableLoader.Instance.UnitTable.Get(testUnitID);
 
             Player player = Instantiate(playerPrefab, startPosition.position, startPosition.rotation);
-            player.Init(unitDef);
+            player.Init(unitDef, testShopStat);
+            
+            PlayerController controller = player.GetComponent<PlayerController>();
+            if (controller != null) controller.Init(player);
 
-            FlowFieldManager.Instance.players.Add(player.transform);
+            return player;
         }
 
         private void Update()

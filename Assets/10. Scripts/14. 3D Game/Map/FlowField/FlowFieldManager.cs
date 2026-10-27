@@ -16,21 +16,33 @@ namespace PROJECT3D
         private float timer;
         private bool rebuildRequested;
 
+        // 맵 굽기가 끝난 뒤 GameManager가 호출
+        public void Init(MapGrid map)
+        {
+            grid = map;
+            Field = new FlowField(grid);
+            grid.OnGridChanged += RequestRebuild;
+            Rebuild();
+        }
+        
+        // 추격 대상 추가 (플레이어가 생성된 뒤)
+        public void AddPlayer(Transform player)
+        {
+            if (players.Contains(player)) return;
+            players.Add(player);
+            RequestRebuild();
+        }
+        
         private void Awake()
         {
             if(Instance == null) Instance = this;
             else Destroy(gameObject);
-            Field = new FlowField(grid);
-        }
-
-        private void Start()
-        {
-            grid.OnGridChanged += RequestRebuild;
-            Rebuild();
         }
 
         private void Update()
         {
+            if (Field == null) return; // 아직 Init 전
+
             timer -= WorldClock.Instance.DeltaTime;
             if (rebuildRequested || timer <= 0f) Rebuild();
         }

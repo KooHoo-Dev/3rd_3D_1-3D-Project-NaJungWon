@@ -272,7 +272,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8135210075575110663}
   m_Layer: 0
-  m_Name: UnitSkill
+  m_Name: UnitSkillPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -307,6 +307,7 @@ GameObject:
   - component: {fileID: 4379439335337545981}
   - component: {fileID: 1686041705906077915}
   - component: {fileID: 1616070677542795440}
+  - component: {fileID: 6216893849104572621}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -401,7 +402,6 @@ MonoBehaviour:
       UnitSkill: {fileID: 0}
       Description: 
     Sprite: {fileID: 0}
-  testMaxHp: 500
 --- !u!114 &4379439335337545981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,9 +419,9 @@ MonoBehaviour:
   anim: {fileID: 0}
   movement: {fileID: 1686041705906077915}
   cameraController: {fileID: 1616070677542795440}
+  SkillPivot: {fileID: 8135210075575110663}
   eSkill: {fileID: 0}
   qSkill: {fileID: 0}
-  speed: 5
 --- !u!114 &1686041705906077915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,6 +458,18 @@ MonoBehaviour:
   distance: 8
   cameraPivot: {fileID: 3888518387522232429}
   cameraTransform: {fileID: 8945511742356850025}
+--- !u!114 &6216893849104572621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8012568546359650725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86631feb50ca4aa8ab36fe4cbf3a058a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.PlayerStatHandler
 --- !u!1 &8956973780816947280
 GameObject:
   m_ObjectHideFlags: 0
@@ -468,7 +480,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5081626150688610796}
   m_Layer: 0
-  m_Name: WeaponAugment
+  m_Name: WeaponAugmentPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

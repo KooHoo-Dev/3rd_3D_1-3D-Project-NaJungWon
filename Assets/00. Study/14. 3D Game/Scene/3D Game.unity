@@ -7998,6 +7998,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543962244}
+  - component: {fileID: 543962245}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -8023,10 +8024,23 @@ Transform:
   - {fileID: 1467241824}
   - {fileID: 1349750254}
   - {fileID: 1306392352}
-  - {fileID: 754387393}
-  - {fileID: 1078263837}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &543962245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543962243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f154f3259f5c4032aeac0a283a60baf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.GameManager
+  mapGrid: {fileID: 1487420143}
+  flowFieldManager: {fileID: 1861437768}
+  playerTester: {fileID: 335944450}
 --- !u!1 &545622506
 GameObject:
   m_ObjectHideFlags: 0
@@ -10482,50 +10496,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 749840022}
   m_CullTransparentMesh: 1
---- !u!1 &754387392
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 754387393}
-  - component: {fileID: 754387394}
-  m_Layer: 0
-  m_Name: PlayerStatHandler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &754387393
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 754387392}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 543962244}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &754387394
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 754387392}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86631feb50ca4aa8ab36fe4cbf3a058a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.PlayerStatHandler
 --- !u!1 &754980108
 GameObject:
   m_ObjectHideFlags: 0
@@ -15072,7 +15042,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 543962244}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1081588169
 GameObject:
@@ -20204,6 +20174,7 @@ MonoBehaviour:
   maxDropDown: 4
   maxSlopeAngle: 40
   rayStartHeight: 100
+  rowsPerFrame: 20
 --- !u!1 &1493178762
 GameObject:
   m_ObjectHideFlags: 0
@@ -28166,10 +28137,11 @@ SceneRoots:
   - {fileID: 533208294}
   - {fileID: 1017118546}
   - {fileID: 619408207}
+  - {fileID: 823741662}
+  - {fileID: 1078263837}
+  - {fileID: 543962244}
   - {fileID: 1487420142}
   - {fileID: 1861437767}
   - {fileID: 2030488156}
-  - {fileID: 823741662}
-  - {fileID: 1021896670}
-  - {fileID: 543962244}
   - {fileID: 335944449}
+  - {fileID: 1021896670}

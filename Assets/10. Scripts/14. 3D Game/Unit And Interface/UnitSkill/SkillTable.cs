@@ -37,7 +37,6 @@ namespace PROJECT3D
                         MaxHp = dto.MaxHp,
                         HealthRegeneration = dto.HealthRegeneration,
                         Damage = dto.Damage,
-                        AttackInterval = dto.AttackInterval,
                         Defense = dto.Defense,
                         Speed = dto.Speed,
                         CritChance = dto.CritChance,
@@ -48,6 +47,7 @@ namespace PROJECT3D
                         ExperienceGain = dto.ExperienceGain,
                         GoldGain = dto.GoldGain
                     },
+                    Cooldown = dto.Cooldown,
                     Description = dto.Description,
                 };
             }

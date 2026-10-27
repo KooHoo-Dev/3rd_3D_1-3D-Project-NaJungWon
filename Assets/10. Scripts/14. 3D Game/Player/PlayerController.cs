@@ -1,7 +1,6 @@
 ﻿using Study.Utilities;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace PROJECT3D
 {
@@ -11,7 +10,7 @@ namespace PROJECT3D
         [SerializeField] private CharacterController3D movement;
         [SerializeField] private CameraController cameraController;
 
-        public StatClass PlayerStat => LocalPlayer.Instance.Stat.unitStat; //너무 길어서 임시로 뺌
+        public StatClass PlayerStat => Player.Stat.unitStat; //너무 길어서 임시로 뺌
         
         [Header("스킬")]
         [SerializeField] private UnitSkill eSkill;
@@ -22,13 +21,12 @@ namespace PROJECT3D
         
         public float speed = 4f;
         
-        //[Header("Settings")]
-        //float Timer = WorldClock.IsInitialized? WorldClock.Instance.DeltaTime : Time.deltaTime;
-
         private void Awake()
         {
-            //eSkill = LocalPlayer.Instance.unitDef.ESkill.UnitSkill;
-            //qSkill = LocalPlayer.Instance.unitDef.QSkill.UnitSkill;
+            Player = GetComponentInParent<Player>(); //플레이어 정보를 비동기로 정보가 다 Init된 다음에 가져오도록 바꿀것
+            //speed = PlayerStat.Speed;
+            //eSkill = Player.unitDef.ESkill.UnitSkill;
+            //qSkill = Player.unitDef.QSkill.UnitSkill;
             LockCursor();
         }
         

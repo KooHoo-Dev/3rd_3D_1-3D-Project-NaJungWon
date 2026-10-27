@@ -43,7 +43,7 @@
             if (Weapon != null) Weapon.SetLevelData(GetLevelData());
         }
 
-        // 만렙 이후 진화 (BS Project처럼 같은 무기가 진화 상태로 바뀐다)
+        // 만렙 이후 진화
         public void Arousal()
         {
             IsArousal = true;

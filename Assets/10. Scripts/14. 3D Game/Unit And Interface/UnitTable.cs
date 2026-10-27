@@ -25,7 +25,7 @@ namespace PROJECT3D
                 GameObject unitBody = Resources.Load<GameObject>(dto.PrefabKey);
                 if(unitBody == null) Debug.LogWarning($"[UnitTable] {dto.PrefabKey} 경로에 파일 없음");
                 Sprite sprite = Resources.Load<Sprite>(dto.SpriteKey);
-                if(sprite == null) Debug.LogWarning($"[UnitTable] {dto.PrefabKey} 경로에 파일 없음");
+                if(sprite == null) Debug.LogWarning($"[UnitTable] {dto.SpriteKey} 경로에 파일 없음");
                 SkillDef passiveSkillDef = skillTable.Get(dto.PassiveSkillID);
                 if(passiveSkillDef == null) Debug.LogWarning($"[UnitTable] {dto.PassiveSkillID} 경로에 파일 없음");
                 SkillDef eSkillDef = skillTable.Get(dto.ESkillID);

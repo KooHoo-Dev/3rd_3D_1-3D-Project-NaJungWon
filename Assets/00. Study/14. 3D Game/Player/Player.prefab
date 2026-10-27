@@ -377,6 +377,7 @@ MonoBehaviour:
   hurtHalfHeight: 1
   hurtGizmoColor: {r: 1, g: 0, b: 0, a: 1}
   <HitPivot>k__BackingField: {fileID: 4314886328793446306}
+  BodyPivot: {fileID: 6709455145183590606}
   unitDef:
     ID: 0
     Name: 

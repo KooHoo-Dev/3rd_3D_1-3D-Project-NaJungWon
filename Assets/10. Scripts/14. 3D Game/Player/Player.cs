@@ -11,7 +11,8 @@ namespace PROJECT3D
     {
         public PlayerStat Stat { get; set; } = new PlayerStat();
         public override BaseStat BaseStat => Stat;
-        
+
+        public Transform BodyPivot; // 캐릭터 모델 넣을곳
         public UnitDef unitDef;
 
         public bool IsInvincible { get; set; } // 무적. 켜져 있으면 데미지x
@@ -22,13 +23,14 @@ namespace PROJECT3D
 
         private void Start()
         {
-            Stat.unitStat.MaxHp = testMaxHp;
-            Stat.ResetToFull();
+            //Stat.unitStat.MaxHp = testMaxHp;
+            //Stat.ResetToFull();
         }
         
         public void Init(UnitDef def)
         {
             unitDef = def;
+            Instantiate(def.UnitBody, BodyPivot);
             Stat.unitStat = def.UnitStat;
             Stat.ResetToFull();
         }

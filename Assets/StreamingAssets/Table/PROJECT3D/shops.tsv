@@ -1,0 +1,12 @@
+ID	Name	SpriteKey	StatType	Level	Value	Cost
+0	최대 체력	PROJECT3D/Sprites/Stat/hp img	MaxHp	1	10	100
+0	최대 체력	PROJECT3D/Sprites/Stat/hp img	MaxHp	2	20	200
+0	최대 체력	PROJECT3D/Sprites/Stat/hp img	MaxHp	3	30	400
+1	공격력	PROJECT3D/Sprites/Stat/attack img	Damage	1	10	150
+1	공격력	PROJECT3D/Sprites/Stat/attack img	Damage	2	20	300
+1	공격력	PROJECT3D/Sprites/Stat/attack img	Damage	3	30	600
+2	이동 속도	PROJECT3D/Sprites/Stat/speed img	Speed	1	5	100
+2	이동 속도	PROJECT3D/Sprites/Stat/speed img	Speed	2	10	200
+3	체력 재생	PROJECT3D/Sprites/Stat/hp p img	HealthRegeneration	1	0.5	100
+3	체력 재생	PROJECT3D/Sprites/Stat/hp p img	HealthRegeneration	2	1	200
+4	투사체	PROJECT3D/Sprites/Stat/projectile img	ProjectileCount	1	1	1000

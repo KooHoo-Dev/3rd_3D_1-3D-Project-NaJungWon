@@ -10,13 +10,13 @@ namespace PROJECT3D
     public abstract class UnitAttack : MonoBehaviour
     {
         [Header("공통 공격 설정")]
-        [SerializeField] protected Transform firePoint; // 발사 위치. 없으면 이 오브젝트 위치
+        private Transform FirePoint => Owner.FirePivot; // 발사 위치. 없으면 이 오브젝트 위치
 
         // 주인 : 같은 오브젝트(몹) 또는 부모(플레이어)에서 찾는다
         protected CombatEntity Owner { get; private set; }
         protected StatClass OwnerStat => Owner.BaseStat.unitStat; // 주인의 능력치 (몹/플레이어 공통)
 
-        protected Vector3 FirePosition => firePoint != null ? firePoint.position : transform.position;
+        protected Vector3 FirePosition => FirePoint != null ? FirePoint.position : transform.position;
 
         [Header("데미지 계수")]
         [SerializeField] protected StatType mainStat = StatType.Damage; // 데미지에 쓰는 스탯 (기본 공격력)

@@ -13,6 +13,8 @@ namespace PROJECT3D
         [field: SerializeField] public virtual BaseStat BaseStat { get; }
         // 전투 개체의 머리 상단 부분 Pivot. Hpbar 또는 이름등을 출력하기 위해 사용됩니다.
         [field: SerializeField] public Transform HeadUpPivot { get; private set; }
+        [field: SerializeField] public Transform FirePivot { get; private set; }
+
 
         [Header("피격 판정 (원통)")]
         [SerializeField] private float hurtRadius = 0.5f;            // 원통 반경

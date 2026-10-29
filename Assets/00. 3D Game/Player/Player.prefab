@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &72209860525107019
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7007530857147285215}
+  m_Layer: 0
+  m_Name: FirePivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7007530857147285215
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72209860525107019}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7130914971425496421}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1478558215758712915
 GameObject:
   m_ObjectHideFlags: 0
@@ -42,7 +73,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6709455145183590606}
   m_Layer: 0
-  m_Name: Body
+  m_Name: BodyPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,7 +88,7 @@ Transform:
   m_GameObject: {fileID: 1656626777566006632}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -88,7 +119,7 @@ Transform:
   m_GameObject: {fileID: 3125669469639242514}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -330,6 +361,7 @@ Transform:
   m_Children:
   - {fileID: 8788422041301864894}
   - {fileID: 4314886328793446306}
+  - {fileID: 7007530857147285215}
   - {fileID: 6709455145183590606}
   - {fileID: 3888518387522232429}
   - {fileID: 8135210075575110663}
@@ -374,8 +406,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.LocalPlayer
   <HeadUpPivot>k__BackingField: {fileID: 8788422041301864894}
+  <FirePivot>k__BackingField: {fileID: 7007530857147285215}
   hurtRadius: 0.5
-  hurtHalfHeight: 1
+  hurtHalfHeight: 1.5
   hurtGizmoColor: {r: 1, g: 0, b: 0, a: 1}
   <HitPivot>k__BackingField: {fileID: 4314886328793446306}
   BodyPivot: {fileID: 6709455145183590606}
@@ -388,20 +421,79 @@ MonoBehaviour:
       Name: 
       Icon: {fileID: 0}
       UnitSkill: {fileID: 0}
+      SkillStat:
+        MaxHp: 0
+        HealthRegeneration: 0
+        Damage: 0
+        AttackSpeed: 0
+        Defense: 0
+        Speed: 0
+        CritChance: 0
+        ProjectileCount: 0
+        AttackRange: 0
+        Duration: 0
+        AcquisitionRange: 0
+        ExperienceGain: 0
+        GoldGain: 0
+      Cooldown: 0
       Description: 
     ESkill:
       ID: 0
       Name: 
       Icon: {fileID: 0}
       UnitSkill: {fileID: 0}
+      SkillStat:
+        MaxHp: 0
+        HealthRegeneration: 0
+        Damage: 0
+        AttackSpeed: 0
+        Defense: 0
+        Speed: 0
+        CritChance: 0
+        ProjectileCount: 0
+        AttackRange: 0
+        Duration: 0
+        AcquisitionRange: 0
+        ExperienceGain: 0
+        GoldGain: 0
+      Cooldown: 0
       Description: 
     QSkill:
       ID: 0
       Name: 
       Icon: {fileID: 0}
       UnitSkill: {fileID: 0}
+      SkillStat:
+        MaxHp: 0
+        HealthRegeneration: 0
+        Damage: 0
+        AttackSpeed: 0
+        Defense: 0
+        Speed: 0
+        CritChance: 0
+        ProjectileCount: 0
+        AttackRange: 0
+        Duration: 0
+        AcquisitionRange: 0
+        ExperienceGain: 0
+        GoldGain: 0
+      Cooldown: 0
       Description: 
     Sprite: {fileID: 0}
+    UnitStat:
+      MaxHp: 0
+      HealthRegeneration: 0
+      Damage: 0
+      AttackSpeed: 0
+      Defense: 0
+      Speed: 0
+      CritChance: 0
+      ProjectileCount: 0
+      AttackRange: 0
+      Duration: 0
+      AcquisitionRange: 0
+      ExperienceGain: 0
+      GoldGain: 0
 --- !u!114 &4379439335337545981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -470,6 +562,76 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86631feb50ca4aa8ab36fe4cbf3a058a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.PlayerStatHandler
+  ChrStat:
+    MaxHp: 0
+    HealthRegeneration: 0
+    Damage: 0
+    AttackSpeed: 0
+    Defense: 0
+    Speed: 0
+    CritChance: 0
+    ProjectileCount: 0
+    AttackRange: 0
+    Duration: 0
+    AcquisitionRange: 0
+    ExperienceGain: 0
+    GoldGain: 0
+  AbilityStat:
+    MaxHp: 0
+    HealthRegeneration: 0
+    Damage: 0
+    AttackSpeed: 0
+    Defense: 0
+    Speed: 0
+    CritChance: 0
+    ProjectileCount: 0
+    AttackRange: 0
+    Duration: 0
+    AcquisitionRange: 0
+    ExperienceGain: 0
+    GoldGain: 0
+  SkillStat:
+    MaxHp: 0
+    HealthRegeneration: 0
+    Damage: 0
+    AttackSpeed: 0
+    Defense: 0
+    Speed: 0
+    CritChance: 0
+    ProjectileCount: 0
+    AttackRange: 0
+    Duration: 0
+    AcquisitionRange: 0
+    ExperienceGain: 0
+    GoldGain: 0
+  ShopStat:
+    MaxHp: 0
+    HealthRegeneration: 0
+    Damage: 0
+    AttackSpeed: 0
+    Defense: 0
+    Speed: 0
+    CritChance: 0
+    ProjectileCount: 0
+    AttackRange: 0
+    Duration: 0
+    AcquisitionRange: 0
+    ExperienceGain: 0
+    GoldGain: 0
+  BuffStat:
+    MaxHp: 0
+    HealthRegeneration: 0
+    Damage: 0
+    AttackSpeed: 0
+    Defense: 0
+    Speed: 0
+    CritChance: 0
+    ProjectileCount: 0
+    AttackRange: 0
+    Duration: 0
+    AcquisitionRange: 0
+    ExperienceGain: 0
+    GoldGain: 0
 --- !u!1 &8956973780816947280
 GameObject:
   m_ObjectHideFlags: 0

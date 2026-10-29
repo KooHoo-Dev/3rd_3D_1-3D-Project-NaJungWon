@@ -34,6 +34,9 @@ namespace PROJECT3D
         public string Key { get; set; }
 
         private EnemyDeath[] deathEffects; // 죽을 때 실행할 효과들
+
+        public static event Action<Enemy> OnAnyDied; //킬카운트, 경험치 구슬 소환용
+
         
         public void Init(EnemyDef def) //레벨디자인 할거면 여기에 게임 시간 경과당 배율이 있으면 될듯? (배율은 json으로 관리)
         {
@@ -76,6 +79,7 @@ namespace PROJECT3D
                 foreach (EnemyDeath effect in deathEffects) effect.Apply();
             }
 
+            Controller.StartDead();
             ReturnToPool();
         }
 

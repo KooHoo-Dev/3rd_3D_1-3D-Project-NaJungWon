@@ -21,6 +21,7 @@ namespace PROJECT3D
         
         [Header("공격 설정")]
         [SerializeField] protected float attackRange = 1.5f; // 공격을 시작하는 거리
+        [SerializeField] private float attackDelay = 0.5f; //공격 딜레이
         private float attackTimer;  // 공격 쿨타임 재기용
         private EnemyAttack attack; // 프리팹에 붙은 공격 컴포넌트 (없으면 추격 전용 몹)
         
@@ -28,15 +29,26 @@ namespace PROJECT3D
         protected virtual float MoveSpeed => Enemy.Unit.Speed;
         protected bool IsMoving { get; set; } // 추격 중인지 여부
         
+        [Header("회전 설정")]
+        [SerializeField] private float turnSpeed = 10f; // 회전 보간 속도 (클수록 빨리 돈다)
+        protected Vector3 LookDirection { get; set; }   // 바라볼 수평 방향 (Vector3.zero면 회전 안 함)
+        
         [Header("접지 설정")]
         [SerializeField] protected float yOffset = 1f;         // 몹좌표 offset
         [SerializeField] protected float snapRayHeight = 2f;   // 몸 위 이 높이에서 아래로 레이를 쏜다
         [SerializeField] protected float snapRayDistance = 5f; // 바닥을 찾는 최대 거리
         [SerializeField] protected LayerMask groundMask;       // 바닥으로 취급할 레이어만 검사
+
+        //[Header("사망 설정")]
         
         [Header("연출 설정")]
         [SerializeField] private float riseDuration = 1f; // 바닥 -> 자기 높이 상승 시간
         public bool SpawnRiseDone = false; // 출현 연출 종료 여부
+        
+        private static readonly int Attack = Animator.StringToHash("Attack");
+        private static readonly int IsMove = Animator.StringToHash("IsMove");
+        private static readonly int Die  = Animator.StringToHash("Die");
+
         // 출현 연출(DoTween)의 목표 높이. 지상 = 바닥 + yOffset, 공중 = 바닥 + hoverHeight.
         public float GetSpawnTargetY() => GetTargetHeight();
 
@@ -72,16 +84,12 @@ namespace PROJECT3D
             Enemy = GetComponent<Enemy>();
             Animator = GetComponentInChildren<Animator>();
             attack = GetComponent<EnemyAttack>();
-            
-            //아래는 테스트용
-            if (Field == null) Debug.LogWarning($"[EnemyControllerBase]: FlowFieldManger 또는 .Field가 존재하지 않음");
-            if (MapGrid == null) Debug.LogWarning($"[EnemyControllerBase]: mapGird 연동 안됨");
         }
         
         protected virtual void OnEnable()
         {
             EnemyRegistry.Register(Enemy);
-
+            LookDirection = Vector3.zero;
             // 풀에서 다시 나온 몹이 이전 값을 들고 오지 않게 초기화
             attackTimer = 0f;
             IsMoving = false;
@@ -106,7 +114,11 @@ namespace PROJECT3D
         {
             if (Enemy.Ready == false) return;   // 표 데이터가 들어오기 전에는 대기
             if (SpawnRiseDone == false) return; // 출현 연출(DoTween) 중에는 대기
+            
+            UpdateHeight(); //공중몹의 추락 연출을 위해 사망후에도 y이동 가능
 
+            if (Enemy.BaseStat.IsDead) return; //죽었으면 이동불가
+            
             // 공격 컴포넌트가 있는 몹이 사거리 안에 들어오면 멈춰서 공격
             if (attack != null && Enemy.Unit.AttackSpeed > 0f && IsTargetInAttackRange())
             {
@@ -124,17 +136,23 @@ namespace PROJECT3D
                 Move(WorldClock.Instance.DeltaTime);
             }
 
-            UpdateHeight();
+            UpdateRotation(WorldClock.Instance.DeltaTime);
             EnemyRegistry.UpdateCell(Enemy); // 움직인 뒤 칸이 바뀌었으면 명부의 칸도 업데이트
             UpdateAnimation();
         }
 
         #endregion
 
+        #region 이동 설정
+        
+        // 기본 이동 : 흐름장 추격 + 몹끼리 분리.
         // 기본 이동 : 흐름장 추격 + 몹끼리 분리.
         protected virtual void Move(float deltaTime)
         {
-            Vector3 direction = GetChaseDirection() + GetSeparationDirection();
+            Vector3 chase = GetChaseDirection();
+            if (chase.sqrMagnitude > 0.1f) LookDirection = chase; // 추격 방향(흐름장)을 바라본다. 분리로 밀리는 방향은 무시
+
+            Vector3 direction = chase + GetSeparationDirection();
             if (direction.sqrMagnitude < 0.1f)
             {
                 IsMoving = false;
@@ -175,6 +193,32 @@ namespace PROJECT3D
             return false;
         }
 
+        #endregion
+
+        #region 회전 설정
+
+        // 대상 쪽을 바라볼 방향으로 저장 (공격 중)
+        protected void LookAtTarget()
+        {
+            CombatEntity target = GetTargetOrNull();
+            if (target == null) return;
+
+            Vector3 toTarget = target.transform.position - transform.position;
+            toTarget.y = 0f;
+            if (toTarget.sqrMagnitude > 0.1f) LookDirection = toTarget;
+        }
+
+        // 바라볼 방향으로 forward를 부드럽게 돌린다 (turnSpeed가 클수록 빨리 돈다)
+        protected virtual void UpdateRotation(float deltaTime)
+        {
+            if (LookDirection.sqrMagnitude < 0.1f) return; // 방향이 없으면 회전 안 함
+
+            Vector3 forward = Vector3.Slerp(transform.forward, LookDirection.normalized, turnSpeed * deltaTime);
+            forward.y = 0f; // 몸이 기울지 않게 수평만
+            if (forward.sqrMagnitude > 0.1f) transform.forward = forward;
+        }
+
+        #endregion
         // 기본 접지
         protected virtual void UpdateHeight()
         {
@@ -251,7 +295,7 @@ namespace PROJECT3D
         }
 
         // 공격/돌진 대상. 지금은 로컬 플레이어 하나.
-        // 4인 멀티가 되면 여기만 '가장 가까운 플레이어'를 찾도록 바꾸면 된다.
+        // 4인 멀티가 되면 여기만 '가장 가까운 플레이어'를 찾도록 바꿔야한다.
         protected CombatEntity GetTargetOrNull()
         {
             return LocalPlayer.Instance;
@@ -269,23 +313,26 @@ namespace PROJECT3D
         }
 
         // 공격 실행 : 애니메이션 + 공격 컴포넌트에게 "쏴라"만 전한다.
-        // 어떻게 쏠지(단발/3방향...)는 EnemyAttack 자식이 정한다. (Weapon.Fire와 같은 방식)
         protected virtual void ProcessAttack()
         {
             CombatEntity target = GetTargetOrNull();
             if (target == null) return;
 
-            if (Animator != null) Animator.SetTrigger("Attack"); // 애니메이터에 "Attack" 트리거가 있을 때만 동작
+            if (Animator != null) Animator.SetTrigger(Attack); // 애니메이터에 "Attack" 트리거가 있을 때만 동작
             attack.Fire(target);
         }
 
         // 공통 애니메이션 : 이동/정지 상태를 애니메이터에 넘긴다.
-        // 애니메이터에 bool 파라미터 "IsMove"가 있어야 동작한다. 이름은 프로젝트에 맞게 수정.
         protected virtual void UpdateAnimation()
         {
             if (Animator == null) return;
 
-            Animator.SetBool("IsMove", IsMoving);
+            Animator.SetBool(IsMove, IsMoving);
+        }
+
+        public virtual void StartDead()
+        {
+            Animator.SetTrigger(Die);
         }
     }
 }

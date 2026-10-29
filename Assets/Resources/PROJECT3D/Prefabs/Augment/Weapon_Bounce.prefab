@@ -45,7 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.Bounce
   firePoint: {fileID: 0}
+  mainStat: 3
+  damageRatio: 1
   testAugmentID: 100
-  projectilePrefab: {fileID: 8247114374478686465, guid: e35662e1d958b684b8092f4fbd42ca60, type: 3}
+  projectilePrefab: {fileID: 4972813151334627263, guid: e107bfdc7892ce3479fb6e76f63b97f1, type: 3}
   bounceCount: 3
   arousalBounceCount: 2147483647

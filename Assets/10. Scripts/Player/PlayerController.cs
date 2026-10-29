@@ -28,8 +28,10 @@ namespace PROJECT3D
         {
             Player = player;
             if (PlayerStat.Speed == 0) Debug.Log($"[PlayerController] PlayerStat.Speed가 0임");
-            
+            bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+            anim = GetComponentInChildren<Animator>();
             // 표에 스킬 프리팹 없으면 인스펙터에 넣은 스킬 그대로 (테스트용)
+            if(player.unitDef == null) Debug.LogWarning($"[PlayerController] unitDef가 null임");
             UnitDef def = player.unitDef;
             
             if (def.ESkill == null || def.ESkill.UnitSkill == null)

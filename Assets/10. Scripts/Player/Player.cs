@@ -12,7 +12,6 @@ namespace PROJECT3D
         public PlayerStat Stat { get; set; } = new PlayerStat();
         public PlayerStatHandler StatHandler { get; private set; } // 스탯 총합 계산기
         public override BaseStat BaseStat => Stat;
-
         public Transform BodyPivot; // 캐릭터 모델 넣을곳
         public UnitDef unitDef;
 

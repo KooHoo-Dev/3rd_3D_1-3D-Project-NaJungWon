@@ -20,6 +20,7 @@ namespace PROJECT3D
     {
         public int Damage { get; set; }
         public Vector3 HitPosition { get; set; }
+        public bool IsCritical { get; set; } // 치명타 여부 (데미지 숫자 색 구분용)
         public override EventType Type => EventType.Combat;
     }
 

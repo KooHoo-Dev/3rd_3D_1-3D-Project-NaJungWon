@@ -1,0 +1,5 @@
+ID	StartTime	EndTime	EnemyID	Interval	Count	MinAlive
+0	0	60	00	3	3	20
+1	60	999999	00	1	4	40
+2	45	999999	10	3	2	0
+3	90	999999	01	6	2	0

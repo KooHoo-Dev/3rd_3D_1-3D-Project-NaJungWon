@@ -43,7 +43,25 @@ namespace PROJECT3D
         // 공격 범위가 내 피격 원통에 닿는지. 투사체/범위 공격/자폭/돌진 모두 이걸로 판정.
         public bool IsHitBy(Vector3 center, float radius, HitShape info, float height)
         {
+            return IsHitBy(center, radius, info, height, Quaternion.identity, 0f); // 회전 / 두께 없는 판정
+        }
+
+        // rotation = 공격 범위의 회전, depth = 앞뒤 절반 두께 (둘 다 Cube만 사용)
+        public bool IsHitBy(Vector3 center, float radius, HitShape info, float height, Quaternion rotation, float depth)
+        {
             Vector3 toMe = HitCenter - center;
+
+            // 사각형 판정
+            // 내 위치를 공격 범위 기준 좌표로 바꾸면 회전 없는 상자로 비교할 수 있다
+            //  x(좌우) = 반경, y(위아래) = 높이, z(앞뒤) = 두께 (각각 절반 길이)
+            if (info == HitShape.Cube)
+            {
+                Vector3 local = Quaternion.Inverse(rotation) * toMe;
+                return Mathf.Abs(local.x) <= radius + hurtRadius
+                       && Mathf.Abs(local.y) <= height + hurtHalfHeight
+                       && Mathf.Abs(local.z) <= depth + hurtRadius; // 앞뒤 두께 + 내 몸 두께
+            }
+
             float dy = Mathf.Abs(toMe.y);      // 높이차
             toMe.y = 0f;
             float dxz = toMe.magnitude;        // 바닥 평면 거리

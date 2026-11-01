@@ -8,10 +8,10 @@ namespace PROJECT3D
     {
         [Header("단발 설정")]
         [SerializeField] private HitUnit projectilePrefab;
-        
+
         public override void Fire(CombatEntity target)
         {
-            FireHit(projectilePrefab, GetAimDirection(target), OwnerStat.Damage);        
+            FireHit(projectilePrefab, GetAimDirection(target), GetDamage());
         }
     }
 }

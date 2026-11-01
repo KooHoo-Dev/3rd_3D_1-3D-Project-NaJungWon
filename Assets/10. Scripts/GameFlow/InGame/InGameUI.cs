@@ -15,8 +15,11 @@ namespace PROJECT3D
         public GameInfoUI GameInfo => gameInfo;
         public PlayerInfoUI PlayerInfo => playerInfo;
 
+        private Player player; //킬/골드를 보여줄 내 플레이어
+
         public void Init(Player player)
         {
+            this.player = player; // 새로 추가
             gameInfo.Init();
             playerInfo.Init(player);
             statPanel.Init(player);
@@ -25,6 +28,25 @@ namespace PROJECT3D
             // 두 창은 증강 선택창이 열릴 때만 보인다
             statPanel.Close();
             arousalPanel.Close();
+
+            // 킬 / 골드 (내 것만), 경험치 바 / 레벨 (공용) =====
+            player.OnRecordChanged += RefreshRecord;
+            ExpManager.Instance.OnExpChanged += gameInfo.SetExp;
+            ExpManager.Instance.OnLevelChanged += playerInfo.SetLevel;
+        }
+
+        private void OnDestroy()
+        {
+            if (player != null) player.OnRecordChanged -= RefreshRecord;
+            if (ExpManager.Instance == null) return;
+            ExpManager.Instance.OnExpChanged -= gameInfo.SetExp;
+            ExpManager.Instance.OnLevelChanged -= playerInfo.SetLevel;
+        }
+
+        private void RefreshRecord()
+        {
+            gameInfo.SetKillCount(player.KillCount);
+            gameInfo.SetGold(player.Gold);
         }
     }
 }

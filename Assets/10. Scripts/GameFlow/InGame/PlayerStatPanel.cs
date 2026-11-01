@@ -52,7 +52,7 @@ namespace PROJECT3D
             }
         }
 
-        private string GetStatName(StatType type)
+        public static string GetStatName(StatType type) // [변경] private → public static (증강 카드 레벨업 수치 표시에서도 사용)
         {
             switch (type)
             {
@@ -74,7 +74,7 @@ namespace PROJECT3D
         }
 
         // 스탯 단위에 맞게 글자로
-        private string GetStatValueText(StatType type, float value)
+        public static string GetStatValueText(StatType type, float value) // [변경] private → public static (증강 카드에서도 사용)
         {
             switch (type)
             {

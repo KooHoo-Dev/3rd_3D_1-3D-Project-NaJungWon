@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &319835071064028294
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1246356518990294224}
+  - component: {fileID: 1106952575521650025}
+  m_Layer: 0
+  m_Name: Weapon_LightArrow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1246356518990294224
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 319835071064028294}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -835.24475, y: 0.00002, z: 1320.547}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1106952575521650025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 319835071064028294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfd902557e85d4b428fe41d6296e6e55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.LightArrow
+  mainStat: 4
+  damageRatio: 0.2
+  animationSlot: 0
+  useAnimationTiming: 0
+  animationTiming: 0.5
+  attackDelay: 0
+  drawRangeGizmo: 1
+  rangeGizmoColor: {r: 0, g: 1, b: 1, a: 1}
+  testAugmentID: 101
+  targetArrowPrefab: {fileID: 3938741708077701607, guid: 1cf8841159494134c9b57ce70decefc8, type: 3}
+  straightArrowPrefab: {fileID: 7433137034599820827, guid: e901361a542f4ed4fa9d513e3778373b, type: 3}
+  projectileSpeedBonus: 0.25
+  arousalSpeedRate: 2.5

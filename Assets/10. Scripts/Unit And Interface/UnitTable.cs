@@ -45,6 +45,7 @@ namespace PROJECT3D
                     PassiveSkill = passiveSkillDef,
                     ESkill = eSkillDef,
                     QSkill = qSkillDef,
+                    StartWeaponID = dto.WeaponID, // 새로 추가
                     UnitStat = new StatClass
                     {
                         MaxHp = dto.MaxHp,

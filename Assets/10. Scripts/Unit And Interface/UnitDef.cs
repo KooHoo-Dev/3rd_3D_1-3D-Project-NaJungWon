@@ -11,6 +11,7 @@ namespace PROJECT3D
         public int PassiveSkillID;
         public int ESkillID;
         public int QSkillID;
+        public int WeaponID;  // 새로 추가 : 게임 시작 때 가지고 시작하는 무기증강 ID (-1 = 없음)
         public int MaxHp;
         public float HealthRegeneration;
         public int Damage;
@@ -35,6 +36,7 @@ namespace PROJECT3D
         public SkillDef PassiveSkill;
         public SkillDef ESkill;
         public SkillDef QSkill;
+        public int StartWeaponID; // 새로 추가 : 시작 무기증강 ID (-1 = 없음). 증강 표가 유닛 표보다 늦게 로드돼서 ID로 들고 있다
         public Sprite Sprite; //캐릭터 아이콘
         public StatClass UnitStat;
     }

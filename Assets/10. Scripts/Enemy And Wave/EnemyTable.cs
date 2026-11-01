@@ -37,7 +37,9 @@ namespace PROJECT3D
                     AttackSpeed = dto.AttackSpeed,
                     Speed = dto.Speed,
                     Armor = dto.Armor,
-                    Resist = dto.Resist
+                    Resist = dto.Resist,
+                    Exp = dto.Exp,
+                    Gold = dto.Gold 
                 };
             }
         }

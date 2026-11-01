@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6691599083687730516
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1366699780130364181}
+  - component: {fileID: 5404947690663554176}
+  m_Layer: 0
+  m_Name: Weapon_WizardBolt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1366699780130364181
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6691599083687730516}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5404947690663554176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6691599083687730516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0071c7a0f682ea245af6a095f2c582ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.WizardBolt
+  mainStat: 7
+  damageRatio: 1
+  animationSlot: 0
+  useAnimationTiming: 0
+  animationTiming: 0.5
+  attackDelay: 0
+  drawRangeGizmo: 1
+  rangeGizmoColor: {r: 0, g: 1, b: 1, a: 1}
+  testAugmentID: -1
+  boltPrefab: {fileID: 965188646082320647, guid: 09d6faf0b30bb9947a02cb0dc3f40d19, type: 3}
+  searchRange: 8
+  orbitRadius: 1
+  arousalStunTime: 0.5
+  arousalStunCount: 3
+  arousalStunInterval: 1

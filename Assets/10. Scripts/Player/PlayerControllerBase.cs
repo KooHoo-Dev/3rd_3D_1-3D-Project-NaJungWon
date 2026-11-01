@@ -10,5 +10,15 @@ namespace PROJECT3D
         public Player Player;
         public SkinnedMeshRenderer bodyRenderer;
         public Animator anim;
+        
+        protected static readonly int IsMove = Animator.StringToHash("IsMove");
+        protected static readonly int Jump = Animator.StringToHash("Jump");
+        protected static readonly int Fall = Animator.StringToHash("Fall");
+        protected static readonly int Attack = Animator.StringToHash("Attack");
+        protected static readonly int ESkill = Animator.StringToHash("ESkill");
+        protected static readonly int QSkill = Animator.StringToHash("QSkill");
+        protected static readonly int Casting = Animator.StringToHash("IsCasting");
+        protected static readonly int IsGrounded = Animator.StringToHash("IsGrounded"); 
+        protected static readonly int Die = Animator.StringToHash("Die");
     }
 }

@@ -11,7 +11,14 @@ namespace PROJECT3D
         // 판정 모양대로 그린다 (구 / 원통). halfHeight는 원통일 때만 쓴다
         public static void Draw(Vector3 center, float radius, HitShape info, float halfHeight)
         {
+            Draw(center, radius, info, halfHeight, Quaternion.identity, 0f); // [변경] 회전 / 두께 없는 그리기
+        }
+        
+        // rotation / halfDepth는 Cube만 사용
+        public static void Draw(Vector3 center, float radius, HitShape info, float halfHeight, Quaternion rotation, float halfDepth)
+        {
             if (info == HitShape.Sphere) Gizmos.DrawWireSphere(center, radius);
+            else if (info == HitShape.Cube) DrawCube(center, radius, halfHeight, halfDepth, rotation); // [변경]
             else DrawCylinder(center, radius, halfHeight);
         }
 
@@ -31,7 +38,7 @@ namespace PROJECT3D
         }
 
         // 바닥과 평행한 원을 선분으로 그린다
-        private static void DrawCircle(Vector3 center, float radius)
+        public static void DrawCircle(Vector3 center, float radius) // [변경] private → public (몹 사거리처럼 높이를 안 보는 범위 그리기용)
         {
             Vector3 prev = center + new Vector3(radius, 0f, 0f);
 
@@ -42,6 +49,14 @@ namespace PROJECT3D
                 Gizmos.DrawLine(prev, next);
                 prev = next;
             }
+        }
+        
+        // 직육면체 (가로 = 반경 x2, 세로 = 절반 높이 x2, 앞뒤 = 절반 두께 x2)
+        public static void DrawCube(Vector3 center, float radius, float halfHeight, float halfDepth, Quaternion rotation)
+        {
+            Gizmos.matrix = Matrix4x4.TRS(center, rotation, Vector3.one); // 공격 범위의 위치/회전 그대로
+            Gizmos.DrawWireCube(Vector3.zero, new Vector3(radius * 2f, halfHeight * 2f, halfDepth * 2f));
+            Gizmos.matrix = Matrix4x4.identity; // 다른 Gizmo에 영향 없게 되돌린다
         }
     }
 }

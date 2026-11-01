@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using Jay;
 using UnityEngine;
 
@@ -36,6 +37,14 @@ namespace PROJECT3D
         public void Save()
         {
             SaveService.Save(Data);
+        }
+        
+        // 게임을 끌 때 저장 (로비 상점 구매 등)
+        // 인게임 도중에 끄면 저장하지 않는다 (이번 판 골드는 로비로 돌아가야 저장됨)
+        protected override void OnApplicationQuit()
+        {
+            if (SceneManager.GetActiveScene().name != SceneLoader.InGameScene) Save();
+            base.OnApplicationQuit();
         }
 
         #region 방
@@ -83,7 +92,6 @@ namespace PROJECT3D
             if (amount <= 0) return;
 
             Data.Gold += amount;
-            Save();
             OnDataChanged?.Invoke();
         }
 
@@ -95,7 +103,6 @@ namespace PROJECT3D
         {
             Data.SelectedUnitID = unitID;
             RefreshLocalSlot();
-            Save();
             OnDataChanged?.Invoke();
         }
 
@@ -118,7 +125,6 @@ namespace PROJECT3D
             Data.ShopLevels[(int)type]++;
 
             RefreshLocalSlot();
-            Save();
             OnDataChanged?.Invoke();
             return true;
         }

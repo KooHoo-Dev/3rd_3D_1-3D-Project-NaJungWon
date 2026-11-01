@@ -23,6 +23,11 @@ namespace PROJECT3D
         
         public Quaternion YawRotation => Quaternion.Euler(0f, angleY, 0f);
 
+        public Vector3 GetAimDirection()
+        {
+            return Quaternion.Euler(angleX, angleY, 0f) * Vector3.forward;
+        }
+        
         private void LateUpdate()
         {
             UpdateAngle();

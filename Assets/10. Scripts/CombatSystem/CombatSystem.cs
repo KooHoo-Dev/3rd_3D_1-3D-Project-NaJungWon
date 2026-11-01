@@ -6,22 +6,15 @@ namespace PROJECT3D
 {
     public class CombatSystem : MonoBehaviour
     {
-        [Header("처리량")]
-        [Tooltip("한 프레임에 처리할 최대 전투 이벤트 수. 남은 이벤트는 다음 프레임으로 넘어갑니다")]
-        [SerializeField] private int maxEventsPerFrame = 10;
-
-        [Header("적 판정")]
-        [Tooltip("총·유탄이 맞힐 적의 레이어 이름. Project Settings > Tags and Layers의 이름과 같아야 합니다")]
-        [SerializeField] private LayerMask enemyLayer;
-
+        // [변경] 삭제 : maxEventsPerFrame(읽는 곳 없음), enemyLayer / EnemyMask(콜라이더 판정 시절 값. 지금은 EnemyRegistry로 찾는다)
         public static CombatSystem Instance { get; private set; }
 
-        public int EnemyMask { get; private set; }
+        [SerializeField] private float critMultiplier = 1.5f; // 새로 추가 : 치명타 데미지 배율
 
         public event Action<CombatEvent> OnCombatEvent;
         public event Action<HealEvent> OnHealEvent;
 
-        private readonly Dictionary<Collider, IDamageable> monsterDic = new Dictionary<Collider, IDamageable>();
+        // [변경] 삭제 : monsterDic (콜라이더 → 몹 사전. EnemyRegistry로 대체됨)
         private readonly Queue<InGameEvent> inGameEventQueue = new Queue<InGameEvent>();
 
         private void Awake()
@@ -34,8 +27,6 @@ namespace PROJECT3D
             }
 
             Instance = this;
-            EnemyMask = enemyLayer;
-            if (EnemyMask == 0) Debug.LogWarning($"{enemyLayer} 레이어가 없어 총·유탄이 아무것도 맞히지 못합니다");
         }
 
         private void OnDestroy()
@@ -45,12 +36,11 @@ namespace PROJECT3D
 
         private void Update()
         {
-            int processCount = 0;
+            int count = inGameEventQueue.Count;
 
-            while (inGameEventQueue.Count > 0 && processCount < maxEventsPerFrame)
+            for (int i = 0; i < count; i++)
             {
                 var inGameEvent = inGameEventQueue.Dequeue();
-                processCount++;
 
                 if (inGameEvent.Receiver is UnityEngine.Object receiverObject && 
                     receiverObject == null) continue;
@@ -79,42 +69,25 @@ namespace PROJECT3D
                 Debug.LogWarning($"[CombatSystem] : sender 존재 여부 : {sender != null}, receiver 존재 여부 : {receiver != null}");
                 return;
             }
+            
+            // 치명타 처리
+            bool isCritical = false;
+            if (UnityEngine.Random.Range(0f, 100f) < sender.BaseStat.unitStat.CritChance)
+            {
+                isCritical = true;
+                damage = Mathf.RoundToInt(damage * critMultiplier);
+            }
 
             CombatEvent combatEvent = new CombatEvent();
             combatEvent.Sender = sender;
             combatEvent.Receiver = receiver;
             combatEvent.Damage = damage;
             combatEvent.HitPosition = hitPosition;
+            combatEvent.IsCritical = isCritical; // 새로 추가
 
             AddInGameEvent(combatEvent);
         }
         
-        public void RegisterMonster(IDamageable monster)
-        {
-            //RegisterMonster(monster.MainCollider, monster);
-        }
-
-        public void RegisterMonster(Collider collider, IDamageable monster)
-        {
-            if (monsterDic.TryAdd(collider, monster) == false)
-            {
-                Debug.LogWarning($"{monster.GameObject.name}가 등록되어 있습니다." +
-                                 $"{monsterDic[collider]}를 대체합니다");
-                monsterDic[collider] = monster;
-            }
-        }
-
-        public void UnregisterMonster(Collider collider)
-        {
-            monsterDic.Remove(collider);
-        }
-
-        public IDamageable GetMonsterOrNull(Collider collider)
-        {
-            if (monsterDic.TryGetValue(collider, out var monster)) return monster;
-            return null;
-        }
-
         public void AddInGameEvent(InGameEvent inGameEvent)
         {
             inGameEventQueue.Enqueue(inGameEvent);

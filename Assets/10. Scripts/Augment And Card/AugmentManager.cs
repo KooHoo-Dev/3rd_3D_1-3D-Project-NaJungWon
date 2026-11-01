@@ -45,6 +45,26 @@ namespace PROJECT3D
         {
             this.player = player;
             weaponRoot = root;
+            GiveStartWeapon(player.unitDef.StartWeaponID); // 새로 추가 : 캐릭터 기본 무기를 들고 시작
+        }
+
+        // 새로 추가 : 시작 무기증강 지급. 카드로 새 증강을 고른 것과 같은 흐름(Apply)을 그대로 쓴다
+        // (무기 생성 → 1레벨 수치 → 능력치 갱신 → 슬롯 UI 갱신 이벤트)
+        private void GiveStartWeapon(int augmentID)
+        {
+            if (augmentID < 0) return; // -1 = 시작 무기 없음
+
+            AugmentDef def = TableLoader.Instance.AugmentTable.GetOrNull(augmentID);
+            if (def == null)
+            {
+                Debug.LogWarning($"[AugmentManager] 시작 무기 {augmentID}번이 증강 표에 없습니다");
+                return;
+            }
+
+            AugmentOffer offer = new AugmentOffer();
+            offer.Kind = OfferKind.New;
+            offer.Def = def;
+            Apply(offer);
         }
         
         #region 카드 만들기
@@ -237,7 +257,7 @@ namespace PROJECT3D
                     break;
                 
                 case SpecialType.Gold:
-                    //이후 골드 시스템 적용
+                    player.AddGold((int)def.Value); // 골드 획득 (골드 획득량 % 적용)
                     Debug.Log($"[AugmentManager] 골드 {def.Value} 획득");
                     break;
             }

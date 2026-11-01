@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6655121964068614627}
-  - component: {fileID: 8112358065694440765}
+  - component: {fileID: 2056759654643945832}
   m_Layer: 0
   m_Name: Skill_Slash
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8112358065694440765
+--- !u!114 &2056759654643945832
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,11 +41,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 5235628734677439590}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f229f3832b1e48daaf544700f6c28e0e, type: 3}
+  m_Script: {fileID: 11500000, guid: 975968e273e64a6fbefbbf9534abd563, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.ProjectileSkill
-  firePoint: {fileID: 0}
-  useValueType: 
-  damage: 50
-  cooldown: 5
-  projectilePrefab: {fileID: 7502496136243878170, guid: 9a210c14a393152449c4c38b945106b5, type: 3}
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.SkillSwordWave
+  mainStat: 3
+  damageRatio: 1
+  animationSlot: 3
+  useAnimationTiming: 1
+  animationTiming: 0.3
+  attackDelay: 0
+  wavePrefab: {fileID: 1943385224894676901, guid: d084aa3be9ec31f4ea42eef2af1f55c8, type: 3}
+  aimDistance: 500
+  aimMask:
+    serializedVersion: 2
+    m_Bits: 0

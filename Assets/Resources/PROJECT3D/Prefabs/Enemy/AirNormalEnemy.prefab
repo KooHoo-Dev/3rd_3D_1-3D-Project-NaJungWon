@@ -373,12 +373,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1638240148413498624}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -226.65565, z: 0}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7353993903239169034}
+  m_Father: {fileID: 2847803233209988589}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &8983635485897839152
 SkinnedMeshRenderer:
@@ -432,7 +432,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 4300000, guid: f14db21b5e70e3d4ab6f0e158099a341, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 5d9efb65c776b714fb5123711f07de0c, type: 3}
   m_Bones:
   - {fileID: 7679062670353980482}
   - {fileID: 981270995403663992}
@@ -1166,8 +1166,7 @@ Transform:
   m_Children:
   - {fileID: 854087654683539381}
   - {fileID: 7051532274283518063}
-  - {fileID: 7679062670353980482}
-  - {fileID: 2082715796918936288}
+  - {fileID: 2847803233209988589}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &4928202932243974522
@@ -1179,7 +1178,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5367332497665587768}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: f14db21b5e70e3d4ab6f0e158099a341, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 063e65bf9ea59ea44bb459f4b7490fd3, type: 3}
   m_Controller: {fileID: 22100000, guid: 64c564b217a94e144a56df63f7c70bd0, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
@@ -1212,6 +1211,8 @@ MonoBehaviour:
   <HitPivot>k__BackingField: {fileID: 7051532274283518063}
   resist: 0
   deathParticle: {fileID: 0}
+  Exp: 0
+  Gold: 0
 --- !u!114 &8583234467519658693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1225,8 +1226,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.AirNormal
   separationDistance: 1.5
+  attack: {fileID: 1589413552306792074}
   attackRange: 5
   attackDelay: 0.5
+  contactInterval: 1
+  contactDamageRate: 1
+  moveSmooth: 8
   turnSpeed: 10
   yOffset: 0
   snapRayHeight: 2
@@ -1234,12 +1239,13 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 1024
+  heightSpeedRatio: 2
+  bodyTilt: {fileID: 0}
   riseDuration: 1
   SpawnRiseDone: 0
   hoverHeight: 5
   abovePlayer: 2
   flyClearance: 1
-  heightSpeedRatio: 2
   lookAhead: 1
   surfaceRayHeight: 50
   surfaceMask:
@@ -1259,6 +1265,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.SingleShot
   mainStat: 3
   damageRatio: 1
+  animationSlot: 1
+  useAnimationTiming: 1
+  animationTiming: 0.5
+  attackDelay: 0
+  drawRangeGizmo: 1
+  rangeGizmoColor: {r: 0, g: 1, b: 1, a: 1}
   projectilePrefab: {fileID: 7363217913790623089, guid: 9ce51affb74112041b5aaf3281f6514a, type: 3}
 --- !u!1 &5454283333316052812
 GameObject:
@@ -1390,7 +1402,7 @@ Transform:
   - {fileID: 2935109028660084892}
   - {fileID: 3864304172017644820}
   - {fileID: 636628345718121710}
-  m_Father: {fileID: 7353993903239169034}
+  m_Father: {fileID: 2847803233209988589}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5752442509198605188
 GameObject:
@@ -1974,6 +1986,39 @@ Transform:
   m_Children:
   - {fileID: 1395493167582408113}
   m_Father: {fileID: 558176945766997116}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7552230078188780419
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2847803233209988589}
+  m_Layer: 0
+  m_Name: BodyPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2847803233209988589
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7552230078188780419}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7679062670353980482}
+  - {fileID: 2082715796918936288}
+  m_Father: {fileID: 7353993903239169034}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7681936185850931132
 GameObject:

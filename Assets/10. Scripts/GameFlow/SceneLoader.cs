@@ -16,11 +16,13 @@ namespace PROJECT3D
 
         public static void LoadLobby()
         {
+            GameSession.Instance.Save(); // 게임 종료 → 로비 복귀 시 저장
             SceneManager.LoadScene(LobbyScene);
         }
 
         public static void LoadInGame()
         {
+            GameSession.Instance.Save(); // 인게임 진입 시 저장 (로비에서 바꾼 것들)
             SceneManager.LoadScene(InGameScene);
         }
     }

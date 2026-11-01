@@ -14,7 +14,6 @@ namespace PROJECT3D
         [SerializeField] private float hoverHeight = 3f;       // 발밑 표면에서 떠 있는 기본 높이
         [SerializeField] private float abovePlayer = 2f;       // 플레이어가 바닥에 있을 때 그 위로 뜰 높이
         [SerializeField] private float flyClearance = 1f;      // 장애물 꼭대기와 띄울 여유 높이
-        [SerializeField] private float heightSpeedRatio = 2f;  // 상승/하강 속도 = 이동속도의 몇 배
         [SerializeField] private float lookAhead = 1f;         // 앞쪽 장애물을 검사할 거리 (보통 칸 크기)
         [SerializeField] private float surfaceRayHeight = 50f; // 표면 레이를 쏘기 시작할 높이 (가장 높은 장애물보다 높게)
         [SerializeField] private LayerMask surfaceMask;        // 지형 + 장애물 레이어 둘 다 체크
@@ -68,17 +67,9 @@ namespace PROJECT3D
             targetY = Mathf.Max(targetY, aheadSurfaceY + flyClearance);    // 2. 앞 장애물을 넘을 높이
 
             if (IsPlayerGrounded())                                        // 3. 플레이어 위 (점프/낙하 중엔 제외)
-                targetY = Mathf.Max(targetY, LocalPlayer.Instance.transform.position.y + abovePlayer);
+                targetY = Mathf.Max(targetY, GetTargetOrNull().transform.position.y + abovePlayer); // [변경] LocalPlayer 직접 참조 → 부모 GetTargetOrNull (멀티 때 한 곳만 바꾸면 되게)
 
             return targetY;
-        }
-
-        // 고도 갱신 : 목표 고도까지 일정 속도로 오르고/내린다
-        protected override void UpdateHeight()
-        {
-            Vector3 position = transform.position;
-            position.y = Mathf.MoveTowards(position.y, GetTargetHeight(), Enemy.Unit.Speed * heightSpeedRatio * WorldClock.Instance.DeltaTime);
-            transform.position = position;
         }
 
         // 해당 XZ 지점의 표면(지형/장애물 꼭대기) 높이를 위에서 아래로 레이를 쏴서 잰다
@@ -96,11 +87,11 @@ namespace PROJECT3D
             return false;
         }
 
-        // 플레이어가 바닥에 붙어 있는지 확인 (나중에 멀티에 맞게 변경할 것
+        // 플레이어가 바닥에 붙어 있는지 확인 (나중에 멀티에 맞게 변경할 것)
         private bool IsPlayerGrounded()
         {
             if (playerMovement == null) 
-                playerMovement = LocalPlayer.Instance.GetComponent<CharacterController3D>();
+                playerMovement = GetTargetOrNull().GetComponent<CharacterController3D>(); // [변경] 부모 GetTargetOrNull 재사용
 
             return playerMovement.IsGrounded;
         }

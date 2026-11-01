@@ -29,6 +29,8 @@ namespace PROJECT3D
         public float Speed;
         public int Armor;
         public float Resist; //밀림 정도
+        public int Exp;
+        public int Gold;
     }
     
     [System.Serializable]
@@ -45,5 +47,7 @@ namespace PROJECT3D
         public float Speed;
         public int Armor;
         public float Resist;
+        public int Exp;
+        public int Gold;
     }
 }

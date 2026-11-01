@@ -4,9 +4,6 @@ using UnityEngine;
 namespace PROJECT3D
 {
     // 논타겟 : 정한 방향으로 직진
-    //  - pierce = false : 처음 맞힌 대상에서 사라진다
-    //  - pierce = true  : 사거리 끝까지 날아가며 닿는 모든 적에게 피해 (관통 제한 없음)
-    //  - 사거리 끝 / 지형·장애물에 닿으면 사라진다
     public class NonTargetHit : HitUnit
     {
         [Header("논타겟 설정")]
@@ -14,6 +11,7 @@ namespace PROJECT3D
         [SerializeField] private float range = 15f;      // 기본 사거리 (범위 증가 적용)
         [SerializeField] private bool pierce = false;    // 관통 여부
         [SerializeField] private LayerMask blockMask;    // 지형 + 장애물 레이어
+        // [변경] explodePrefab / explodeEffect는 부모(HitUnit)로 옮김
 
         private Vector3 direction;
         private float currentRange;
@@ -42,6 +40,7 @@ namespace PROJECT3D
             // 이번 프레임에 지나갈 구간에 지형/장애물이 있으면 사라진다
             if (Physics.Raycast(transform.position, direction, out RaycastHit hit, step, blockMask, QueryTriggerInteraction.Ignore))
             {
+                Explode(hit.point); // [변경] 벽/바닥에 닿은 자리에서 폭발 (폭발 프리팹이 없으면 아무것도 안 함)
                 ReturnToPool();
                 return;
             }
@@ -54,7 +53,7 @@ namespace PROJECT3D
             {
                 if (hitTargets.Add(targets[i]) == false) continue; // 이미 맞힌 대상 (Add가 false = 이미 들어 있음)
 
-                Hit(targets[i]);
+                Hit(targets[i]); // [변경] 폭발형이면 Hit 안에서 폭발한다
                 if (pierce == false)
                 {
                     ReturnToPool();

@@ -171,6 +171,7 @@ namespace PROJECT3D
         // 이펙트 재생
         public static void PlayEffect(ParticleEffect prefab, Vector3 position)
         {
+            if (prefab == null) return; // 이펙트를 안 넣었으면 생략
             IObjectPoolItem effect = Instance.GetObjectOrNull(prefab.gameObject);
             if (effect == null) return;
 

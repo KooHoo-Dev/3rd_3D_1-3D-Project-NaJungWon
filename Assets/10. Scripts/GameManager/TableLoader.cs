@@ -9,11 +9,12 @@ namespace PROJECT3D
         public SkillTable SkillTable { get; private set; }
         public EnemyTable EnemyTable { get; private set; }
         public WaveTable WaveTable { get; private set; }
+        public SpawnRuleTable SpawnRuleTable { get; private set; } // 새로 추가 : 상시 소환 규칙
         public AugmentTable AugmentTable { get; private set; }
         public AugmentLevelTable AugmentLevelTable { get; private set; }
         public ShopTable ShopTable { get; private set; }
         public StructureTable StructureTable { get; private set; }
-
+        public LevelTable LevelTable { get; private set; }
         public bool IsLoaded { get; private set; } // 이미 로드했는지
 
         // 여러 씬에서 불러도 처음 한 번만 로드한다
@@ -36,9 +37,12 @@ namespace PROJECT3D
             EnemyTable.Load();
             WaveTable = new WaveTable();
             WaveTable.Load(EnemyTable);
+            SpawnRuleTable = new SpawnRuleTable();  // 새로 추가
+            SpawnRuleTable.Load(EnemyTable);        // 새로 추가
             //structureTable = new StructureTable();
             //structureTable.Load();
-
+            LevelTable = new LevelTable();
+            LevelTable.Load(); 
             IsLoaded = true;
             Debug.Log("[TableLoader] 테이블 로드 완료");
         }

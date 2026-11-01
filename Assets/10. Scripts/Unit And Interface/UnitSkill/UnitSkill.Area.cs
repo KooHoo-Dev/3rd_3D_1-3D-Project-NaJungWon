@@ -14,8 +14,13 @@ namespace PROJECT3D
         protected override void Use(Vector3 aimDirection)
         {
             Debug.Log($"[AreaSkill] {Owner.GameObject.name}가 범위스킬을 사용!");
-            Vector3 center = Owner.transform.position + aimDirection * forwardDistance;
-            FireHit(zonePrefab, center, aimDirection, GetDamage());
+            // [변경] 조준이 3D 방향이 되어서, 바닥 범위는 수평 방향만 쓴다 (범위가 공중/땅속에 생기지 않게)
+            Vector3 flatDirection = aimDirection;
+            flatDirection.y = 0f;
+            flatDirection.Normalize();
+
+            Vector3 center = Owner.transform.position + flatDirection * forwardDistance;
+            FireHit(zonePrefab, center, flatDirection, GetDamage());
         }
     }
 }

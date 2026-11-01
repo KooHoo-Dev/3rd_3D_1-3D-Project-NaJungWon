@@ -38,8 +38,8 @@ namespace PROJECT3D
 
             // E/Q 스킬
             PlayerController controller = player.GetComponent<PlayerController>();
-            skills[0] = controller.ESkill;
-            skills[1] = controller.QSkill;
+            skills[0] = controller.UnitESkill;
+            skills[1] = controller.UnitQSkill;
             SetSkillSlot(skillSlots[0], def.ESkill, "E"); // [변경] 키 글자 추가
             SetSkillSlot(skillSlots[1], def.QSkill, "Q"); // [변경] 키 글자 추가
 

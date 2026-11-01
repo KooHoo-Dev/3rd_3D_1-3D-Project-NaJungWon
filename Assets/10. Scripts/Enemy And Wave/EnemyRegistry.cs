@@ -7,10 +7,11 @@ namespace PROJECT3D
     // 몹을 '칸(cell)'별 리스트로 나눠 담아 두고, 주변 칸만 검사.
     public static class EnemyRegistry
     {
+        [Header("기본 설정")]
         // 칸 크기. separationDistance(1.5)보다 크게 잡으면 주변 9칸만 보면 된다.
         // MapGrid의 칸(지형용)과는 다른, 몹 검색 전용 칸이다.
         private const float CellSize = 2f;
-
+        
         // 칸 좌표 → 그 칸에 있는 몹들
         private static readonly Dictionary<Vector2Int, List<Enemy>> cells = new Dictionary<Vector2Int, List<Enemy>>();
 
@@ -21,6 +22,15 @@ namespace PROJECT3D
         // 격자는 피벗 위치로 나뉘어 있어서, 공격 판정 때 이만큼 넉넉하게 후보를 가져와야
         // 몸이 크거나 HitPivot이 피벗에서 떨어진 몹을 놓치지 않는다.
         private static float maxHitReach = 0f;
+
+        public static int Count { get; private set; } // 새로 추가 : 지금 명부에 있는(살아 있는) 몹 수
+
+        [Header("출현 연출 설정")]
+        // 소환 수 제한(WaveManager)은 올라오는 중인 몹도 세야 해서 따로 센다
+        public static int RisingCount { get; private set; } // 출현 연출 중인 몹 수
+        public static int AliveCount => Count + RisingCount; // 소환 수 제한용 : 명부 + 올라오는 중
+        public static void AddRising() { RisingCount++; }
+        public static void RemoveRising() { RisingCount--; }
 
         // 월드 좌표 → 칸 좌표 (높이는 무시하고 x, z만 쓴다)
         public static Vector2Int ToCell(Vector3 position)
@@ -34,6 +44,7 @@ namespace PROJECT3D
         {
             enemy.RegistryCell = ToCell(enemy.transform.position);
             GetOrCreateCell(enemy.RegistryCell).Add(enemy);
+            Count++; // 새로 추가
 
             // 피벗 → 원통 중심 거리 + 원통 중심 → 가장 먼 모서리 거리(√(반경² + 절반높이²))
             float offset = (enemy.HitCenter - enemy.transform.position).magnitude;
@@ -45,7 +56,9 @@ namespace PROJECT3D
         public static void Unregister(Enemy enemy)
         {
             if (cells.TryGetValue(enemy.RegistryCell, out List<Enemy> list))
-                list.Remove(enemy);
+            {
+                if (list.Remove(enemy)) Count--; // 실제로 빠졌을 때만 수를 줄인다
+            }
         }
 
         // 몹이 움직인 뒤 매 프레임 불러준다. 칸이 바뀌었을 때만 옮겨 담는다.
@@ -89,16 +102,23 @@ namespace PROJECT3D
         // 투사체, 범위 공격, 장판 등 몹을 때리는 쪽은 전부 이걸 쓴다.
         public static void FindHitTargets(Vector3 center, float radius, HitShape info, float height, ref List<Enemy> result)
         {
+            FindHitTargets(center, radius, info, height, Quaternion.identity, 0f, ref result); // 회전 / 두께 없는 판정
+        }
+
+        // rotation = 공격 범위의 회전, depth = 앞뒤 절반 두께 (둘 다 Cube만 사용)
+        public static void FindHitTargets(Vector3 center, float radius, HitShape info, float height, Quaternion rotation, float depth, ref List<Enemy> result)
+        {
             // 1. 넉넉하게 후보를 가져온다 (몸 크기 + 기둥 높이만큼 더)
             float searchRadius = radius + maxHitReach;
             if (info == HitShape.Column) searchRadius += height;
+            if (info == HitShape.Cube) searchRadius += height + depth; // 직육면체는 높이 + 두께만큼 더
             FindInRange(center, searchRadius, ref result);
 
             // 2. 실제로 피격 원통에 닿는 몹만 남긴다 (뒤에서부터 지워야 순서가 안 꼬인다)
             for (int i = result.Count - 1; i >= 0; i--)
             {
                 Enemy enemy = result[i];
-                if (enemy.Stat.IsDead || enemy.IsHitBy(center, radius, info, height) == false)
+                if (enemy.Stat.IsDead || enemy.IsHitBy(center, radius, info, height, rotation, depth) == false) // 두께 전달
                     result.RemoveAt(i);
             }
         }
@@ -134,6 +154,8 @@ namespace PROJECT3D
         {
             cells.Clear();
             maxHitReach = 0f;
+            Count = 0; // 새로 추가
+            RisingCount = 0; // 새로 추가
         }
 
         private static List<Enemy> GetOrCreateCell(Vector2Int cell)

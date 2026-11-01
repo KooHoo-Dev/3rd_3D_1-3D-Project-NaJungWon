@@ -17,10 +17,10 @@ namespace PROJECT3D
             Vector3 left = Quaternion.Euler(0f, -spreadAngle, 0f) * center;
             Vector3 right = Quaternion.Euler(0f, spreadAngle, 0f) * center;
 
-            int damage = OwnerStat.Damage;
-            FireHit(projectilePrefab, center, OwnerStat.Damage);        
-            FireHit(projectilePrefab, left, OwnerStat.Damage);        
-            FireHit(projectilePrefab, right, OwnerStat.Damage);        
+            int damage = GetDamage();
+            FireHit(projectilePrefab, center, damage);
+            FireHit(projectilePrefab, left, damage);
+            FireHit(projectilePrefab, right, damage);
         }
     }
 }

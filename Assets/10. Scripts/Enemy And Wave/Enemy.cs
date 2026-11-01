@@ -36,16 +36,20 @@ namespace PROJECT3D
         private EnemyDeath[] deathEffects; // 죽을 때 실행할 효과들
 
         public static event Action<Enemy> OnAnyDied; //킬카운트, 경험치 구슬 소환용
-
+        public int Exp;
+        public int Gold;
         
-        public void Init(EnemyDef def) //레벨디자인 할거면 여기에 게임 시간 경과당 배율이 있으면 될듯? (배율은 json으로 관리)
+        // [변경] hpRate / damageRate : 시간이 지날수록 강해지는 배율 (WaveManager가 계산해서 넘긴다. 1 = 표 그대로)
+        public void Init(EnemyDef def, float hpRate, float damageRate)
         {
-            Unit.MaxHp = def.MaxHp;
-            Unit.Damage = def.Damage;
+            Unit.MaxHp = Mathf.RoundToInt(def.MaxHp * hpRate);        // [변경]
+            Unit.Damage = Mathf.RoundToInt(def.Damage * damageRate);  // [변경]
             Unit.AttackSpeed = def.AttackSpeed;
             Unit.Speed = def.Speed;
             Unit.Defense = def.Armor;
             resist = def.Resist;
+            Exp = def.Exp;
+            Gold = def.Gold;
             Stat.ResetToFull();
             
             enemyDef = def;
@@ -60,9 +64,9 @@ namespace PROJECT3D
         public override void TakeDamage(CombatEvent combatEvent)
         {
             if (Stat.IsDead) return; // 이미 죽었으면 무시
-            Debug.Log($"[Enemy]: {combatEvent.Receiver.GameObject.name}가 {combatEvent.Sender.GameObject.name}에게 {combatEvent.Damage}를 입음!");
+            //Debug.Log($"[Enemy]: {combatEvent.Receiver.GameObject.name}가 {combatEvent.Sender.GameObject.name}에게 {combatEvent.Damage}를 입음!");
             int damage = CalculateFinalDamage(combatEvent.Damage); // 받는 쪽 보정 (방어력 등은 나중에 여기서)
-            if (Stat.ApplyDamage(damage)) Die();
+            if (Stat.ApplyDamage(damage)) Die(combatEvent.Sender as Player);
         }
 
         public override void TakeHeal(HealEvent healEvent)
@@ -71,13 +75,15 @@ namespace PROJECT3D
         }
 
         // 사망 처리
-        private void Die()
+        private void Die(Player killer)
         {
-            if(deathEffects == null)
-            {
-                ObjectPoolManager.PlayEffect(deathParticle, transform.position);
-                foreach (EnemyDeath effect in deathEffects) effect.Apply();
-            }
+            if (deathParticle != null) ObjectPoolManager.PlayEffect(deathParticle, transform.position);
+            foreach (EnemyDeath effect in deathEffects) effect.Apply();
+
+            // 막타 친 플레이어에게 킬 / 골드
+            killer.AddKill();
+            killer.AddGold(Gold);
+            OnAnyDied?.Invoke(this); // 풀로 돌아가기 전에 알린다 (경험치 구슬 소환)
 
             Controller.StartDead();
             ReturnToPool();

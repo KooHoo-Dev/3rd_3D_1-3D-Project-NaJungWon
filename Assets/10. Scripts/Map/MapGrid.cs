@@ -36,7 +36,6 @@ namespace PROJECT3D
         {
             Instance = this;
             Grid = new SquareGrid(width, depth, cellSize, transform.position);
-            //BakeAll();
         }
 
         private void OnDestroy()
@@ -44,19 +43,7 @@ namespace PROJECT3D
             if (Instance == this) Instance = null;
         }
 
-        public void BakeAll() //내부 테스트용
-        {
-            if (Grid == null) return;
-            Physics.SyncTransforms();
-            for (int z = 0; z < Grid.Depth; z++)
-            {
-                for (int x = 0; x < Grid.Width; x++)
-                {
-                    BakeTile(Grid.GetTileOrNull(x, z));
-                }
-            }
-            OnGridChanged?.Invoke();
-        }
+        // [변경] 삭제 : BakeAll (내부 테스트용 동기 굽기. 부르는 곳 없음 → GameManager는 BakeAllAsync 사용)
         
         public async UniTask BakeAllAsync(CancellationToken token)
         {

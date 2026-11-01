@@ -14,9 +14,13 @@ namespace PROJECT3D
         [SerializeField] private FlowFieldManager flowFieldManager;
         [SerializeField] private PlayerSpawner playerSpawner; // 로비에서 고른 캐릭터 + 상점 스탯으로 플레이어 생성
         [SerializeField] private InGameUI inGameUI;           // 새로 추가 : 인게임 HUD
-        public bool IsReady { get; private set; }  // 준비가 끝났는지 (다른 곳에서 확인용)
+        [SerializeField] private GameOverPanel gameOverPanel; // 새로 추가 : 패배 결과창
+        public bool IsReady { get; private set; }
         public event Action OnGameReady;           // 준비가 끝났을 때 (로딩 화면 끄기 등)
 
+        private Player localPlayer; // 내 플레이어 (사망 / 기록 확인용)
+        private bool isGameOver;    // 패배 처리가 두 번 돌지 않게
+        
         private void Start()
         {
             BootAsync(this.GetCancellationTokenOnDestroy()).Forget();
@@ -24,6 +28,10 @@ namespace PROJECT3D
 
         private async UniTaskVoid BootAsync(CancellationToken token)
         {
+            WorldClock.Instance.ResetClock(); // 이전 판의 정지 / 경과 시간 초기화
+            EnemyRegistry.Clear();  // 새로 추가 : 정적 명부는 씬이 바뀌어도 남아서, 이전 판 몹 / 플레이어 기록을 지운다
+            PlayerRegistry.Clear(); // 새로 추가
+            
             // 1. 테이블 연결
             TableLoader.Instance.LoadData();
             Debug.Log("[GameManager] 1. 테이블 로드 완료");
@@ -44,8 +52,10 @@ namespace PROJECT3D
             // 5. 매니저 연결
             flowFieldManager.AddPlayer(player.transform);
             AugmentManager.Instance.Init(player, player.BodyPivot);
-            WaveManager.Instance.Init(mapGrid, flowFieldManager.Field);
-            inGameUI.Init(player); // 새로 추가 : 증강 매니저가 준비된 뒤에 연결 (보유 증강 표시)
+            WaveManager.Instance.Init(mapGrid); // [변경] 안 쓰던 흐름장 매개변수 삭제
+            inGameUI.Init(player); // 증강 매니저가 준비된 뒤에 연결 (보유 증강 표시)
+            localPlayer = player;
+            player.OnDead += HandlePlayerDead;  // 죽으면 패배 처리
             Debug.Log("[GameManager] 5. 매니저 연결 완료");
 
             // 6. 게임 시작
@@ -53,6 +63,29 @@ namespace PROJECT3D
             OnGameReady?.Invoke();
             WaveManager.Instance.StartWaves();
             Debug.Log("[GameManager] 6. 게임 시작");
+        }
+        
+        private void OnDestroy()
+        {
+            if (localPlayer != null) localPlayer.OnDead -= HandlePlayerDead;
+        }
+
+        private void HandlePlayerDead()
+        {
+            if (isGameOver) return;
+            isGameOver = true;
+            GameOverAsync(this.GetCancellationTokenOnDestroy()).Forget();
+        }
+
+        // 게임 정지 → 사망 모션 끝까지 → 패배 결과창
+        private async UniTaskVoid GameOverAsync(CancellationToken token)
+        {
+            WorldClock.Instance.Pause(); // 몹 / 투사체 / 웨이브 / 타이머 정지 (커서도 풀린다)
+
+            PlayerController controller = localPlayer.GetComponent<PlayerController>();
+            await controller.PlayDieAsync(token);
+
+            gameOverPanel.Open(localPlayer.KillCount, localPlayer.Gold, WorldClock.Instance.ElapsedTime);
         }
     }
 }

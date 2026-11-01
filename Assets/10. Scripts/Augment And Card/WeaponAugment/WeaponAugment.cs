@@ -42,39 +42,67 @@ namespace PROJECT3D
             OnArousal();
         }
 
-        protected virtual void Update()
+        protected override void Update()
         {
-            if (levelData == null) return; //아직 초기화 전
+            base.Update(); // 공격 시점 처리
+            if (levelData == null) return; // 아직 초기화 전
+            if (IsDelaying) return;        // 이전 공격의 시점을 기다리는 중
 
-            float attackSpeed = GetStat(StatType.AttackSpeed);
+            float attackSpeed = GetWeaponAttackSpeed(); // [변경] 무기마다 공속 보정이 다를 수 있어 가상 메서드로 (기본 = 부모 GetAttackSpeed)
             if (attackSpeed <= 0f) return; // 공속 0이면 공격하지 않는 무기
 
             timer += WorldClock.Instance.DeltaTime;
             if (timer < 1f / attackSpeed) return; // 초당 횟수 → 간격(초)
             timer = 0f;
+            StartDelay(); // 애니메이션 / 딜레이 후 Attack
+        }
+
+        // 공격 시점이 되면 실제 공격
+        protected override void OnDelayEnd()
+        {
             Attack();
         }
 
-        // 무기 수치 + 플레이어 수치를 합친 최종값
-        // 스탯마다 합치는 방법이 다르면 case를 추가한다
-        protected float GetStat(StatType type)
-        {
-            float weaponValue = levelData.AugmentLevelStat.Get(type);
-            float ownerValue = OwnerStat.Get(type);
+        // [변경] 삭제 : GetStat / GetDamage
+        //  - SetLevelData에서 SetAttackStat(레벨 수치)를 넣기 때문에 부모 UnitAttack의 GetDamage / GetAttackSpeed / GetProjectileCount와 계산이 똑같았다
+        //  - 데미지 = 무기 기본 데미지 + 플레이어 메인스탯 × 계수 → 부모 GetDamage() 그대로 사용
 
-            return type switch
-            {
-                StatType.Damage => weaponValue + OwnerStat.Get(mainStat) * damageRatio, // 무기 기본 데미지 + 플레이어 메인스탯 × 계수 (예 : 탱커 무기는 최대 체력 × 0.05)
-                StatType.AttackSpeed => weaponValue * ownerValue, // 무기 공속 × 플레이어 공속 배율
-                StatType.ProjectileCount => weaponValue + ownerValue, // 투사체는 플레이어 자체 투사체와 더하기
-                _ => weaponValue + ownerValue
-            };
+        // 새로 추가 : 무기가 한 번에 쏘는 투사체 수 (무기 기본 개수 + 플레이어 개수). 표 실수로 0이 돼도 최소 1개
+        protected int GetWeaponProjectileCount()
+        {
+            return Mathf.Max(1, GetProjectileCount()); // [변경] 부모(UnitAttack) 계산 재사용
         }
 
-        // 최종 데미지 (int)
-        protected int GetDamage()
+        // 새로 추가 : 이 무기의 최종 공속 (초당 횟수). 기본 = 무기 공속 × 플레이어 공속 배율
+        // 빛의 화살처럼 투사체 수 / 진화로 공속이 바뀌는 무기는 재정의
+        protected virtual float GetWeaponAttackSpeed()
         {
-            return Mathf.RoundToInt(GetStat(StatType.Damage));
+            return GetAttackSpeed();
+        }
+
+        // 새로 추가 : 기본 1개를 넘는 추가 투사체 수 (상점 + 능력증강 + 무기 레벨). 투사체 대신 다른 효과로 바꿔 쓰는 무기용
+        protected int GetExtraProjectileCount()
+        {
+            return GetWeaponProjectileCount() - 1;
+        }
+
+        // 새로 추가 : 기본 공격 조준 (검기 / 마법사 공용. 원래 검기 안에 있던 것을 옮김)
+        // 범위(searchRange, 범위 증가 적용) 안 가장 가까운 적 쪽, 없으면 캐릭터 정면. 수평 방향만
+        protected Vector3 GetTargetOrForwardDirection(float searchRange)
+        {
+            return GetFlatDirectionTo(FindTarget(searchRange)); // [변경] 방향 계산을 아래로 분리 (마법사 전격이 찾은 대상을 같이 쓰려고)
+        }
+
+        // 새로 추가 : target 쪽 수평 방향 (target이 null이면 캐릭터 정면)
+        protected Vector3 GetFlatDirectionTo(Enemy target)
+        {
+            Vector3 direction = Owner.transform.forward;
+
+            if (target != null) direction = target.HitCenter - Owner.HitCenter;
+
+            direction.y = 0f;
+            if (direction.sqrMagnitude < 0.01f) direction = Owner.transform.forward; // 적이 몸에 딱 붙어 있을 때
+            return direction.normalized;
         }
 
         // 실제 공격 내용. 자식이 반드시 재정의

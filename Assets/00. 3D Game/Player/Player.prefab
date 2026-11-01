@@ -72,6 +72,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6709455145183590606}
+  - component: {fileID: 8251334176149803190}
   m_Layer: 0
   m_Name: BodyPivot
   m_TagString: Untagged
@@ -94,6 +95,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7130914971425496421}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8251334176149803190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1656626777566006632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fad47a0cdb141ea975a18ac9cfedf17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.BodyTilt
+  tiltSpeed: 10
+  maxTiltAngle: 30
 --- !u!1 &3125669469639242514
 GameObject:
   m_ObjectHideFlags: 0
@@ -494,6 +509,9 @@ MonoBehaviour:
       AcquisitionRange: 0
       ExperienceGain: 0
       GoldGain: 0
+  safeFallHeight: 4
+  fallDamagePerMeter: 5
+  basePickupRange: 3
 --- !u!114 &4379439335337545981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -531,6 +549,12 @@ MonoBehaviour:
   jumpCount: 0
   maxJumpCount: 2
   groundStickVelocity: -2
+  nearGroundDistance: 0.4
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 3072
+  turnSpeed: 15
+  bodyTilt: {fileID: 8251334176149803190}
 --- !u!114 &1616070677542795440
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -44,3 +44,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa1bcff7d23c46cdbbeceb7854b3ba73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.UnitSkill_Dash
+  mainStat: 3
+  damageRatio: 1
+  animationSlot: 2
+  useAnimationTiming: 1
+  animationTiming: 0.3
+  attackDelay: 0
+  dashDistance: 8
+  dashSpeed: 30
+  hitRadius: 1.5
+  invincibleWhileDash: 1
+  effectPrefab: {fileID: 0}

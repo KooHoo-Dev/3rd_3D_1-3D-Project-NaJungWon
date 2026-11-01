@@ -115,6 +115,15 @@ namespace PROJECT3D
         public void SlowMotion() => SetScaleStep(SLOW_STEP);
         public void NormalSpeed() => SetScaleStep(DEFAULT_STEP);
 
+        // 새 판 시작 시 시계 초기화
+        public void ResetClock()
+        {
+            lastRunningStep = DEFAULT_STEP;
+            SetScaleStep(DEFAULT_STEP);
+            ElapsedTime = 0f;
+            tickTimer = 0f;
+        }
+        
         public void TogglePause()
         {
             if (IsPaused) Resume();

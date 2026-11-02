@@ -1235,7 +1235,7 @@ MonoBehaviour:
   turnSpeed: 10
   yOffset: 0
   snapRayHeight: 2
-  snapRayDistance: 10
+  snapRayDistance: 15
   groundMask:
     serializedVersion: 2
     m_Bits: 1024

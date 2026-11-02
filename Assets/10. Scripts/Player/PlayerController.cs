@@ -25,7 +25,9 @@ namespace PROJECT3D
         
         // 스킬 사용 중이면 이동/점프/다른 스킬을 막는다
         private bool IsCasting => (eSkill != null && eSkill.IsCasting) || (qSkill != null && qSkill.IsCasting);
-        
+
+        //이속 테스트 용
+        public float Speed = 7f;
         // 플레이어 데이터가 다 들어간 뒤 PlayerSpawner가 호출 // [변경] 주석 정정 (PlayerTester → PlayerSpawner)
         public void Init(Player player)
         {
@@ -92,11 +94,11 @@ namespace PROJECT3D
         {
             if (IsCasting)
             {
-                movement.SetValue(Vector2.zero, PlayerStat.Speed, cameraController.YawRotation);
+                movement.SetValue(Vector2.zero, Speed, cameraController.YawRotation);
                 return;
             }
             Vector2 inputAxis = SimpleInput.GetMoveAxisRaw();
-            movement.SetValue(inputAxis, PlayerStat.Speed, cameraController.YawRotation);
+            movement.SetValue(inputAxis, Speed, cameraController.YawRotation);
             if (SimpleInput.GetKeyDown(Key.Space)) movement.RequestJump();
         }
 
@@ -141,7 +143,7 @@ namespace PROJECT3D
             anim.SetTrigger(Fall);
         }
 
-        // 새로 추가 : 지금 스킬 모션(태그 "Skill")을 재생 중이거나 그쪽으로 넘어가는 중인지
+        // 지금 스킬 모션(태그 "Skill")을 재생 중이거나 그쪽으로 넘어가는 중인지
         private bool IsSkillAnimationPlaying()
         {
             if (anim.GetCurrentAnimatorStateInfo(0).IsTag("Skill")) return true;

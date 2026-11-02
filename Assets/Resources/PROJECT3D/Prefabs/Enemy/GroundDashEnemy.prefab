@@ -1213,20 +1213,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.Dash
   separationDistance: 1.5
+  attack: {fileID: 0}
   attackRange: 8
   attackDelay: 0.5
   contactInterval: 1
   contactDamageRate: 1
-  contactRange: 0.2
   moveSmooth: 8
   turnSpeed: 10
   yOffset: 0
   snapRayHeight: 2
-  snapRayDistance: 5
+  snapRayDistance: 10
   groundMask:
     serializedVersion: 2
     m_Bits: 3072
-  heightSpeedRatio: 2
+  heightSpeedRatio: 4
   bodyTilt: {fileID: 42552824839839659}
   riseDuration: 1
   SpawnRiseDone: 0

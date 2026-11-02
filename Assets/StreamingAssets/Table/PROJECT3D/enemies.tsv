@@ -1,7 +1,7 @@
 ID	Name	EnemyType	EnemyGrade	PrefabKey	MaxHp	Damage	AttackSpeed	Speed	Armor	Resist	Exp	Gold
-00	GroundNormal	Ground	Normal	PROJECT3D/Prefabs/Enemy/GroundNormalEnemy	40	10	0	3	0	0	1	10
+00	GroundNormal	Ground	Normal	PROJECT3D/Prefabs/Enemy/GroundNormalEnemy	40	10	0	4	0	0	1	10
 01	GroundArtillery	Ground	Normal	PROJECT3D/Prefabs/Enemy/GroundArtilleryEnemy	35	15	0.5	2.5	0	0	2	15
-02	GroundDash	Ground	Normal	PROJECT3D/Prefabs/Enemy/GroundDashEnemy	60	10	0	3	0	0	2	15
+02	GroundDash	Ground	Normal	PROJECT3D/Prefabs/Enemy/GroundDashEnemy	60	10	0	3.5	0	0	2	15
 09	GroundDummy	Ground	Normal	PROJECT3D/Prefabs/Enemy/GroundDummyEnemy	1000	1	0	3	0	0	0	0
-10	AirNormal	Air	Normal	PROJECT3D/Prefabs/Enemy/AirNormalEnemy	30	20	0.5	4	0	0	1	10
+10	AirNormal	Air	Normal	PROJECT3D/Prefabs/Enemy/AirNormalEnemy	30	20	0.5	5	0	0	1	10
 19	AirDummy	Air	Normal	PROJECT3D/Prefabs/Enemy/AirDummyEnemy	1000	1	1	4	0	0	0	0

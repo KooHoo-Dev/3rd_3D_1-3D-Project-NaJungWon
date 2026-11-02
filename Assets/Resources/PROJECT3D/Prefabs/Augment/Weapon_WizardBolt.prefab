@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.WizardBolt
   mainStat: 7
   damageRatio: 1
-  animationSlot: 0
+  animationSlot: 1
   useAnimationTiming: 0
   animationTiming: 0.5
   attackDelay: 0

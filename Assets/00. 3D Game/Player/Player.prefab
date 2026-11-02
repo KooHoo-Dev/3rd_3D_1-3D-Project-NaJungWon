@@ -494,6 +494,7 @@ MonoBehaviour:
         GoldGain: 0
       Cooldown: 0
       Description: 
+    StartWeaponID: 0
     Sprite: {fileID: 0}
     UnitStat:
       MaxHp: 0
@@ -509,9 +510,10 @@ MonoBehaviour:
       AcquisitionRange: 0
       ExperienceGain: 0
       GoldGain: 0
-  safeFallHeight: 4
+  safeFallHeight: 15
   fallDamagePerMeter: 5
   basePickupRange: 3
+  hitInvincibleTime: 0.1
 --- !u!114 &4379439335337545981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -532,6 +534,7 @@ MonoBehaviour:
   SkillPivot: {fileID: 8135210075575110663}
   eSkill: {fileID: 0}
   qSkill: {fileID: 0}
+  Speed: 7
 --- !u!114 &1686041705906077915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,17 +547,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2817c901c3b841e5ab234b96b34ede17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.CharacterController3D
-  gravity: -9.81
-  jumpHeight: 3
+  gravity: -30
+  jumpHeight: 4
   jumpCount: 0
   maxJumpCount: 2
   groundStickVelocity: -2
-  nearGroundDistance: 0.4
+  nearGroundDistance: 0.5
   groundMask:
     serializedVersion: 2
     m_Bits: 3072
   turnSpeed: 15
-  bodyTilt: {fileID: 8251334176149803190}
+  bodyTilt: {fileID: 0}
 --- !u!114 &1616070677542795440
 MonoBehaviour:
   m_ObjectHideFlags: 0

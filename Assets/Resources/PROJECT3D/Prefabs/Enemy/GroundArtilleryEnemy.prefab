@@ -1918,11 +1918,11 @@ MonoBehaviour:
   turnSpeed: 10
   yOffset: 1
   snapRayHeight: 2
-  snapRayDistance: 5
+  snapRayDistance: 10
   groundMask:
     serializedVersion: 2
     m_Bits: 1024
-  heightSpeedRatio: 2
+  heightSpeedRatio: 4
   bodyTilt: {fileID: 8482480477799443212}
   riseDuration: 1
   SpawnRiseDone: 0

@@ -16,8 +16,8 @@ namespace PROJECT3D
         [Tooltip("접지 중에 아래로 누르는 힘. 0이면 경사면에서 미끄러질 수 있다")]
         [SerializeField] private float groundStickVelocity = -2f;
         [Tooltip("내려가는 중이어도 발밑 바닥이 이 거리 안이면 '떨어지기 시작'으로 보지 않는다 (작은 턱/내리막)")]
-        [SerializeField] private float nearGroundDistance = 0.4f; // 새로 추가
-        [SerializeField] private LayerMask groundMask;            // 새로 추가 : 바닥 레이어 (꼭 지정)
+        [SerializeField] private float nearGroundDistance = 0.4f;
+        [SerializeField] private LayerMask groundMask;            // 바닥 레이어 (꼭 지정)
         
         [Header("회전 / 기울기")]
         [SerializeField] private float turnSpeed = 15f;  // 이동 방향으로 도는 속도
@@ -115,7 +115,7 @@ namespace PROJECT3D
             if (bodyTilt != null) bodyTilt.SetGroundNormal(groundNormal);
         }
 
-        // ===== 새로 추가 : 공중 상태 (최고점 기록 → 하강 시작 → 착지) =====
+        // 공중 상태 (최고점 기록 → 하강 시작 → 착지)
         private void UpdateAirState()
         {
             float y = transform.position.y;
@@ -151,7 +151,6 @@ namespace PROJECT3D
             Vector3 origin = feet + Vector3.up * 0.1f;
             return Physics.Raycast(origin, Vector3.down, nearGroundDistance + 0.1f, groundMask, QueryTriggerInteraction.Ignore);
         }
-        // ===== 새로 추가 끝 =====
         
         // 이동 방향 바라보기
         private void RotateToMove(Vector3 moveVector)
@@ -192,11 +191,11 @@ namespace PROJECT3D
 
             if (jumpCount >= maxJumpCount) return;
             jumpCount++;
-            velocity.y = Mathf.Sqrt(-2f * gravity * jumpHeight); // [변경] 점프 높이 공식 (v = √(-2 × 중력 × 높이))
+            velocity.y = Mathf.Sqrt(-2f * gravity * jumpHeight); // 점프 높이 공식 (v = √(-2 × 중력 × 높이))
             IsGrounded = false;
 
-            isFallingDown = false; // 새로 추가 : 2단 점프면 다시 최고점을 지날 때 하강 알림
-            OnJumpStart?.Invoke(); // [변경] OnJumped → OnJumpStart
+            isFallingDown = false; // 2단 점프면 다시 최고점을 지날 때 하강 알림
+            OnJumpStart?.Invoke();
         }
     }
 }

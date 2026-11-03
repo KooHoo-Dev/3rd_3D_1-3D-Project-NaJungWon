@@ -54,6 +54,6 @@ MonoBehaviour:
   rangeGizmoColor: {r: 0, g: 1, b: 1, a: 1}
   testAugmentID: 101
   targetArrowPrefab: {fileID: 7249368057099220369, guid: c6ea50c3187e6ca4b9b6917d011213d6, type: 3}
-  straightArrowPrefab: {fileID: 442053123086126959, guid: f6388377be9877b4693fe7a2e2dfe6bd, type: 3}
+  searchRange: 10
   projectileSpeedBonus: 0.25
   arousalSpeedRate: 2.5

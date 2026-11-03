@@ -12,6 +12,8 @@ namespace PROJECT3D
 
         private float remainTime; // 귀환까지 남은 시간 (시간 기준일 때만 사용)
 
+        #region UnityMethod
+
         private void Awake()
         {
             // 인스펙터에서 안 넣었으면 자식에서 찾는다
@@ -21,12 +23,6 @@ namespace PROJECT3D
         private void OnEnable()
         {
             remainTime = lifeTime;
-        }
-        
-        // 지속시간 직접 설정
-        public void SetLifeTime(float time)
-        {
-            remainTime = time;
         }
 
         private void Update()
@@ -44,6 +40,16 @@ namespace PROJECT3D
             if (particle == null || particle.IsAlive(true) == false) ReturnToPool();
         }
 
+        #endregion
+
+        #region 외부 설정
+
+        // 지속시간 직접 설정
+        public void SetLifeTime(float time)
+        {
+            remainTime = time;
+        }
+
         public void ReturnToPool()
         {
             // 풀 없이 씬에 직접 놓은 이펙트라면 그냥 끈다
@@ -55,5 +61,7 @@ namespace PROJECT3D
 
             ObjectPoolManager.Instance.ReturnToPool(this);
         }
+
+        #endregion
     }
 }

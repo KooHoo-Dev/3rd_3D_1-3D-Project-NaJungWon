@@ -13,6 +13,8 @@ namespace PROJECT3D
         private List<AugmentDef> abilities = new List<AugmentDef>(); // 줄 순서대로 능력치 증강
         private List<AugmentDef> weapons = new List<AugmentDef>();   // 진화가 있는 무기 증강
 
+        #region 외부 설정
+
         // 테이블에서 능력치 증강 / 무기 증강을 나눠 담는다 (게임 시작 시 한 번)
         public void Init()
         {
@@ -69,6 +71,10 @@ namespace PROJECT3D
             }
         }
 
+        #endregion
+
+        #region 내부 설정
+
         private bool IsOwned(int augmentID)
         {
             List<OwnedAugment> owned = AugmentManager.Instance.OwnedAugments;
@@ -78,5 +84,7 @@ namespace PROJECT3D
             }
             return false;
         }
+
+        #endregion
     }
 }

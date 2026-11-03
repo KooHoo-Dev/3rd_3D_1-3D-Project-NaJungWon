@@ -17,6 +17,8 @@ namespace PROJECT3D
         // [변경] 삭제 : monsterDic (콜라이더 → 몹 사전. EnemyRegistry로 대체됨)
         private readonly Queue<InGameEvent> inGameEventQueue = new Queue<InGameEvent>();
 
+        #region UnityMethod
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -27,11 +29,6 @@ namespace PROJECT3D
             }
 
             Instance = this;
-        }
-
-        private void OnDestroy()
-        {
-            if (Instance == this) Instance = null;
         }
 
         private void Update()
@@ -61,6 +58,15 @@ namespace PROJECT3D
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
+        #endregion
+
+        #region 외부 설정
+
         // 데미지 보내기 창구
         public void SendDamage(CombatEntity sender, CombatEntity receiver, int damage, Vector3 hitPosition)
         {
@@ -87,10 +93,12 @@ namespace PROJECT3D
 
             AddInGameEvent(combatEvent);
         }
-        
+
         public void AddInGameEvent(InGameEvent inGameEvent)
         {
             inGameEventQueue.Enqueue(inGameEvent);
         }
+
+        #endregion
     }
 }

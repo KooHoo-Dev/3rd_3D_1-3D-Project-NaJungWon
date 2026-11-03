@@ -8,43 +8,15 @@ namespace PROJECT3D
     {
         [Header("타겟팅 설정")]
         [SerializeField] private float speed = 10f;
-        [SerializeField] private float range = 8f;  // 기본 탐색 범위 (첫 탐색/재탐색 공통, 범위 증가 적용)
-
-        public float BaseRange => range;
+        // [변경] 탐색 범위(range / BaseRange) 삭제 : 대상을 찾는 범위는 쏘는 쪽(무기증강)이 정하고 SetTarget으로 넘겨준다
 
         private Enemy target;
         private int remainHit;
-        private float currentRange;
+        private float currentRange; // 다음 대상 재탐색 범위 (SetTarget으로 받은 값. 범위 증가는 쏘는 쪽에서 적용)
         private HashSet<CombatEntity> hitTargets = new HashSet<CombatEntity>(); // 다음 대상 찾을 때 제외용
         private float speedRate = 1f; // 속도 배율
 
-        public override void Launch(Vector3 from, Vector3 direction, int damage, CombatEntity owner)
-        {
-            base.Launch(from, direction, damage, owner);
-            target = null;
-            remainHit = 1;          // SetTarget을 안 불렀을 때는 1번
-            currentRange = range;
-            hitTargets.Clear();
-            speedRate = 1f;         // 풀 재사용 시 초기화
-        }
-
-        // 속도 배율 (FireHit 뒤에 부른다. 1 = 프리팹 속도 그대로)
-        public void SetSpeedRate(float rate)
-        {
-            speedRate = rate;
-        }
-
-        public override void ApplyBonus(float rangeRate, float durationRate)
-        {
-            base.ApplyBonus(rangeRate, durationRate); // 반경
-            currentRange = range * rangeRate;         // 탐색 범위
-        }
-
-        public void SetTarget(Enemy target, int hitCount)
-        {
-            this.target = target;
-            remainHit = hitCount;
-        }
+        #region UnityMethod
 
         private void Update()
         {
@@ -80,15 +52,50 @@ namespace PROJECT3D
         {
             base.OnDrawGizmos();
 
+            if (Application.isPlaying == false) return; // [변경] 탐색 범위는 쏠 때 받으니 실행 중에만
             Gizmos.color = Color.green;
-            float searchRange = range;
-            if (Application.isPlaying) searchRange = currentRange;
-            HitGizmo.Draw(transform.position, searchRange, HitShape.Sphere, 0f);
+            HitGizmo.Draw(transform.position, currentRange, HitShape.Sphere, 0f); // [변경]
         }
+
+        #endregion
+
+        #region 외부 설정
+
+        public override void Launch(Vector3 from, Vector3 direction, int damage, CombatEntity owner)
+        {
+            base.Launch(from, direction, damage, owner);
+            target = null;
+            remainHit = 1;          // SetTarget을 안 불렀을 때는 1번
+            currentRange = 0f;      // [변경] SetTarget을 안 불렀으면 재탐색 안 함
+            hitTargets.Clear();
+            speedRate = 1f;         // 풀 재사용 시 초기화
+        }
+
+        // 속도 배율 (FireHit 뒤에 부른다. 1 = 프리팹 속도 그대로)
+        public void SetSpeedRate(float rate)
+        {
+            speedRate = rate;
+        }
+
+        // [변경] ApplyBonus 재정의 삭제 (탐색 범위가 없어져서 부모의 반경 처리만 쓴다)
+
+        // [변경] searchRange 추가 : 쏘는 쪽이 대상을 찾은 범위(범위 증가 적용 값)를 그대로 재탐색에 쓴다
+        public void SetTarget(Enemy target, int hitCount, float searchRange)
+        {
+            this.target = target;
+            remainHit = hitCount;
+            currentRange = searchRange;
+        }
+
+        #endregion
+
+        #region 내부 설정
 
         private bool IsAliveTarget()
         {
             return target != null && target.gameObject.activeInHierarchy && target.Stat.IsDead == false;
         }
+
+        #endregion
     }
 }

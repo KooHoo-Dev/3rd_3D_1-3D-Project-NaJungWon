@@ -16,23 +16,8 @@ namespace PROJECT3D
         private float timer;
         private bool rebuildRequested;
 
-        // 맵 굽기가 끝난 뒤 GameManager가 호출
-        public void Init(MapGrid map)
-        {
-            grid = map;
-            Field = new FlowField(grid);
-            grid.OnGridChanged += RequestRebuild;
-            Rebuild();
-        }
-        
-        // 추격 대상 추가 (플레이어가 생성된 뒤)
-        public void AddPlayer(Transform player)
-        {
-            if (players.Contains(player)) return;
-            players.Add(player);
-            RequestRebuild();
-        }
-        
+        #region UnityMethod
+
         private void Awake()
         {
             if(Instance == null) Instance = this;
@@ -45,25 +30,6 @@ namespace PROJECT3D
 
             timer -= WorldClock.Instance.DeltaTime;
             if (rebuildRequested || timer <= 0f) Rebuild();
-        }
-
-        private void RequestRebuild()
-        {
-            rebuildRequested = true;
-        }
-
-        public void Rebuild()
-        {
-            targets.Clear();
-            foreach (Transform player in players)
-            {
-                //여기에 플레이어 사망 시에도 추격안하게 하는 코드 추가 필요
-                if (player != null && player.gameObject.activeInHierarchy)
-                    targets.Add(player.position);
-            }
-            Field.Build(targets);
-            rebuildRequested = false;
-            timer = rebuildInterval;
         }
 
         private void OnDestroy()
@@ -99,5 +65,51 @@ namespace PROJECT3D
                 Gizmos.DrawSphere(point + arrow, squareGrid.CellSize * 0.06f);
             }
         }
+
+        #endregion
+
+        #region 외부 설정
+
+        // 맵 굽기가 끝난 뒤 GameManager가 호출
+        public void Init(MapGrid map)
+        {
+            grid = map;
+            Field = new FlowField(grid);
+            grid.OnGridChanged += RequestRebuild;
+            Rebuild();
+        }
+
+        // 추격 대상 추가 (플레이어가 생성된 뒤)
+        public void AddPlayer(Transform player)
+        {
+            if (players.Contains(player)) return;
+            players.Add(player);
+            RequestRebuild();
+        }
+
+        public void Rebuild()
+        {
+            targets.Clear();
+            foreach (Transform player in players)
+            {
+                //여기에 플레이어 사망 시에도 추격안하게 하는 코드 추가 필요
+                if (player != null && player.gameObject.activeInHierarchy)
+                    targets.Add(player.position);
+            }
+            Field.Build(targets);
+            rebuildRequested = false;
+            timer = rebuildInterval;
+        }
+
+        #endregion
+
+        #region 내부 설정
+
+        private void RequestRebuild()
+        {
+            rebuildRequested = true;
+        }
+
+        #endregion
     }
 }

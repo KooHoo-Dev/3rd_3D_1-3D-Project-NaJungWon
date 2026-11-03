@@ -12,6 +12,10 @@ namespace PROJECT3D
 
         private Player player;
 
+        #region 외부 설정
+
+        #region 스탯 창
+
         public void Init(Player player)
         {
             this.player = player;
@@ -51,6 +55,10 @@ namespace PROJECT3D
                 valueTexts[i].SetText(GetStatValueText(type, stat.Get(type)));
             }
         }
+
+        #endregion
+
+        #region 스탯 글자
 
         public static string GetStatName(StatType type) // [변경] private → public static (증강 카드 레벨업 수치 표시에서도 사용)
         {
@@ -95,5 +103,9 @@ namespace PROJECT3D
                     return $"+{value:0}%";     // 범위, 지속, 획득 범위, 경험치, 골드
             }
         }
+
+        #endregion
+
+        #endregion
     }
 }

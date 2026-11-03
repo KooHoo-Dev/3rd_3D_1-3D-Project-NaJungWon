@@ -15,6 +15,8 @@ namespace PROJECT3D
 
         public int WeaponIconCount => weaponIcons.Length;
 
+        #region 외부 설정
+
         public void SetAbility(Sprite sprite, bool owned)
         {
             abilityIcon.sprite = sprite;
@@ -36,5 +38,7 @@ namespace PROJECT3D
                 weaponIcons[i].gameObject.SetActive(false);
             }
         }
+
+        #endregion
     }
 }

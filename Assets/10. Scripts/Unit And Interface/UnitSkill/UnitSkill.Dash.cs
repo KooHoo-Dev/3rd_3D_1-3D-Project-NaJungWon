@@ -16,7 +16,8 @@ namespace PROJECT3D
         [SerializeField] private float hitRadius = 1.5f;         // 몸 주변 타격 반경 (범위 증가% 적용)
 
         [Header("돌진 이펙트")]
-        [SerializeField] private ParticleEffect effectPrefab;    // 시작 위치 이펙트 (없으면 생략)
+        [SerializeField] private ParticleEffect effectPrefab;    // 돌진 이펙트 (없으면 생략). 돌진 방향을 바라보고, 돌진하는 동안 플레이어를 따라간다 // [변경] 주석
+        private ParticleEffect dashEffect;                       // 새로 추가 : 이번 돌진에 띄운 이펙트 (돌진 중에만 위치를 맞춘다)
 
         private CharacterController ownerController;   // 플레이어를 움직일 컨트롤러 (벽 충돌 처리용)
         private CharacterController3D ownerMovement;   // 새로 추가 : 중력 끄기/켜기용
@@ -27,6 +28,40 @@ namespace PROJECT3D
 
         private List<Enemy> hitBuffer = new List<Enemy>();               // 이번 프레임 닿은 적 (재사용)
         private HashSet<Enemy> hitEnemies = new HashSet<Enemy>();        // 이번 돌진에서 이미 맞은 적 (한 번만 맞게)
+
+        #region UnityMethod
+
+        protected override void Update()
+        {
+            base.Update(); // 쿨타임 / 공격 시점 처리
+            if (isDashing == false) return;
+
+            // 1. 이번 프레임 이동 (남은 거리보다 더 가지 않게)
+            float step = Mathf.Min(dashSpeed * WorldClock.Instance.DeltaTime, remainDistance);
+            Vector3 before = Owner.transform.position;
+            ownerController.Move(dashDirection * step); // 벽이 있으면 CharacterController가 그 앞에서 막아 준다
+            remainDistance -= step;
+            FollowDashEffect(); // 새로 추가 : 이펙트가 플레이어를 따라오게
+
+            // 2. 지나간 자리의 적 맞히기
+            HitEnemies();
+
+            // 3. 다 갔거나, 장애물에 막혀 거의 못 움직였으면 끝
+            Vector3 moved = Owner.transform.position - before; // [변경] 3D 이동 거리 그대로 비교 (y를 지우지 않음)
+            bool isBlocked = moved.magnitude < step * 0.5f;
+            if (remainDistance <= 0f || isBlocked) EndDash();
+        }
+
+        // 돌진 중에 꺼지면(플레이어 비활성화 등) 상태를 되돌린다
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            if (isDashing) EndDash();
+        }
+
+        #endregion
+
+        #region 외부 설정
 
         // 공격 시점(애니메이션 / 딜레이 후)에 불린다 → 돌진 시작
         protected override void Use(Vector3 aimDirection)
@@ -55,30 +90,16 @@ namespace PROJECT3D
             lookDirection.y = 0f;
             if (lookDirection.sqrMagnitude > 0.01f) Owner.transform.rotation = Quaternion.LookRotation(lookDirection);
             SetDashState(true); // 무적 + 중력 끄기
-            ObjectPoolManager.PlayEffect(effectPrefab, Owner.transform.position);
+            PlayDashEffect(); // [변경] 시작 위치에 방향 없이 띄우던 것 → 돌진 방향을 바라보게 띄우고 따라가게
 
             HitEnemies(); // 시작 위치에 붙어 있던 적도 맞힌다
         }
 
-        protected override void Update()
-        {
-            base.Update(); // 쿨타임 / 공격 시점 처리
-            if (isDashing == false) return;
+        #endregion
 
-            // 1. 이번 프레임 이동 (남은 거리보다 더 가지 않게)
-            float step = Mathf.Min(dashSpeed * WorldClock.Instance.DeltaTime, remainDistance);
-            Vector3 before = Owner.transform.position;
-            ownerController.Move(dashDirection * step); // 벽이 있으면 CharacterController가 그 앞에서 막아 준다
-            remainDistance -= step;
+        #region 내부 설정
 
-            // 2. 지나간 자리의 적 맞히기
-            HitEnemies();
-
-            // 3. 다 갔거나, 장애물에 막혀 거의 못 움직였으면 끝
-            Vector3 moved = Owner.transform.position - before; // [변경] 3D 이동 거리 그대로 비교 (y를 지우지 않음)
-            bool isBlocked = moved.magnitude < step * 0.5f;
-            if (remainDistance <= 0f || isBlocked) EndDash();
-        }
+        #region 돌진
 
         // 몸 주변 적 중 이번 돌진에서 아직 안 맞은 적에게 데미지
         private void HitEnemies()
@@ -101,6 +122,7 @@ namespace PROJECT3D
             isDashing = false;
             IsCasting = false;
             SetDashState(false); // [변경] 무적 해제 + 중력 다시 켜기
+            dashEffect = null;   // 새로 추가 : 이펙트는 놓아준다 (멈춘 자리에서 마저 재생 후 풀로)
         }
 
         // [변경] 돌진 중 상태 : 무적 켜기/끄기 + 중력 끄기/켜기
@@ -112,11 +134,37 @@ namespace PROJECT3D
             if (ownerMovement != null) ownerMovement.SetUseGravity(isDash == false); // 돌진 중에는 중력 X
         }
 
-        // 돌진 중에 꺼지면(플레이어 비활성화 등) 상태를 되돌린다
-        protected override void OnDisable()
+        #endregion
+
+        #region 돌진 이펙트
+
+        // ===== 새로 추가 : 돌진 이펙트 (정면 = 돌진 방향, 돌진하는 동안 플레이어를 따라감) =====
+        //  - 풀에서 꺼낸 이펙트를 들고 있다가 Update에서 플레이어 위치로 옮긴다 (검기 SummonHit의 followOwner와 같은 방식)
+        //  - 이펙트 파티클은 Local 시뮬레이션이라 루트를 옮기면 파티클도 같이 따라온다
+        //  - 돌진이 끝나면 놓아준다 → 남은 파티클은 멈춘 자리에서 마저 재생되고 ParticleEffect가 풀로 돌려보낸다
+        private void PlayDashEffect()
         {
-            base.OnDisable();
-            if (isDashing) EndDash();
+            dashEffect = null;
+            if (effectPrefab == null) return; // 이펙트를 안 넣었으면 생략
+
+            dashEffect = ObjectPoolManager.Instance.GetObjectOrNull(effectPrefab.gameObject) as ParticleEffect;
+            if (dashEffect == null) return;
+
+            // 위/아래 대각선 돌진이면 이펙트도 같이 기울인다 (몸은 안 기울임)
+            dashEffect.transform.SetPositionAndRotation(Owner.transform.position, Quaternion.LookRotation(dashDirection));
+            dashEffect.gameObject.SetActive(true);
         }
+
+        // 돌진하는 동안 이펙트를 플레이어 위치로
+        private void FollowDashEffect()
+        {
+            if (dashEffect == null) return;
+            dashEffect.transform.position = Owner.transform.position;
+        }
+        // ===== 새로 추가 끝 =====
+
+        #endregion
+
+        #endregion
     }
 }

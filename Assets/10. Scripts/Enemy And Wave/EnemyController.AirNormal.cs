@@ -21,11 +21,17 @@ namespace PROJECT3D
         private float aheadSurfaceY = float.MinValue; // 앞쪽 표면 높이 (ApplyMovement에서 재고 UpdateHeight에서 쓴다)
         private CharacterController3D playerMovement; // 플레이어 접지 판정용
 
+        #region UnityMethod
+
         protected override void OnEnable()
         {
             aheadSurfaceY = float.MinValue; // 풀에서 다시 나올 때 이전 값 지우기 (출현 높이 계산보다 먼저)
             base.OnEnable();
         }
+
+        #endregion
+
+        #region 외부 설정
 
         // 추적 방향 : 플레이어에게 직진
         protected override Vector3 GetChaseDirection()
@@ -72,6 +78,10 @@ namespace PROJECT3D
             return targetY;
         }
 
+        #endregion
+
+        #region 내부 설정
+
         // 해당 XZ 지점의 표면(지형/장애물 꼭대기) 높이를 위에서 아래로 레이를 쏴서 잰다
         private bool TryGetSurfaceHeight(Vector3 point, out float surfaceY)
         {
@@ -95,5 +105,7 @@ namespace PROJECT3D
 
             return playerMovement.IsGrounded;
         }
+
+        #endregion
     }
 }

@@ -14,6 +14,8 @@ namespace PROJECT3D
 
         private List<ShopSlotUI> slots = new List<ShopSlotUI>();
 
+        #region UnityMethod
+
         // ===== 새로 추가 : 닫기 버튼 =====
         private void Awake()
         {
@@ -31,6 +33,10 @@ namespace PROJECT3D
             if (GameSession.IsInitialized)
                 GameSession.Instance.OnDataChanged -= Refresh;
         }
+
+        #endregion
+
+        #region 외부 설정
 
         public void Init()
         {
@@ -62,6 +68,10 @@ namespace PROJECT3D
         }
         // ===== 새로 추가 끝 =====
 
+        #endregion
+
+        #region 내부 설정
+
         // 구매 버튼을 눌렀을 때 (성공하면 OnDataChanged로 Refresh가 불린다)
         private void Buy(StatType type)
         {
@@ -75,5 +85,7 @@ namespace PROJECT3D
                 slots[i].Refresh();
             }
         }
+
+        #endregion
     }
 }

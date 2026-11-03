@@ -22,6 +22,8 @@ namespace PROJECT3D
         private readonly Color highColor = new Color(0.2f, 0.4f, 1f);
         private readonly Color unreachableColor = new Color(1f, 0.9f, 0f);
 
+        #region UnityMethod
+
         private void OnDrawGizmos()
         {
             if (onlyWhenSelected == false) DrawTiles();
@@ -31,6 +33,45 @@ namespace PROJECT3D
         {
             if (onlyWhenSelected) DrawTiles();
         }
+
+        #endregion
+
+        #region 외부 설정
+
+        // 인스펙터 컴포넌트 오른쪽 위 ⋮ 메뉴에서 실행 (Play 중)
+        [ContextMenu("타일 통계 출력")]
+        private void LogTileCount()
+        {
+            if (MapGrid.Instance == null || MapGrid.Instance.Grid == null)
+            {
+                Debug.LogWarning("격자가 아직 없습니다. Play 중 맵 굽기가 끝난 뒤 실행하세요.");
+                return;
+            }
+
+            SquareGrid grid = MapGrid.Instance.Grid;
+            bool canCheckReach = CanCheckReach();
+            int walkable = 0;
+            int blocked = 0;
+            int unreachable = 0;
+
+            for (int z = 0; z < grid.Depth; z++)
+            {
+                for (int x = 0; x < grid.Width; x++)
+                {
+                    Tile tile = grid.GetTileOrNull(x, z);
+                    if (tile.IsWalkable == false) blocked++;
+                    else if (canCheckReach && tile.Distance < 0) unreachable++;
+                    else walkable++;
+                }
+            }
+
+            int total = grid.Width * grid.Depth;
+            Debug.Log($"[MapTester] 전체 {total}칸 / 걸을 수 있는 칸 {walkable} / 막힌 칸 {blocked} / 갇힌 칸 {unreachable}");
+        }
+
+        #endregion
+
+        #region 내부 설정
 
         private void DrawTiles()
         {
@@ -95,35 +136,6 @@ namespace PROJECT3D
             return FlowFieldManager.Instance.players.Count > 0;
         }
 
-        // 인스펙터 컴포넌트 오른쪽 위 ⋮ 메뉴에서 실행 (Play 중)
-        [ContextMenu("타일 통계 출력")]
-        private void LogTileCount()
-        {
-            if (MapGrid.Instance == null || MapGrid.Instance.Grid == null)
-            {
-                Debug.LogWarning("격자가 아직 없습니다. Play 중 맵 굽기가 끝난 뒤 실행하세요.");
-                return;
-            }
-
-            SquareGrid grid = MapGrid.Instance.Grid;
-            bool canCheckReach = CanCheckReach();
-            int walkable = 0;
-            int blocked = 0;
-            int unreachable = 0;
-
-            for (int z = 0; z < grid.Depth; z++)
-            {
-                for (int x = 0; x < grid.Width; x++)
-                {
-                    Tile tile = grid.GetTileOrNull(x, z);
-                    if (tile.IsWalkable == false) blocked++;
-                    else if (canCheckReach && tile.Distance < 0) unreachable++;
-                    else walkable++;
-                }
-            }
-
-            int total = grid.Width * grid.Depth;
-            Debug.Log($"[MapTester] 전체 {total}칸 / 걸을 수 있는 칸 {walkable} / 막힌 칸 {blocked} / 갇힌 칸 {unreachable}");
-        }
+        #endregion
     }
 }

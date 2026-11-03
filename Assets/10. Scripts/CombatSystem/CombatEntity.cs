@@ -15,7 +15,6 @@ namespace PROJECT3D
         [field: SerializeField] public Transform HeadUpPivot { get; private set; }
         [field: SerializeField] public Transform FirePivot { get; private set; }
 
-
         [Header("피격 판정 (원통)")]
         [SerializeField] private float hurtRadius = 0.5f;            // 원통 반경
         [SerializeField] private float hurtHalfHeight = 1f;          // 원통 절반 높이
@@ -28,7 +27,38 @@ namespace PROJECT3D
         // 피격 원통의 중심
         public Vector3 HitCenter => HitPivot != null ? HitPivot.position : transform.position;
 
-        public GameObject GameObject => gameObject;        
+        public GameObject GameObject => gameObject;
+
+        // 새로 추가 : E / Q 스킬 모션 재생 중인지 (AttackTimingSender가 스킬 상태에 들어갈 때 +1, 나갈 때 -1)
+        // 개수로 세는 이유 : E → Q로 바로 이어지면 Q 들어가기가 E 나가기보다 먼저 불린다
+        private int skillMotionCount;
+        public bool IsSkillMotion => skillMotionCount > 0;
+
+        #region UnityMethod
+
+        // 씬 화면에 피격 원통을 그린다 (Scene 창, 또는 Game 창의 Gizmos 버튼을 켜면 보인다)
+        protected virtual void OnDrawGizmos()
+        {
+            Gizmos.color = hurtGizmoColor;
+            HitGizmo.DrawCylinder(HitCenter, hurtRadius, hurtHalfHeight);
+        }
+
+        #endregion
+
+        #region 외부 설정
+
+        #region 스킬 모션
+
+        public void SetSkillMotion(bool isOn) // 새로 추가
+        {
+            skillMotionCount += isOn ? 1 : -1;
+            if (skillMotionCount < 0) skillMotionCount = 0;
+        }
+
+        #endregion
+
+        #region 피격
+
         public abstract void TakeDamage(CombatEvent combatEvent);
 
         public abstract void TakeHeal(HealEvent healEvent );
@@ -39,6 +69,10 @@ namespace PROJECT3D
         {
             return damage;
         }
+
+        #endregion
+
+        #region 피격 판정
 
         // 공격 범위가 내 피격 원통에 닿는지. 투사체/범위 공격/자폭/돌진 모두 이걸로 판정.
         public bool IsHitBy(Vector3 center, float radius, HitShape info, float height)
@@ -74,12 +108,9 @@ namespace PROJECT3D
             return outXZ * outXZ + outY * outY <= radius * radius;
         }
 
-        // 씬 화면에 피격 원통을 그린다 (Scene 창, 또는 Game 창의 Gizmos 버튼을 켜면 보인다)
-        protected virtual void OnDrawGizmos()
-        {
-            Gizmos.color = hurtGizmoColor;
-            HitGizmo.DrawCylinder(HitCenter, hurtRadius, hurtHalfHeight);
-        }
+        #endregion
+
+        #endregion
     }
 
 }

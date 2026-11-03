@@ -17,6 +17,8 @@ namespace PROJECT3D
         [SerializeField] private TMP_Text unitNameText;     // 캐릭터 이름
         [SerializeField] private TMP_Text playerNameText;   // 플레이어 이름
 
+        #region 외부 설정
+
         // 칸 번호와 클릭했을 때 할 일을 받는다
         public void Init(int index, Action<int> onClicked)
         {
@@ -42,5 +44,7 @@ namespace PROJECT3D
             unitNameText.SetText(def.Name);
             playerNameText.SetText(slot.Name);
         }
+
+        #endregion
     }
 }

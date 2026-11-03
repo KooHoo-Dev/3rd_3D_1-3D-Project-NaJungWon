@@ -19,6 +19,8 @@ namespace PROJECT3D
         private Canvas canvas;
         private bool isSubscribed;
 
+        #region UnityMethod
+
         private void Awake()
         {
             canvas = GetComponent<Canvas>();
@@ -36,6 +38,10 @@ namespace PROJECT3D
             if (isSubscribed && CombatSystem.Instance != null)
                 CombatSystem.Instance.OnCombatEvent -= OnHit;
         }
+
+        #endregion
+
+        #region 내부 설정
 
         private void OnHit(CombatEvent combatEvent)
         {
@@ -57,6 +63,8 @@ namespace PROJECT3D
             damageText.Set(canvas, headPosition, combatEvent.Damage.ToString(), duration, color);
             damageText.gameObject.SetActive(true);
         }
+
+        #endregion
     }
 }
 // ===== 새로 추가 끝 =====

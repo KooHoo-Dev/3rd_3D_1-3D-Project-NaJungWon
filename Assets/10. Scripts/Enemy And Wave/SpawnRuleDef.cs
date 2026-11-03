@@ -10,6 +10,7 @@
         public float Interval;
         public int Count;
         public int MinAlive;
+        public int MaxAlive; // 새로 추가
     }
 
     [System.Serializable]
@@ -22,5 +23,6 @@
         public float Interval;    // 소환 주기(초)
         public int Count;         // 한 번에 소환할 수
         public int MinAlive;      // 맵 전체 몹이 이 수보다 적으면 바로 채운다 (0이면 안 채움)
+        public int MaxAlive;      // 새로 추가 : 맵 전체 몹이 이 수 이상이면 이 규칙은 소환 안 함 (0이면 제한 없음. 시간대별 상시 최대 몹 수)
     }
 }

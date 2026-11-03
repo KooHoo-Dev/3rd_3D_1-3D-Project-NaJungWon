@@ -30,6 +30,8 @@ namespace PROJECT3D
         private static readonly Color ButtonColor = new Color(0.12f, 0.15f, 0.19f);
         private static readonly Color ButtonLineColor = new Color(0.72f, 0.60f, 0.36f);       // 버튼 테두리
 
+        #region 외부 설정
+
         [ContextMenu("1. Build UI")]
         private void BuildUI()
         {
@@ -70,6 +72,10 @@ namespace PROJECT3D
             EditorSceneManager.MarkSceneDirty(gameObject.scene);
             Debug.Log($"[GameOverUIBuilder] '{RootName}' 삭제");
         }
+
+        #endregion
+
+        #region 내부 설정
 
         #region 영역
 
@@ -255,6 +261,8 @@ namespace PROJECT3D
             rect.anchoredPosition = position;
             rect.sizeDelta = size;
         }
+
+        #endregion
 
         #endregion
 #endif

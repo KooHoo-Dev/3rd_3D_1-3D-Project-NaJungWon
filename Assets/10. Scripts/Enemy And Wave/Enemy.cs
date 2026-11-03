@@ -38,7 +38,21 @@ namespace PROJECT3D
         public static event Action<Enemy> OnAnyDied; //킬카운트, 경험치 구슬 소환용
         public int Exp;
         public int Gold;
-        
+
+        #region UnityMethod
+
+        public void Awake()
+        {
+            Controller = GetComponent<EnemyControllerBase>();
+            deathEffects = GetComponents<EnemyDeath>(); // 여러 개면 전부 가져옴
+        }
+
+        #endregion
+
+        #region 외부 설정
+
+        #region 초기화
+
         // [변경] hpRate / damageRate : 시간이 지날수록 강해지는 배율 (WaveManager가 계산해서 넘긴다. 1 = 표 그대로)
         public void Init(EnemyDef def, float hpRate, float damageRate)
         {
@@ -55,12 +69,10 @@ namespace PROJECT3D
             enemyDef = def;
         }
 
-        public void Awake()
-        {
-            Controller = GetComponent<EnemyControllerBase>();
-            deathEffects = GetComponents<EnemyDeath>(); // 여러 개면 전부 가져옴
-        }
-        
+        #endregion
+
+        #region 피격
+
         public override void TakeDamage(CombatEvent combatEvent)
         {
             if (Stat.IsDead) return; // 이미 죽었으면 무시
@@ -73,6 +85,28 @@ namespace PROJECT3D
         {
             
         }
+
+        #endregion
+
+        #region 풀
+
+        public void ReturnToPool()
+        {
+            // 풀에서 꺼낸 몹이 아니면(Instantiate로 만든 몹) 그냥 끈다
+            if (ObjectPoolManager.Instance == null || string.IsNullOrEmpty(Key))
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            ObjectPoolManager.Instance.ReturnToPool(this);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
 
         // 사망 처리
         private void Die(Player killer)
@@ -89,16 +123,6 @@ namespace PROJECT3D
             ReturnToPool();
         }
 
-        public void ReturnToPool()
-        {
-            // 풀에서 꺼낸 몹이 아니면(Instantiate로 만든 몹) 그냥 끈다
-            if (ObjectPoolManager.Instance == null || string.IsNullOrEmpty(Key))
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-
-            ObjectPoolManager.Instance.ReturnToPool(this);
-        }
+        #endregion
     }
 }

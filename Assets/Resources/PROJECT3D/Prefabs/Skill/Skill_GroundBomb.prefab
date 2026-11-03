@@ -48,13 +48,19 @@ MonoBehaviour:
   damageRatio: 0.8
   animationSlot: 3
   useAnimationTiming: 1
-  animationTiming: 0.3
+  animationTiming: 0.5
   attackDelay: 0
   drawRangeGizmo: 1
   rangeGizmoColor: {r: 0, g: 1, b: 1, a: 1}
   aimDistance: 100
-  zonePrefab: {fileID: 4877221864152722571, guid: fb17a8ac964100746a266edf359916f3, type: 3}
-  maxRange: 15
+  aimMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  aimEnemyDistance: 40
+  isAimSkill: 1
+  zonePrefab: {fileID: 4877221864152722571, guid: 768d077aace449d0b0af07637f373848, type: 3}
+  maxRange: 20
   groundMask:
     serializedVersion: 2
     m_Bits: 3072
+  previewPrefab: {fileID: 7310452918604137501, guid: e55c4bf6984e495aa49748cadf041fa2, type: 3}

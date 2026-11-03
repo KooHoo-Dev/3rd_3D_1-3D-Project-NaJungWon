@@ -13,17 +13,13 @@ namespace PROJECT3D
 
         private Vector3 groundNormal = Vector3.up; // 바닥 방향 (월드 기준)
 
+        #region UnityMethod
+
         private void OnEnable()
         {
             // 풀에서 다시 나와도 똑바로 선 상태부터
             groundNormal = Vector3.up;
             transform.localRotation = Quaternion.identity;
-        }
-
-        // 본체가 매 프레임 넣어 준다 (공중이면 Vector3.up)
-        public void SetGroundNormal(Vector3 normal)
-        {
-            groundNormal = normal;
         }
 
         private void LateUpdate()
@@ -41,5 +37,17 @@ namespace PROJECT3D
             float t = 1f - Mathf.Exp(-tiltSpeed * WorldClock.Instance.DeltaTime);
             transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, t);
         }
+
+        #endregion
+
+        #region 외부 설정
+
+        // 본체가 매 프레임 넣어 준다 (공중이면 Vector3.up)
+        public void SetGroundNormal(Vector3 normal)
+        {
+            groundNormal = normal;
+        }
+
+        #endregion
     }
 }

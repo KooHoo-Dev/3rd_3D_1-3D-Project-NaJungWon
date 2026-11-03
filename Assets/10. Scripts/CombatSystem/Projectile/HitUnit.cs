@@ -18,6 +18,8 @@ namespace PROJECT3D
         [SerializeField] private float hitDepth = 0.5f;         // 직육면체일 때만 사용 (앞뒤 절반 두께)
         [SerializeField] private ParticleEffect impactEffect;   // 맞은 자리에 터뜨릴 이펙트 (없으면 생략)
         [SerializeField] private Color rangeGizmoColor = Color.yellow;
+        public float HitRadius => hitRadius; // 새로 추가 : 프리팹 기본 반경 (스킬 조준 중 예상 범위 표시용)
+        protected ParticleEffect ExplodeEffect => explodeEffect; // 새로 추가 : 소환형(SummonHit)이 첫 판정 때 터뜨릴 이펙트
 
         [Header("폭발 (없으면 폭발 안 함)")]
         [SerializeField] private HitUnit explodePrefab;        // 터질 때 만들 범위 (SummonHit 프리팹. 반경은 프리팹에서)
@@ -32,12 +34,42 @@ namespace PROJECT3D
 
         private List<Enemy> enemyBuffer = new List<Enemy>();               // 격자 검색 결과 (재사용)
         private List<CombatEntity> touching = new List<CombatEntity>();     // 이번에 닿은 대상 (재사용)
+        private TrailRenderer[] trails; // 새로 추가 : 꼬리 (풀 재사용 시 이전 위치에서 선이 이어지지 않게 비운다)
+
+        // 맞은 몹 정지
+        private float stunTime;     // 한 번 멈추는 시간 (0이면 정지 효과 없음)
+        private int stunCount;      // 몇 번 멈추는지
+        private float stunInterval; // 멈춤 사이 간격
+
+        #region UnityMethod
 
         protected virtual void Awake()
         {
             baseScale = transform.localScale; // 프리팹 원래 크기 저장
-
+            trails = GetComponentsInChildren<TrailRenderer>(true); // 새로 추가
         }
+
+        // 새로 추가 : 풀에서 꺼내 켤 때 (FireHit이 Launch로 자리를 옮긴 뒤에 켠다) 지난번 꼬리 점들을 지운다
+        protected virtual void OnEnable()
+        {
+            for (int i = 0; i < trails.Length; i++)
+            {
+                trails[i].Clear();
+            }
+        }
+
+        // 씬 화면에 공격 범위를 그리기
+        protected virtual void OnDrawGizmos()
+        {
+            Gizmos.color = rangeGizmoColor;
+            HitGizmo.Draw(transform.position, Application.isPlaying ? currentHitRadius : hitRadius, hitShape, hitHeight, transform.rotation, Application.isPlaying ? currentHitDepth : hitDepth); // [변경] 범위 증가 적용 두께 전달
+        }
+
+        #endregion
+
+        #region 외부 설정
+
+        #region 발사 설정
 
         // 생성 직후 공통 설정. 자식은 override 해서 base.Launch() 뒤에 자기 값을 초기화한다
         // direction : 직진 방향 / 첫 조준 방향. 소환형은 쓰지 않는다
@@ -84,6 +116,10 @@ namespace PROJECT3D
             return hit;
         }
 
+        #endregion
+
+        #region 판정
+
         // 지금 위치의 공격 범위에 닿은 대상들 (몹이 만든 것 → 플레이어, 플레이어가 만든 것 → 몹)
         protected List<CombatEntity> FindTouching()
         {
@@ -124,16 +160,13 @@ namespace PROJECT3D
             }
 
             CombatSystem.Instance.SendDamage(owner, target, damage, transform.position);
-            if (impactEffect != null) ObjectPoolManager.PlayEffect(impactEffect, transform.position);
+            if (impactEffect != null) ObjectPoolManager.PlayEffect(impactEffect, GetImpactPoint(target)); // [변경] 범위 중심 → 맞은 대상 표면 (범위 공격에서 이펙트가 한 자리에 겹치던 것)
             ApplyStun(target); // 정지 효과가 있으면 스턴 적용
         }
 
-        #region 스턴 설정
+        #endregion
 
-        // 맞은 몹 정지
-        private float stunTime;     // 한 번 멈추는 시간 (0이면 정지 효과 없음)
-        private int stunCount;      // 몇 번 멈추는지
-        private float stunInterval; // 멈춤 사이 간격
+        #region 스턴 설정
 
         // FireHit 뒤에 부른다. 풀 재사용을 위해 Launch에서 0으로 초기화된다
         public void SetStun(float time, int count, float interval)
@@ -143,15 +176,9 @@ namespace PROJECT3D
             stunInterval = interval;
         }
 
-        private void ApplyStun(CombatEntity target)
-        {
-            if (stunTime <= 0f) return;
-            if (target is Enemy enemy && enemy.Controller != null)
-                enemy.Controller.Stun(stunTime, stunCount, stunInterval);
-        }
-
         #endregion
-        
+
+        #region 폭발
 
         // position에 폭발 범위 + 이펙트 (폭발 프리팹이 없으면 아무것도 안 함)
         protected virtual void Explode(Vector3 position)
@@ -162,16 +189,47 @@ namespace PROJECT3D
             ObjectPoolManager.PlayEffect(explodeEffect, position);
         }
 
+        #endregion
+
+        #region 풀
+
         public void ReturnToPool()
         {
             ObjectPoolManager.Instance.ReturnToPool(this);
         }
 
-        // 씬 화면에 공격 범위를 그리기
-        protected virtual void OnDrawGizmos()
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
+
+        #region 판정
+
+        // 새로 추가 : 피격 이펙트 위치 = 대상 피격 원통 표면 중 이 공격 쪽 지점 (큰 몹이어도 몸에 가려지지 않게)
+        // 높이는 대상 몸 중심 그대로. 공격이 대상 중심에 딱 겹치면 몸 중심
+        private Vector3 GetImpactPoint(CombatEntity target)
         {
-            Gizmos.color = rangeGizmoColor;
-            HitGizmo.Draw(transform.position, Application.isPlaying ? currentHitRadius : hitRadius, hitShape, hitHeight, transform.rotation, Application.isPlaying ? currentHitDepth : hitDepth); // [변경] 범위 증가 적용 두께 전달
+            Vector3 toAttack = transform.position - target.HitCenter;
+            toAttack.y = 0f;
+            if (toAttack.sqrMagnitude < 0.01f) return target.HitCenter;
+
+            return target.HitCenter + toAttack.normalized * target.HurtRadius;
         }
+
+        #endregion
+
+        #region 스턴 설정
+
+        private void ApplyStun(CombatEntity target)
+        {
+            if (stunTime <= 0f) return;
+            if (target is Enemy enemy && enemy.Controller != null)
+                enemy.Controller.Stun(stunTime, stunCount, stunInterval);
+        }
+
+        #endregion
+
+        #endregion
     }
 }

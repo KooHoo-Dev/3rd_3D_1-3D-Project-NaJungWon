@@ -53,7 +53,12 @@ MonoBehaviour:
   drawRangeGizmo: 1
   rangeGizmoColor: {r: 0, g: 1, b: 1, a: 1}
   aimDistance: 100
+  aimMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  aimEnemyDistance: 40
+  isAimSkill: 1
   dashDistance: 8
   dashSpeed: 30
   hitRadius: 1.5
-  effectPrefab: {fileID: -6935697493453511134, guid: 880d638003ae90749be0c59b906c3461, type: 3}
+  effectPrefab: {fileID: 696589868255265241, guid: b976ea60c2e146f4b52fbe9bb6ada305, type: 3}

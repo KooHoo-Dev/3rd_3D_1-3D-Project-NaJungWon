@@ -86,7 +86,7 @@ MonoBehaviour:
   impactEffect: {fileID: 0}
   rangeGizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   explodePrefab: {fileID: 0}
-  explodeEffect: {fileID: 0}
+  explodeEffect: {fileID: 7801724633658513147, guid: d21cf5bce84d4aeca82c06636dfcf91c, type: 3}
   delay: 2
   duration: 0
   tickInterval: 0.5

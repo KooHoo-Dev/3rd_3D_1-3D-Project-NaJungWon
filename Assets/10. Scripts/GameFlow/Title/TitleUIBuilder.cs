@@ -26,6 +26,8 @@ namespace PROJECT3D
         private static readonly Color ButtonColor = new Color(0.30f, 0.26f, 0.22f);
         private static readonly Color TextColor = new Color(0.93f, 0.89f, 0.80f);
 
+        #region 외부 설정
+
         [ContextMenu("1. Build UI")]
         private void BuildUI()
         {
@@ -66,6 +68,10 @@ namespace PROJECT3D
             EditorSceneManager.MarkSceneDirty(gameObject.scene);
             Debug.Log($"[TitleUIBuilder] '{RootName}' 삭제");
         }
+
+        #endregion
+
+        #region 내부 설정
 
         #region 영역
 
@@ -259,6 +265,8 @@ namespace PROJECT3D
             rect.anchoredPosition = new Vector2(0f, y);
             rect.sizeDelta = new Vector2(0f, height);
         }
+
+        #endregion
 
         #endregion
 #endif

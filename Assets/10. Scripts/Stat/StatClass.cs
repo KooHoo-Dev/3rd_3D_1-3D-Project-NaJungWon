@@ -13,7 +13,7 @@ namespace PROJECT3D
         Speed, // 이동 속도
         CritChance, // 크리티컬 확률%
         ProjectileCount, // 투사체 증가
-        AttackRange, // 공격 범위 증가%
+        AttackRange, // 공격 범위 증가% (0 = 배율 1. 모든 무기 / 스킬의 탐색 범위 + 투사체 크기 / 판정 반경에 곱해진다) // [변경] 주석
         Duration, // 지속시간 증가%
         AcquisitionRange, // 획득 범위 증가%
         ExperienceGain, // 경험치 획득량 증가%
@@ -37,6 +37,10 @@ namespace PROJECT3D
         public float AcquisitionRange;
         public float ExperienceGain;
         public float GoldGain;
+
+        #region 외부 설정
+
+        #region 값 접근
 
         // StatType 번호로 값 읽기 (for문용)
         public float Get(StatType type)
@@ -81,6 +85,10 @@ namespace PROJECT3D
             }
         }
 
+        #endregion
+
+        #region 통째로 계산
+
         public void Add(StatClass other)
         {
             for (int i = 1; i < (int)StatType.Count; i++)
@@ -108,5 +116,9 @@ namespace PROJECT3D
                 Set((StatType)i, 0f);
             }
         }
+
+        #endregion
+
+        #endregion
     }
 }

@@ -12,7 +12,9 @@ namespace PROJECT3D
         private Dictionary<int, WaveDef> waveDefs = new();
 
         public int Count => waveDefs.Count;
-        
+
+        #region 외부 설정
+
         public WaveDef Get(int id) => waveDefs[id];
 
         public void Load(EnemyTable enemyTable)
@@ -34,5 +36,7 @@ namespace PROJECT3D
                 };
             }
         }
+
+        #endregion
     }
 }

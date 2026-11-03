@@ -18,6 +18,8 @@ namespace PROJECT3D
         [SerializeField] private GameObject settingsPanel;
         [SerializeField] private Button settingsCloseButton;
 
+        #region UnityMethod
+
         private void Awake()
         {
             createRoomButton.onClick.AddListener(OnCreateRoomClicked);
@@ -36,6 +38,12 @@ namespace PROJECT3D
             settingsPanel.SetActive(false); // 새로 추가
         }
 
+        #endregion
+
+        #region 내부 설정
+
+        #region 방
+
         //멀티 - 방 만들기. 지금은 솔로 방
         // [변경] 원래 OnSoloClicked에 있던 내용
         private void OnCreateRoomClicked()
@@ -51,6 +59,10 @@ namespace PROJECT3D
             OnCreateRoomClicked(); // [변경] OnSoloClicked → OnCreateRoomClicked
         }
 
+        #endregion
+
+        #region 설정 창
+
         // ===== 새로 추가 : 설정 창 열기/닫기 =====
         private void OnSettingsClicked()
         {
@@ -63,9 +75,17 @@ namespace PROJECT3D
         }
         // ===== 새로 추가 끝 =====
 
+        #endregion
+
+        #region 나가기
+
         private void OnExitClicked()
         {
             Application.Quit();
         }
+
+        #endregion
+
+        #endregion
     }
 }

@@ -27,10 +27,12 @@ namespace PROJECT3D
         public float maxDropDown = 4f;
         [Range(0f, 89f)] public float maxSlopeAngle = 40f;
         public float rayStartHeight = 100f;
-        
+
         [Header("굽기")]
         // 한 프레임에 굽는 줄 수 (크면 빨리 끝나지만 화면이 멈칫한다고 한다.)
-        [SerializeField] private int rowsPerFrame = 20; 
+        [SerializeField] private int rowsPerFrame = 20;
+
+        #region UnityMethod
 
         private void Awake()
         {
@@ -43,8 +45,14 @@ namespace PROJECT3D
             if (Instance == this) Instance = null;
         }
 
+        #endregion
+
+        #region 외부 설정
+
+        #region 굽기
+
         // [변경] 삭제 : BakeAll (내부 테스트용 동기 굽기. 부르는 곳 없음 → GameManager는 BakeAllAsync 사용)
-        
+
         public async UniTask BakeAllAsync(CancellationToken token)
         {
             if (Grid == null) return;
@@ -61,6 +69,61 @@ namespace PROJECT3D
             }
             OnGridChanged?.Invoke();
         }
+
+        // 바뀐 영역의 타일만 다시 재검사
+        public void RebakeArea(Bounds area)
+        {
+            if (Grid == null) return;
+            Physics.SyncTransforms();
+            RectInt rect = GetAreaRect(area);
+            for (int z = rect.yMin; z < rect.yMax; z++)
+            for (int x = rect.xMin; x < rect.xMax; x++)
+                BakeTile(Grid.GetTileOrNull(x, z));
+            OnGridChanged?.Invoke();
+        }
+
+        // 장애물이 솟아오르는 동안에는 물리 검사 없이 우선 막기
+        public void BlockArea(Bounds area)
+        {
+            if (Grid == null) return;
+            RectInt rect = GetAreaRect(area);
+            for (int z = rect.yMin; z < rect.yMax; z++)
+            for (int x = rect.xMin; x < rect.xMax; x++)
+                Grid.GetTileOrNull(x, z).Kind = TileKind.Blocked;
+            OnGridChanged?.Invoke();
+        }
+
+        #endregion
+
+        #region 이동 검사
+
+        // 두 타일 사이를 이동할 수 있는가? 비트 저장 대신 읽기 쉬운 조건문으로 검사한다.
+        public bool CanMove(Tile from, Tile to)
+        {
+            if (!CanCrossHeight(from, to)) return false;
+            int dx = to.Coord.x - from.Coord.x;
+            int dz = to.Coord.y - from.Coord.y;
+            if (Mathf.Abs(dx) > 1 || Mathf.Abs(dz) > 1) return false;
+            if (dx == 0 && dz == 0) return false;
+
+            // 대각선 이동 시 양옆 벽이나 높은 턱의 모서리를 가로지르지 않는다.
+            if (dx != 0 && dz != 0)
+            {
+                Tile sideX = Grid.GetTileOrNull(from.Coord.x + dx, from.Coord.y);
+                Tile sideZ = Grid.GetTileOrNull(from.Coord.x, from.Coord.y + dz);
+                if (!CanCrossHeight(from, sideX) || !CanCrossHeight(sideX, to)) return false;
+                if (!CanCrossHeight(from, sideZ) || !CanCrossHeight(sideZ, to)) return false;
+            }
+            return true;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
+
+        #region 굽기
 
         private void BakeTile(Tile tile)
         {
@@ -95,25 +158,20 @@ namespace PROJECT3D
             tile.Kind = TileKind.Walkable;
         }
 
-        // 두 타일 사이를 이동할 수 있는가? 비트 저장 대신 읽기 쉬운 조건문으로 검사한다.
-        public bool CanMove(Tile from, Tile to)
+        private RectInt GetAreaRect(Bounds area)
         {
-            if (!CanCrossHeight(from, to)) return false;
-            int dx = to.Coord.x - from.Coord.x;
-            int dz = to.Coord.y - from.Coord.y;
-            if (Mathf.Abs(dx) > 1 || Mathf.Abs(dz) > 1) return false;
-            if (dx == 0 && dz == 0) return false;
-
-            // 대각선 이동 시 양옆 벽이나 높은 턱의 모서리를 가로지르지 않는다.
-            if (dx != 0 && dz != 0)
-            {
-                Tile sideX = Grid.GetTileOrNull(from.Coord.x + dx, from.Coord.y);
-                Tile sideZ = Grid.GetTileOrNull(from.Coord.x, from.Coord.y + dz);
-                if (!CanCrossHeight(from, sideX) || !CanCrossHeight(sideX, to)) return false;
-                if (!CanCrossHeight(from, sideZ) || !CanCrossHeight(sideZ, to)) return false;
-            }
-            return true;
+            Vector2Int min = Grid.WorldToCell(area.min);
+            Vector2Int max = Grid.WorldToCell(area.max);
+            int xMin = Mathf.Clamp(min.x, 0, Grid.Width);
+            int zMin = Mathf.Clamp(min.y, 0, Grid.Depth);
+            int xMax = Mathf.Clamp(max.x + 1, 0, Grid.Width);
+            int zMax = Mathf.Clamp(max.y + 1, 0, Grid.Depth);
+            return new RectInt(xMin, zMin, xMax - xMin, zMax - zMin);
         }
+
+        #endregion
+
+        #region 이동 검사
 
         private bool CanCrossHeight(Tile from, Tile to)
         {
@@ -128,38 +186,8 @@ namespace PROJECT3D
             return true;
         }
 
-        // 바뀐 영역의 타일만 다시 재검사
-        public void RebakeArea(Bounds area)
-        {
-            if (Grid == null) return;
-            Physics.SyncTransforms();
-            RectInt rect = GetAreaRect(area);
-            for (int z = rect.yMin; z < rect.yMax; z++)
-            for (int x = rect.xMin; x < rect.xMax; x++)
-                BakeTile(Grid.GetTileOrNull(x, z));
-            OnGridChanged?.Invoke();
-        }
+        #endregion
 
-        // 장애물이 솟아오르는 동안에는 물리 검사 없이 우선 막기
-        public void BlockArea(Bounds area)
-        {
-            if (Grid == null) return;
-            RectInt rect = GetAreaRect(area);
-            for (int z = rect.yMin; z < rect.yMax; z++)
-            for (int x = rect.xMin; x < rect.xMax; x++)
-                Grid.GetTileOrNull(x, z).Kind = TileKind.Blocked;
-            OnGridChanged?.Invoke();
-        }
-
-        private RectInt GetAreaRect(Bounds area)
-        {
-            Vector2Int min = Grid.WorldToCell(area.min);
-            Vector2Int max = Grid.WorldToCell(area.max);
-            int xMin = Mathf.Clamp(min.x, 0, Grid.Width);
-            int zMin = Mathf.Clamp(min.y, 0, Grid.Depth);
-            int xMax = Mathf.Clamp(max.x + 1, 0, Grid.Width);
-            int zMax = Mathf.Clamp(max.y + 1, 0, Grid.Depth);
-            return new RectInt(xMin, zMin, xMax - xMin, zMax - zMin);
-        }
+        #endregion
     }
 }

@@ -12,9 +12,12 @@ namespace PROJECT3D
         private Dictionary<int, AugmentDef> augmentDefs = new();
 
         public int Count => augmentDefs.Count;
-        
+
         // 등록된 모든 증강을 foreach로 조회할 때 사용
         public IReadOnlyCollection<AugmentDef> All => augmentDefs.Values;
+
+        #region 외부 설정
+
         public AugmentDef Get(int id) => augmentDefs[id];
 
         // 새로 추가 : 없는 ID면 null (시작 무기처럼 다른 표에 적힌 ID를 확인할 때)
@@ -65,5 +68,7 @@ namespace PROJECT3D
                 augmentDefs.Add(dto.ID, def);
             }
         }
+
+        #endregion
     }
 }

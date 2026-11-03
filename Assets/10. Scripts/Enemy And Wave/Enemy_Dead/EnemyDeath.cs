@@ -8,12 +8,20 @@ namespace PROJECT3D
     {
         protected Enemy Owner { get; private set; }
 
+        #region UnityMethod
+
         protected virtual void Awake()
         {
             Owner = GetComponent<Enemy>();
         }
 
+        #endregion
+
+        #region 외부 설정
+
         // 죽은 순간 한 번 호출. 이 시점에는 아직 몹이 켜져 있다(위치 사용 가능).
         public abstract void Apply();
+
+        #endregion
     }
 }

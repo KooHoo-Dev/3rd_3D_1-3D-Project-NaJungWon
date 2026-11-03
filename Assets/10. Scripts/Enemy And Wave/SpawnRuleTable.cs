@@ -13,6 +13,8 @@ namespace PROJECT3D
 
         public int Count => ruleDefs.Count;
 
+        #region 외부 설정
+
         public SpawnRuleDef Get(int index) => ruleDefs[index];
 
         public void Load(EnemyTable enemyTable)
@@ -38,8 +40,11 @@ namespace PROJECT3D
                     Interval = dto.Interval,
                     Count = dto.Count,
                     MinAlive = dto.MinAlive,
+                    MaxAlive = dto.MaxAlive, // 새로 추가
                 });
             }
         }
+
+        #endregion
     }
 }

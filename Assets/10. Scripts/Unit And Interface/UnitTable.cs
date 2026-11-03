@@ -15,7 +15,9 @@ namespace PROJECT3D
         
         // 등록된 모든 캐릭터 (로비 캐릭터 선택 슬롯 만들기용)
         public IReadOnlyCollection<UnitDef> All => unitDefs.Values;
-        
+
+        #region 외부 설정
+
         public UnitDef Get(int id) => unitDefs[id];
 
         public void Load(SkillTable skillTable)
@@ -65,5 +67,7 @@ namespace PROJECT3D
                 };
             }
         }
+
+        #endregion
     }
 }

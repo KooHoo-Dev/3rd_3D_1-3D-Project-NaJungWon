@@ -23,11 +23,30 @@ namespace PROJECT3D
         public string Key { get; set; }
         public GameObject GameObject => gameObject;
 
+        #region UnityMethod
+
         private void Awake()
         {
             text = GetComponent<TMP_Text>();
             rectTransform = GetComponent<RectTransform>();
         }
+
+        private void Update()
+        {
+            remainTime -= WorldClock.Instance.DeltaTime;
+            if (remainTime <= 0f)
+            {
+                ReturnToPool();
+                return;
+            }
+
+            worldPosition += Vector3.up * (riseSpeed * WorldClock.Instance.DeltaTime); // 월드 기준으로 떠오른다
+            UpdatePosition();
+        }
+
+        #endregion
+
+        #region 외부 설정
 
         // 출력할 내용 넣기. canvas = 이 글자가 올라갈 캔버스
         public void Set(Canvas canvas, Vector3 position, string content, float duration, Color color)
@@ -44,18 +63,14 @@ namespace PROJECT3D
             UpdatePosition(); // 켜지는 첫 프레임부터 제자리에 보이게
         }
 
-        private void Update()
+        public void ReturnToPool()
         {
-            remainTime -= WorldClock.Instance.DeltaTime;
-            if (remainTime <= 0f)
-            {
-                ReturnToPool();
-                return;
-            }
-
-            worldPosition += Vector3.up * (riseSpeed * WorldClock.Instance.DeltaTime); // 월드 기준으로 떠오른다
-            UpdatePosition();
+            ObjectPoolManager.Instance.ReturnToPool(this);
         }
+
+        #endregion
+
+        #region 내부 설정
 
         // 월드 좌표 → 화면 좌표 → 캔버스 좌표
         private void UpdatePosition()
@@ -69,10 +84,7 @@ namespace PROJECT3D
             rectTransform.anchoredPosition = localPoint;
         }
 
-        public void ReturnToPool()
-        {
-            ObjectPoolManager.Instance.ReturnToPool(this);
-        }
+        #endregion
     }
 }
 // ===== 새로 추가 끝 =====

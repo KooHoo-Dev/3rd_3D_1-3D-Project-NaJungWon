@@ -24785,8 +24785,7 @@ MonoBehaviour:
   rangeGizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   explodePrefab: {fileID: 0}
   explodeEffect: {fileID: 0}
-  speed: 10
-  range: 5
+  speed: 20
 --- !u!1 &8267921128664901641
 GameObject:
   m_ObjectHideFlags: 0

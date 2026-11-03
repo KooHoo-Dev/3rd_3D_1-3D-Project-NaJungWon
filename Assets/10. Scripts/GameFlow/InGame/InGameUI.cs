@@ -17,6 +17,20 @@ namespace PROJECT3D
 
         private Player player; //킬/골드를 보여줄 내 플레이어
 
+        #region UnityMethod
+
+        private void OnDestroy()
+        {
+            if (player != null) player.OnRecordChanged -= RefreshRecord;
+            if (ExpManager.Instance == null) return;
+            ExpManager.Instance.OnExpChanged -= gameInfo.SetExp;
+            ExpManager.Instance.OnLevelChanged -= playerInfo.SetLevel;
+        }
+
+        #endregion
+
+        #region 외부 설정
+
         public void Init(Player player)
         {
             this.player = player; // 새로 추가
@@ -35,18 +49,16 @@ namespace PROJECT3D
             ExpManager.Instance.OnLevelChanged += playerInfo.SetLevel;
         }
 
-        private void OnDestroy()
-        {
-            if (player != null) player.OnRecordChanged -= RefreshRecord;
-            if (ExpManager.Instance == null) return;
-            ExpManager.Instance.OnExpChanged -= gameInfo.SetExp;
-            ExpManager.Instance.OnLevelChanged -= playerInfo.SetLevel;
-        }
+        #endregion
+
+        #region 내부 설정
 
         private void RefreshRecord()
         {
             gameInfo.SetKillCount(player.KillCount);
             gameInfo.SetGold(player.Gold);
         }
+
+        #endregion
     }
 }

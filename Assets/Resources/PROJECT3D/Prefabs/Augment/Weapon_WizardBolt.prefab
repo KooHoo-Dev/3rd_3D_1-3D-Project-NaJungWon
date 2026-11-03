@@ -47,14 +47,14 @@ MonoBehaviour:
   mainStat: 7
   damageRatio: 1
   animationSlot: 1
-  useAnimationTiming: 0
+  useAnimationTiming: 1
   animationTiming: 0.5
   attackDelay: 0
   drawRangeGizmo: 1
   rangeGizmoColor: {r: 0, g: 1, b: 1, a: 1}
   testAugmentID: -1
   boltPrefab: {fileID: 965188646082320647, guid: 09d6faf0b30bb9947a02cb0dc3f40d19, type: 3}
-  searchRange: 8
+  searchRange: 10
   orbitRadius: 1
   arousalStunTime: 0.5
   arousalStunCount: 3

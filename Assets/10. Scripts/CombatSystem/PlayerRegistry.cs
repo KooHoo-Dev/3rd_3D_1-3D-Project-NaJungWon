@@ -10,6 +10,10 @@ namespace PROJECT3D
 
         public static IReadOnlyList<Player> All => players;
 
+        #region 외부 설정
+
+        #region 등록
+
         public static void Register(Player player)
         {
             if (players.Contains(player)) return; // 두 번 등록 방지
@@ -20,6 +24,16 @@ namespace PROJECT3D
         {
             players.Remove(player);
         }
+
+        // 판을 다시 시작할 때 명부를 비운다 (static이라 씬을 넘어 남는다)
+        public static void Clear()
+        {
+            players.Clear();
+        }
+
+        #endregion
+
+        #region 검색
 
         // center에서 radius 안의 가장 가까운 살아 있는 플레이어. 없으면 null.
         public static Player FindNearest(Vector3 center, float radius)
@@ -43,10 +57,8 @@ namespace PROJECT3D
             return nearest;
         }
 
-        // 판을 다시 시작할 때 명부를 비운다 (static이라 씬을 넘어 남는다)
-        public static void Clear()
-        {
-            players.Clear();
-        }
+        #endregion
+
+        #endregion
     }
 }

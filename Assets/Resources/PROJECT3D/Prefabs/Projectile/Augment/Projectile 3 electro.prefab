@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 482501850051038334}
   - component: {fileID: 6140766302621010181}
   - component: {fileID: 6037097668850778979}
+  - component: {fileID: 7410146409111975457}
   m_Layer: 0
   m_Name: Flash
   m_TagString: Untagged
@@ -4963,7 +4964,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: Infinity, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
@@ -4972,6 +4973,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &7410146409111975457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460435402985155981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1776006125911881702
 GameObject:
   m_ObjectHideFlags: 0
@@ -34478,10 +34508,12 @@ MonoBehaviour:
   hitShape: 0
   hitRadius: 0.2
   hitHeight: 1
+  hitDepth: 0.5
   impactEffect: {fileID: 3054948667164385447, guid: 240c80ac67fc701418abc2a57fc4a9c6, type: 3}
   rangeGizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  speed: 10
-  range: 8
+  explodePrefab: {fileID: 0}
+  explodeEffect: {fileID: 0}
+  speed: 20
 --- !u!1 &4031770867854967007
 GameObject:
   m_ObjectHideFlags: 0

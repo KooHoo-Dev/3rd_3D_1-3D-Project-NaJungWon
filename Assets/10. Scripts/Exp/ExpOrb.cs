@@ -27,23 +27,11 @@ namespace PROJECT3D
         [SerializeField] private float fallSpeed = 10f; // 새로 추가 : 바닥까지 떨어지는 속도
         private float landY;                            // 새로 추가 : 떨어져서 멈출 높이
 
-        // 풀에서 꺼낸 직후 호출
-        public void Init(float exp, float landY) // [변경] landY 추가
-        {
-            this.exp = exp;
-            this.landY = landY; // 새로 추가
-            target = null;
-            speed = startSpeed;
-        }
+        #region UnityMethod
 
         private void OnEnable()
         {
             activeOrbs.Add(this);
-        }
-
-        private void OnDisable()
-        {
-            activeOrbs.Remove(this);
         }
 
         private void Update()
@@ -62,6 +50,67 @@ namespace PROJECT3D
 
             MoveToTarget();
         }
+
+        private void OnDisable()
+        {
+            activeOrbs.Remove(this);
+        }
+
+        #endregion
+
+        #region 외부 설정
+
+        #region 초기화
+
+        // 풀에서 꺼낸 직후 호출
+        public void Init(float exp, float landY) // [변경] landY 추가
+        {
+            this.exp = exp;
+            this.landY = landY; // 새로 추가
+            target = null;
+            speed = startSpeed;
+        }
+
+        #endregion
+
+        #region 자석
+
+        // 자석 : 아직 아무도 안 따라가는 구슬이면 이 플레이어를 따라가게 한다
+        public void Attract(Player player)
+        {
+            if (target == null) target = player;
+        }
+
+        // 자석 구조물에서 호출 : 켜져 있는 구슬 전부 끌어당기기
+        public static void AttractAll(Player player)
+        {
+            for (int i = 0; i < activeOrbs.Count; i++)
+            {
+                activeOrbs[i].Attract(player);
+            }
+        }
+
+        #endregion
+
+        #region 풀
+
+        public void ReturnToPool()
+        {
+            // 풀 없이 씬에 직접 놓은 구슬이라면 그냥 끈다
+            if (ObjectPoolManager.Instance == null || string.IsNullOrEmpty(Key))
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            ObjectPoolManager.Instance.ReturnToPool(this);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
 
         // 새로 추가 : landY까지 일정 속도로 떨어지기 (이미 바닥이면 그대로)
         private void Fall()
@@ -101,31 +150,6 @@ namespace PROJECT3D
             }
         }
 
-        // 자석 : 아직 아무도 안 따라가는 구슬이면 이 플레이어를 따라가게 한다
-        public void Attract(Player player)
-        {
-            if (target == null) target = player;
-        }
-
-        // 자석 구조물에서 호출 : 켜져 있는 구슬 전부 끌어당기기
-        public static void AttractAll(Player player)
-        {
-            for (int i = 0; i < activeOrbs.Count; i++)
-            {
-                activeOrbs[i].Attract(player);
-            }
-        }
-
-        public void ReturnToPool()
-        {
-            // 풀 없이 씬에 직접 놓은 구슬이라면 그냥 끈다
-            if (ObjectPoolManager.Instance == null || string.IsNullOrEmpty(Key))
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-
-            ObjectPoolManager.Instance.ReturnToPool(this);
-        }
+        #endregion
     }
 }

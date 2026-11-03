@@ -29,8 +29,17 @@ namespace PROJECT3D
         // 소환 수 제한(WaveManager)은 올라오는 중인 몹도 세야 해서 따로 센다
         public static int RisingCount { get; private set; } // 출현 연출 중인 몹 수
         public static int AliveCount => Count + RisingCount; // 소환 수 제한용 : 명부 + 올라오는 중
+
+        #region 외부 설정
+
+        #region 출현 연출
+
         public static void AddRising() { RisingCount++; }
         public static void RemoveRising() { RisingCount--; }
+
+        #endregion
+
+        #region 명부 관리
 
         // 월드 좌표 → 칸 좌표 (높이는 무시하고 x, z만 쓴다)
         public static Vector2Int ToCell(Vector3 position)
@@ -67,10 +76,27 @@ namespace PROJECT3D
             Vector2Int now = ToCell(enemy.transform.position);
             if (now == enemy.RegistryCell) return; // 같은 칸이면 할 일 없음
 
-            Unregister(enemy);
+            // [변경] Unregister(enemy) → 이전 칸 리스트에서만 빼기
+            //  Unregister는 몹 수(Count)도 줄여서, 칸을 옮길 때마다 Count가 1씩 줄었다 (다시 더하지 않음)
+            //  → 살아 있는 몹 수가 실제보다 작게 세져서 최대 몹 수(maxAliveEnemies) 제한이 안 걸리고,
+            //    MinAlive(너무 적으면 바로 채움)가 계속 켜져 상시 소환이 끝없이 나오던 문제
+            if (cells.TryGetValue(enemy.RegistryCell, out List<Enemy> oldList)) oldList.Remove(enemy);
             enemy.RegistryCell = now;
             GetOrCreateCell(now).Add(enemy);
         }
+
+        // 판을 다시 시작할 때 명부를 비운다
+        public static void Clear()
+        {
+            cells.Clear();
+            maxHitReach = 0f;
+            Count = 0; // 새로 추가
+            RisingCount = 0; // 새로 추가
+        }
+
+        #endregion
+
+        #region 검색
 
         // center에서 radius 안에 '몹 위치(피벗)'가 있는 몹들을 result에 담는다. (분리 이동 등 위치 기준용)
         public static void FindInRange(Vector3 center, float radius, ref List<Enemy> result)
@@ -122,7 +148,7 @@ namespace PROJECT3D
                     result.RemoveAt(i);
             }
         }
-        
+
         // center에서 radius 안의 가장 가까운 살아 있는 몹. exclude에 든 몹(이미 맞힌 몹 등)은 건너뛴다. 없으면 null.
         // 타겟팅 공격의 첫 대상 찾기 / 대상이 죽었을 때 다시 찾기에 쓴다.
         public static Enemy FindNearest(Vector3 center, float radius, HashSet<CombatEntity> exclude)
@@ -149,14 +175,11 @@ namespace PROJECT3D
             return nearest;
         }
 
-        // 판을 다시 시작할 때 명부를 비운다
-        public static void Clear()
-        {
-            cells.Clear();
-            maxHitReach = 0f;
-            Count = 0; // 새로 추가
-            RisingCount = 0; // 새로 추가
-        }
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
 
         private static List<Enemy> GetOrCreateCell(Vector2Int cell)
         {
@@ -166,5 +189,7 @@ namespace PROJECT3D
             cells[cell] = list;
             return list;
         }
+
+        #endregion
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading; // [변경]
+using Cysharp.Threading.Tasks; // 새로 추가
 using UnityEngine;
 
 namespace PROJECT3D
@@ -15,6 +17,16 @@ namespace PROJECT3D
         [SerializeField] private PlayerStatPanel statPanel;     // 우측 : 플레이어 스탯
         // ===== 새로 추가 끝 =====
 
+        // ===== 새로 추가 : 카드 이펙트 =====
+        // [변경] 캔버스 모드 바꾸던 것 삭제 → 씬의 UICamera(UI 전용 Overlay 카메라)가 캔버스를 그린다
+        [Header("카드 이펙트")]
+        [SerializeField] private float selectEffectMaxWait = 3f;    // 선택 이펙트를 기다리는 최대 시간(초). 이펙트가 안 끝나도 이 시간이 지나면 진행
+
+        private bool isSelecting; // 카드를 골라서 선택 이펙트를 기다리는 중
+        // ===== 새로 추가 끝 =====
+
+        #region UnityMethod
+
         // ===== 새로 추가 : 열림 상태 (레벨업 선택창 안 뜨는 버그 수정) =====
         // 원인 : 씬에 SelectCardSystem이 켜진 채로 저장돼 있어서, ExpManager가 "이미 열려 있음(activeSelf)"으로 보고 영영 안 열었다
         // 수정 : 오브젝트 켜짐 여부 대신 이 값으로 열림을 판단하고, 씬에서 켜져 있어도 시작할 때 스스로 끈다
@@ -26,6 +38,10 @@ namespace PROJECT3D
             if (IsOpen == false) gameObject.SetActive(false);
         }
         // ===== 새로 추가 끝 =====
+
+        #endregion
+
+        #region 외부 설정
 
         // 레벨업했을 때
         [ContextMenu("Open LevelUp")]
@@ -44,6 +60,23 @@ namespace PROJECT3D
             List<AugmentOffer> offers = AugmentManager.Instance.BuildChestOffers(cards.Length);
             Show(offers);
         }
+
+        public void Close()
+        {
+            IsOpen = false; // 새로 추가
+            isSelecting = false; // 새로 추가
+            for (int i = 0; i < cards.Length; i++) cards[i].StopEffects(); // 새로 추가 : 카드 이펙트 끄기
+            gameObject.SetActive(false);
+            arousalPanel.Close(); // 새로 추가
+            statPanel.Close();    // 새로 추가
+            WorldClock.Instance.Resume();
+        }
+
+        #endregion
+
+        #region 내부 설정
+
+        #region 카드 선택
 
         private void Show(List<AugmentOffer> offers)
         {
@@ -69,20 +102,53 @@ namespace PROJECT3D
             }
 
             IsOpen = true; // 새로 추가 : SetActive(true)보다 먼저 (첫 Awake에서 꺼지지 않게)
+            isSelecting = false; // 새로 추가
             gameObject.SetActive(true);
+
+            // 새로 추가 : 켜진 뒤에 카드 등장 이펙트 (꺼진 상태에서는 파티클이 재생되지 않는다)
+            for (int i = 0; i < offers.Count && i < cards.Length; i++)
+            {
+                cards[i].SetInteractable(true);
+                cards[i].PlayAppearEffect();
+            }
+
             arousalPanel.Open(); // 새로 추가 : 좌측 진화 목록
             statPanel.Open();    // 새로 추가 : 우측 플레이어 스탯
             WorldClock.Instance.Pause(); // 고르는 동안 게임 시간 정지
         }
 
-        public void Close()
+        // 카드를 클릭했을 때
+        // [변경] 바로 닫지 않고 선택 이펙트가 끝난 뒤에 닫는다 (닫힐 때 게임 재개)
+        private void Select(AugmentOffer offer)
         {
-            IsOpen = false; // 새로 추가
-            gameObject.SetActive(false);
-            arousalPanel.Close(); // 새로 추가
-            statPanel.Close();    // 새로 추가
-            WorldClock.Instance.Resume();
+            if (isSelecting) return; // 이펙트 기다리는 중에 다른 카드를 또 누른 경우
+            isSelecting = true;
+
+            AugmentManager.Instance.Apply(offer);
+            for (int i = 0; i < cards.Length; i++) cards[i].SetInteractable(false);
+
+            AugmentCardUI selectedCard = cards[shownOffers.IndexOf(offer)];
+            selectedCard.PlaySelectEffect();
+            WaitSelectEffectAsync(selectedCard, this.GetCancellationTokenOnDestroy()).Forget();
         }
+
+        // 새로 추가 : 선택 이펙트가 끝날 때까지(최대 selectEffectMaxWait초) 기다렸다가 닫는다
+        //  - 게임 시간(WorldClock)은 멈춰 있으니 실제 시간으로 기다린다 (Time.timeScale은 건드리지 않음)
+        private async UniTaskVoid WaitSelectEffectAsync(AugmentCardUI card, CancellationToken token)
+        {
+            float waited = 0f;
+            while (card.IsSelectEffectPlaying() && waited < selectEffectMaxWait)
+            {
+                await UniTask.Yield(token);
+                waited += Time.unscaledDeltaTime;
+            }
+
+            if (isSelecting) Close();
+        }
+
+        #endregion
+
+        #region 리롤
 
         // ===== 새로 추가 : 카드 리롤 (테스트용. 횟수 제한 없음) =====
         private bool isChest;                    // 지금 창이 상자로 열렸는지 (레벨업 / 상자 규칙 구분)
@@ -104,6 +170,7 @@ namespace PROJECT3D
 
                 shownOffers[cardIndex] = candidates[i];
                 cards[cardIndex].Bind(candidates[i], Select);
+                cards[cardIndex].PlayAppearEffect(); // 새로 추가 : 바뀐 카드도 등장 이펙트
                 return;
             }
 
@@ -121,11 +188,8 @@ namespace PROJECT3D
         }
         // ===== 새로 추가 끝 =====
 
-        // 카드를 클릭했을 때
-        private void Select(AugmentOffer offer)
-        {
-            AugmentManager.Instance.Apply(offer);
-            Close();
-        }
+        #endregion
+
+        #endregion
     }
 }

@@ -9,6 +9,8 @@ namespace PROJECT3D
         public const string LobbyScene = "Robby";
         public const string InGameScene = "3D Game";
 
+        #region 외부 설정
+
         public static void LoadTitle()
         {
             SceneManager.LoadScene(TitleScene);
@@ -25,5 +27,7 @@ namespace PROJECT3D
             GameSession.Instance.Save(); // 인게임 진입 시 저장 (로비에서 바꾼 것들)
             SceneManager.LoadScene(InGameScene);
         }
+
+        #endregion
     }
 }

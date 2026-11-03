@@ -14,6 +14,8 @@ namespace PROJECT3D
 
         public int Count => levelDefs.Count;
 
+        #region 외부 설정
+
         // 이 레벨에서 다음 레벨까지 필요한 경험치
         // 표보다 높은 레벨이면 마지막 줄 값을 계속 쓴다
         public int GetRequiredExp(int level)
@@ -47,5 +49,7 @@ namespace PROJECT3D
                 levelDefs.Add(def);
             }
         }
+
+        #endregion
     }
 }

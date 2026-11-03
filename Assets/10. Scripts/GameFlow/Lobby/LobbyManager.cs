@@ -32,6 +32,8 @@ namespace PROJECT3D
         [Header("테스트용 (게임 골드 획득이 생기면 지울 것)")]
         [SerializeField] private int testGold = 1000;
 
+        #region UnityMethod
+
         private void Awake()
         {
             shopButton.onClick.AddListener(OnShopClicked);                 // 새로 추가
@@ -53,12 +55,6 @@ namespace PROJECT3D
             GameSession.Instance.OnDataChanged += Refresh; // [변경] RefreshGold → Refresh
         }
 
-        private void OnDisable()
-        {
-            if (GameSession.IsInitialized)
-                GameSession.Instance.OnDataChanged -= Refresh; // [변경] RefreshGold → Refresh
-        }
-
         private void Start()
         {
             // 타이틀을 거치지 않고 로비 씬에서 바로 테스트할 때를 위해
@@ -70,6 +66,29 @@ namespace PROJECT3D
             CloseAllPanels(); // 새로 추가
             Refresh();        // [변경] RefreshGold → Refresh
         }
+
+        private void OnDisable()
+        {
+            if (GameSession.IsInitialized)
+                GameSession.Instance.OnDataChanged -= Refresh; // [변경] RefreshGold → Refresh
+        }
+
+        #endregion
+
+        #region 외부 설정
+
+        // 테스트용 : 플레이 중 인스펙터에서 컴포넌트 우클릭 -> Add Test Gold
+        [ContextMenu("Add Test Gold")]
+        private void AddTestGold()
+        {
+            GameSession.Instance.AddGold(testGold);
+        }
+
+        #endregion
+
+        #region 내부 설정
+
+        #region 화면
 
         // [변경] RefreshGold → Refresh : 골드 + 플레이어 칸 다시 그리기
         private void Refresh()
@@ -94,6 +113,8 @@ namespace PROJECT3D
             optionPanel.SetActive(false);
         }
         // ===== 새로 추가 끝 =====
+
+        #endregion
 
         #region 버튼
 
@@ -146,11 +167,6 @@ namespace PROJECT3D
 
         #endregion
 
-        // 테스트용 : 플레이 중 인스펙터에서 컴포넌트 우클릭 -> Add Test Gold
-        [ContextMenu("Add Test Gold")]
-        private void AddTestGold()
-        {
-            GameSession.Instance.AddGold(testGold);
-        }
+        #endregion
     }
 }

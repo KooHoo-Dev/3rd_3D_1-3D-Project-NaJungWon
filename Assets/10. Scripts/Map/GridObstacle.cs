@@ -12,6 +12,8 @@ namespace PROJECT3D
         private MapGrid grid;
         private Bounds Area => new Bounds(transform.position + areaCenter, areaSize);
 
+        #region UnityMethod
+
         private IEnumerator Start()
         {
             grid = MapGrid.Instance;
@@ -25,6 +27,16 @@ namespace PROJECT3D
             grid.RebakeArea(Area);
         }
 
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(Area.center, Area.size);
+        }
+
+        #endregion
+
+        #region 외부 설정
+
         // 파괴 시 Destroy 대신 호출한다. 솟아오르기 대기 중인 검사도 취소한다.
         public void Remove()
         {
@@ -36,10 +48,6 @@ namespace PROJECT3D
             Destroy(gameObject);
         }
 
-        private void OnDrawGizmosSelected()
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(Area.center, Area.size);
-        }
+        #endregion
     }
 }

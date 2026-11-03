@@ -72,6 +72,8 @@ namespace PROJECT3D
 
         private readonly Dictionary<string, ObjectPool> objectPoolDic = new Dictionary<string, ObjectPool>();
 
+        #region UnityMethod
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -84,11 +86,6 @@ namespace PROJECT3D
             Instance = this;
         }
 
-        private void OnDestroy()
-        {
-            if (Instance == this) Instance = null;
-        }
-
         private void Start()
         {
             foreach (var data in objectPoolDatas)
@@ -96,6 +93,17 @@ namespace PROJECT3D
                 CreatePool(data);
             }
         }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
+        #endregion
+
+        #region 외부 설정
+
+        #region 풀 생성
 
         // ObjectPoolData를 이용해서 ObjectPool 한 단위를 만들고
         // 내부 딕셔너리에 등록합니다
@@ -120,6 +128,10 @@ namespace PROJECT3D
             objectPoolDic.Add(data.Key, new ObjectPool(data.Prefab, poolParent, data.ExpandSize, data.Key));
         }
 
+        #endregion
+
+        #region 꺼내기
+
         public IObjectPoolItem GetObjectOrNull(string key)
         {
             if (objectPoolDic.TryGetValue(key, out var pool)) return pool.Get();
@@ -127,7 +139,6 @@ namespace PROJECT3D
             Debug.LogWarning($"{key}값의 Pool이 존재하지 않습니다");
             return null;
         }
-
 
         public IObjectPoolItem GetObjectOrNull(GameObject prefab)
         {
@@ -149,13 +160,10 @@ namespace PROJECT3D
             return objectPoolDic[key].Get();
         }
 
-        private Transform CreatePoolParent(string objectName)
-        {
-            GameObject poolParent = new GameObject($"{objectName}.Pool");
-            poolParent.transform.SetParent(transform, false);
-            return poolParent.transform;
-        }
-        
+        #endregion
+
+        #region 반납
+
         // 아이템을 입력받아서 해당 아이템을 관리하는 풀에 집어넣는 함수
         public void ReturnToPool(IObjectPoolItem item)
         {
@@ -168,6 +176,10 @@ namespace PROJECT3D
             pool.Return(item);
         }
 
+        #endregion
+
+        #region 이펙트
+
         // 이펙트 재생
         public static void PlayEffect(ParticleEffect prefab, Vector3 position)
         {
@@ -178,5 +190,20 @@ namespace PROJECT3D
             effect.GameObject.transform.position = position;
             effect.GameObject.SetActive(true);
         }
+
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
+
+        private Transform CreatePoolParent(string objectName)
+        {
+            GameObject poolParent = new GameObject($"{objectName}.Pool");
+            poolParent.transform.SetParent(transform, false);
+            return poolParent.transform;
+        }
+
+        #endregion
     }
 }

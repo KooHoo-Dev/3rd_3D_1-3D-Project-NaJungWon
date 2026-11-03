@@ -9,7 +9,11 @@ namespace PROJECT3D
 
         public int Hp { get; private set; }
         public bool IsDead => (Hp <= 0);
-        
+
+        #region 외부 설정
+
+        #region 체력
+
         public bool ApplyDamage(int damage)
         {
             Hp = Mathf.Clamp(Hp - damage, 0, unitStat.MaxHp);
@@ -20,15 +24,23 @@ namespace PROJECT3D
         {
             Hp = Mathf.Clamp(Hp + heal, 0, unitStat.MaxHp);
         }
-        
+
         public void ResetToFull()
         {
             Hp = unitStat.MaxHp;
         }
 
+        #endregion
+
+        #region 스탯
+
         public void UpdateStat()
         {
             //PlayerStatHandler.Instance.ApplyPlayerStatChange(StatClass baseStat);
         }
+
+        #endregion
+
+        #endregion
     }
 }

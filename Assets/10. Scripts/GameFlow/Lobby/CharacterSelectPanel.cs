@@ -16,12 +16,18 @@ namespace PROJECT3D
 
         private List<CharacterSlotUI> slots = new List<CharacterSlotUI>();
 
+        #region UnityMethod
+
         // ===== 새로 추가 : 닫기 버튼 =====
         private void Awake()
         {
             closeButton.onClick.AddListener(Close);
         }
         // ===== 새로 추가 끝 =====
+
+        #endregion
+
+        #region 외부 설정
 
         public void Init()
         {
@@ -51,6 +57,10 @@ namespace PROJECT3D
         }
         // ===== 새로 추가 끝 =====
 
+        #endregion
+
+        #region 내부 설정
+
         // 칸을 클릭했을 때 (OnDataChanged로 로비의 플레이어 칸도 바뀐다)
         private void Select(UnitDef def)
         {
@@ -71,5 +81,7 @@ namespace PROJECT3D
             infoText.SetText($"{def.Name}\n" +
                              $"체력 {def.UnitStat.MaxHp} · 공격력 {def.UnitStat.Damage} · 방어력 {def.UnitStat.Defense}");
         }
+
+        #endregion
     }
 }

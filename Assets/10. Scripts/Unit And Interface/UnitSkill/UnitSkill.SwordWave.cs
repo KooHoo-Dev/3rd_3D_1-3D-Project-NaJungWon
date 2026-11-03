@@ -11,6 +11,8 @@ namespace PROJECT3D
         [Header("검기")]
         [SerializeField] private NonTargetHit wavePrefab;   // 검기 투사체 (hitShape를 Cube로)
 
+        #region 외부 설정
+
         // 공격 시점(애니메이션 / 딜레이 후)에 불린다
         protected override void Use(Vector3 aimDirection)
         {
@@ -23,5 +25,7 @@ namespace PROJECT3D
 
             FireHit(wavePrefab, direction, GetDamage());
         }
+
+        #endregion
     }
 }

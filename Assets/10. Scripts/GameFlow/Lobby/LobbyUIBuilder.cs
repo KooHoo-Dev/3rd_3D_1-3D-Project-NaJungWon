@@ -44,6 +44,8 @@ namespace PROJECT3D
         private GameObject optionPanel;
         private Button optionCloseButton;
 
+        #region 외부 설정
+
         [ContextMenu("1. Build UI")]
         private void BuildUI()
         {
@@ -90,6 +92,10 @@ namespace PROJECT3D
             EditorSceneManager.MarkSceneDirty(gameObject.scene);
             Debug.Log($"[LobbyUIBuilder] '{RootName}' 삭제");
         }
+
+        #endregion
+
+        #region 내부 설정
 
         #region 영역 - 기본 화면
 
@@ -550,6 +556,8 @@ namespace PROJECT3D
             rect.anchoredPosition = position;
             rect.sizeDelta = size;
         }
+
+        #endregion
 
         #endregion
 #endif

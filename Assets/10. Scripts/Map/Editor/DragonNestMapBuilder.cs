@@ -131,6 +131,8 @@ namespace PROJECT3D
 
         #endregion
 
+        #region 외부 설정
+
         #region 메뉴
 
         [MenuItem("PROJECT3D/Map/드래곤 둥지 (에셋)/0. 에셋 점검")]
@@ -270,6 +272,14 @@ namespace PROJECT3D
             GameObject oldRoot = GameObject.Find(RootName);
             if (oldRoot != null) Undo.DestroyObjectImmediate(oldRoot);
         }
+
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
+
+        #region 진행 표시
 
         private static void Progress(string step, float rate)
         {
@@ -1863,6 +1873,8 @@ namespace PROJECT3D
         {
             AssetDatabase.CreateAsset(mesh, $"{MeshFolder}/{mesh.name}.asset");
         }
+
+        #endregion
 
         #endregion
     }

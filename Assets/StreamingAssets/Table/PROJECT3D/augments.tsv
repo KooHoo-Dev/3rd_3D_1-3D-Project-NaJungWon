@@ -1,9 +1,13 @@
 ID	Name	PrefabKey	SpriteKey	Type	OwnerUnitID	MainStat	NeedArousal	Special	Value	Description	ArousalDescription
-0	검기	PROJECT3D/Prefabs/Augment/Weapon_Slash	PROJECT3D/Sprites/Weapon/검격	Weapon	0	Damage	None	None	0	가까운 적 방향으로 검기를 사선으로 벤다	
-1	전격	PROJECT3D/Prefabs/Augment/Weapon_WizardBolt	PROJECT3D/Sprites/Weapon/마법사	Weapon	1	Damage	ProjectileCount	None	0	전방을 향해 적을 관통하는 전격 구체를 날린다 (투사체 수만큼 둘레로 발사)	전격에 맞은 적이 3회까지 잠시 멈춘다
-100	바운스	PROJECT3D/Prefabs/Augment/Weapon_Bounce	PROJECT3D/Sprites/Weapon/Sprite_Bounce	Weapon	-1	Damage	Damage	None	0	적 사이를 튕기는 투사체 (투사체 수만큼 더 튕긴다)	튕기는 속도가 빨라지고, 범위 내에 적이 있다면 무한히 튕긴다
-101	빛의 화살	PROJECT3D/Prefabs/Augment/Weapon_LightArrow	PROJECT3D/Sprites/Weapon/빛의	Weapon	-1	Damage	AttackSpeed	None	0	적에게 빛의 화살을 쏜다 (투사체 수만큼 공격 속도 증가)	빛의 화살의 발사 속도가 크게 증가한다
+0	검기	PROJECT3D/Prefabs/Augment/Weapon_Slash	PROJECT3D/Sprites/Weapon/Sprite_Slash	Weapon	0	Damage	Damage	None	0	가까운 적 방향으로 검기를 사선으로 벤다	
+1	전격	PROJECT3D/Prefabs/Augment/Weapon_WizardBolt	PROJECT3D/Sprites/Weapon/Sprite_WizardBolt	Weapon	1	Damage	ProjectileCount	None	0	전방을 향해 적을 관통하는 전격 구체를 날린다	전격에 맞은 적이 3회까지 잠시 멈춘다
+100	바운스	PROJECT3D/Prefabs/Augment/Weapon_Bounce	PROJECT3D/Sprites/Weapon/Sprite_Bounce	Weapon	-1	Damage	Damage	None	0	적 사이를 튕기는 투사체를 생성한다.	튕기는 속도가 빨라지고, 범위 내에 적이 있다면 무한히 튕긴다
+101	빛의 화살	PROJECT3D/Prefabs/Augment/Weapon_LightArrow	PROJECT3D/Sprites/Weapon/Sprite_LightArrow	Weapon	-1	Damage	AttackSpeed	None	0	적에게 빛의 화살을 쏜다	빛의 화살의 발사 속도가 크게 증가한다
+102	빙결 마법	PROJECT3D/Prefabs/Augment/Weapon_IceMagic	PROJECT3D/Sprites/Weapon/Sprite_IceMagic	Weapon	-1	Damage	CritChance	None	0	가까운 적들에게 얼음 투사체를 발사한다	얼음 투사체에 맞은 적이 잠시 멈춘다
 200	공격력		PROJECT3D/Sprites/Stat/attack img	Ability	-1	Damage	None	None	0	공격력 증가	
 201	이동속도		PROJECT3D/Sprites/Stat/speed img	Ability	-1	Speed	None	None	0	이동속도 증가	
+202	치명타		PROJECT3D/Sprites/Stat/critical img	Ability	-1	CritChance	None	None	0	치명타 확률 증가	
+203	공격 속도		PROJECT3D/Sprites/Stat/atk speed	Ability	-1	AttackSpeed	None	None	0	공격 속도 증가	
+204	투사체		PROJECT3D/Sprites/Stat/projectile img	Ability	-1	ProjectileCount	None	None	0	투사체 수 증가	
 300	회복		PROJECT3D/Sprites/Stat/hp img	Special	-1	None	None	Heal	25	최대 체력의 25% 회복	
 301	골드		PROJECT3D/Sprites/Stat/gold img	Special	-1	None	None	Gold	150	골드 150 획득	

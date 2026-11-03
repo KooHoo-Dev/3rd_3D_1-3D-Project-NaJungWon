@@ -10,6 +10,8 @@ namespace PROJECT3D
     {
         private CombatEntity delayedTarget; // 공격 시점에 공격할 대상
 
+        #region 외부 설정
+
         // 애니메이션 / 딜레이 후에 Fire (설정이 없으면 바로)
         public void StartFire(CombatEntity target)
         {
@@ -27,5 +29,7 @@ namespace PROJECT3D
 
         // 실제 공격 내용. 자식이 반드시 재정의
         public abstract void Fire(CombatEntity target);
+
+        #endregion
     }
 }

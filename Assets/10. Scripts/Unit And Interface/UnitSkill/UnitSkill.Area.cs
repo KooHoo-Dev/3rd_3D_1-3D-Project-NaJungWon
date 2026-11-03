@@ -11,6 +11,8 @@ namespace PROJECT3D
         [SerializeField] private HitUnit zonePrefab;          // SummonHit 프리팹 (반경/대기/이펙트는 프리팹에서)
         [SerializeField] private float forwardDistance = 0f;  // 범위 중심을 얼마나 앞에 둘지
 
+        #region 외부 설정
+
         protected override void Use(Vector3 aimDirection)
         {
             Debug.Log($"[AreaSkill] {Owner.GameObject.name}가 범위스킬을 사용!");
@@ -22,5 +24,7 @@ namespace PROJECT3D
             Vector3 center = Owner.transform.position + flatDirection * forwardDistance;
             FireHit(zonePrefab, center, flatDirection, GetDamage());
         }
+
+        #endregion
     }
 }

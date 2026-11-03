@@ -19,6 +19,59 @@ namespace PROJECT3D
         [SerializeField] private GameObject newText; // 새로 추가 : 처음 고르는 증강일 때만 켜는 "New!" 표시
         [SerializeField] private Button rerollButton; // 새로 추가 : 카드 아래 리롤 버튼 (테스트용. 횟수 제한 없음)
 
+        // ===== 새로 추가 : 카드 이펙트 (Eric VFX Studio 카드 이펙트) =====
+        // [변경] 코드에서 만들고 크기 맞추던 방식 → 카드 프리팹 안에 미리 넣어 둔 이펙트 오브젝트를 바로 연결 (크기 / 위치 / 정렬은 프리팹에서)
+        [Header("카드 이펙트 (카드 프리팹 안의 자식)")]
+        [SerializeField] private ParticleSystem appearEffect; // 카드 등장 : FX_CardFlash_B
+        [SerializeField] private ParticleSystem idleEffect;   // 카드 기본 (반복) : FX_CardRimStar_B
+        [SerializeField] private ParticleSystem selectEffect; // 카드 선택 : FX_CardFlare_B
+        // ===== 새로 추가 끝 =====
+
+        #region 외부 설정
+
+        #region 카드 이펙트
+
+        // 새로 추가 : 카드가 나타날 때 (등장 번쩍 + 기본 반복 이펙트 시작)
+        public void PlayAppearEffect()
+        {
+            if (selectEffect != null) selectEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); // 지난번 선택 이펙트 지우기 (Play On Awake로 켜진 것도)
+
+            Restart(appearEffect);
+            Restart(idleEffect);
+        }
+
+        // 새로 추가 : 카드를 골랐을 때 (선택 이펙트)
+        public void PlaySelectEffect()
+        {
+            Restart(selectEffect);
+        }
+
+        // 새로 추가 : 선택 이펙트가 아직 재생 중인지 (반복하는 자식은 빼고, 한 번만 도는 파티클이 하나라도 남아 있으면 true)
+        public bool IsSelectEffectPlaying()
+        {
+            if (selectEffect == null) return false;
+
+            ParticleSystem[] systems = selectEffect.GetComponentsInChildren<ParticleSystem>();
+            for (int i = 0; i < systems.Length; i++)
+            {
+                if (systems[i].main.loop) continue;
+                if (systems[i].IsAlive(false)) return true;
+            }
+            return false;
+        }
+
+        // 새로 추가 : 이펙트 전부 끄기 (선택창이 닫힐 때)
+        public void StopEffects()
+        {
+            if (appearEffect != null) appearEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            if (idleEffect != null) idleEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            if (selectEffect != null) selectEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
+
+        #endregion
+
+        #region 카드 내용
+
         // 새로 추가 : 리롤 버튼을 눌렀을 때 할 일 (선택창이 이 카드 번호로 넣어준다)
         public void SetReroll(Action onReroll)
         {
@@ -55,6 +108,33 @@ namespace PROJECT3D
             button.onClick.AddListener(() => onClicked(offer));
         }
 
+        // 새로 추가 : 카드 / 리롤 버튼 클릭 막기 (선택 이펙트가 도는 동안 다시 못 누르게)
+        public void SetInteractable(bool interactable)
+        {
+            button.interactable = interactable;
+            if (rerollButton != null) rerollButton.interactable = interactable;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
+
+        #region 카드 이펙트
+
+        // 처음부터 다시 재생
+        private void Restart(ParticleSystem effect) // 새로 추가
+        {
+            if (effect == null) return;
+            effect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            effect.Play(true);
+        }
+
+        #endregion
+
+        #region 카드 내용
+
         private string GetLevelText(AugmentOffer offer)
         {
             if (offer.Kind == OfferKind.New) return ""; // [변경] "NEW" 글자 대신 newText 오브젝트를 켠다
@@ -88,5 +168,9 @@ namespace PROJECT3D
             return result;
         }
         // ===== 새로 추가 끝 =====
+
+        #endregion
+
+        #endregion
     }
 }

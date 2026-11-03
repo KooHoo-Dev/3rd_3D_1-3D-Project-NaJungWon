@@ -190,7 +190,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.SingleShot
   firePoint: {fileID: 8899302501097440409}
-  projectilePrefab: {fileID: 7502496136243878170, guid: 9a210c14a393152449c4c38b945106b5, type: 3}
+  projectilePrefab: {fileID: 8204589670866474617, guid: 4c46db2a947b4b34a15036758ebd7446, type: 3}
 --- !u!1 &5798878201409943661
 GameObject:
   m_ObjectHideFlags: 0

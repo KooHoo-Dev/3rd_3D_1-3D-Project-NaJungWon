@@ -19,6 +19,10 @@ namespace PROJECT3D
 
         public List<StatType> StatOrder => statOrder;
 
+        #region 외부 설정
+
+        #region 데이터 조회
+
         public ShopDef Get(StatType type, int level)
         {
             return shopDefs[type][level - 1];
@@ -49,6 +53,10 @@ namespace PROJECT3D
             }
             return stat;
         }
+
+        #endregion
+
+        #region 표 읽기
 
         public void Load()
         {
@@ -85,5 +93,9 @@ namespace PROJECT3D
                 shopDefs[dto.StatType].Add(def);
             }
         }
+
+        #endregion
+
+        #endregion
     }
 }

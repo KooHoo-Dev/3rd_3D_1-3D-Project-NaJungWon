@@ -9,11 +9,15 @@ namespace PROJECT3D
         [Header("투사체 스킬")]
         [SerializeField] private HitUnit fireBallPrefab;
 
+        #region 외부 설정
+
         protected override void Use(Vector3 aimDirection)
         {
             Debug.Log($"[ProjectileSkill] {Owner.GameObject.name}가 투사체 발사 스킬을 사용!");
             Vector3 direction = GetScreenCenterDirection(FirePosition, aimDirection); // [변경] 발사 위치 → 화면 중앙
             FireHit(fireBallPrefab, direction, GetDamage());
         }
+
+        #endregion
     }
 }

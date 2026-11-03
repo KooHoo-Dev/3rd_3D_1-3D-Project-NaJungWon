@@ -29,7 +29,7 @@ namespace PROJECT3D
     {
         [SerializeField] private Player player;
         [SerializeField] private Transform weaponRoot; // 무기증강이 생성될 플레이어 자식 오브젝트
-        
+
         [Header("슬롯 설정")]
         [SerializeField] private int maxWeaponCount = 5;
         [SerializeField] private int maxAbilityCount = 6;
@@ -37,9 +37,13 @@ namespace PROJECT3D
 
         private List<OwnedAugment> ownedAugments = new List<OwnedAugment>();
         public List<OwnedAugment> OwnedAugments => ownedAugments;
-        
+
         // 증강을 얻거나 레벨업, 진화했을 때 알려주는 이벤트 (슬롯 UI 갱신용)
         public event Action OnAugmentChanged;
+
+        #region 외부 설정
+
+        #region 시작 설정
 
         public void Init(Player player, Transform root)
         {
@@ -48,25 +52,8 @@ namespace PROJECT3D
             GiveStartWeapon(player.unitDef.StartWeaponID); // 새로 추가 : 캐릭터 기본 무기를 들고 시작
         }
 
-        // 새로 추가 : 시작 무기증강 지급. 카드로 새 증강을 고른 것과 같은 흐름(Apply)을 그대로 쓴다
-        // (무기 생성 → 1레벨 수치 → 능력치 갱신 → 슬롯 UI 갱신 이벤트)
-        private void GiveStartWeapon(int augmentID)
-        {
-            if (augmentID < 0) return; // -1 = 시작 무기 없음
+        #endregion
 
-            AugmentDef def = TableLoader.Instance.AugmentTable.GetOrNull(augmentID);
-            if (def == null)
-            {
-                Debug.LogWarning($"[AugmentManager] 시작 무기 {augmentID}번이 증강 표에 없습니다");
-                return;
-            }
-
-            AugmentOffer offer = new AugmentOffer();
-            offer.Kind = OfferKind.New;
-            offer.Def = def;
-            Apply(offer);
-        }
-        
         #region 카드 만들기
 
         // 레벨업했을 때 보여줄 카드 (새 증강 + 레벨업. 진화는 상자에서만)
@@ -112,7 +99,68 @@ namespace PROJECT3D
 
             return PickRandom(candidates, cardCount);
         }
-        
+
+        #endregion
+
+        #region 카드 적용
+
+        // 카드를 골랐을 때 호출
+        public void Apply(AugmentOffer offer)
+        {
+            switch (offer.Kind)
+            {
+                case OfferKind.New:
+                    AddAugment(offer.Def);
+                    break;
+                
+                case OfferKind.LevelUp:
+                    offer.Target.LevelUp();
+                    break;
+                
+                case OfferKind.Arousal:
+                    offer.Target.Arousal();
+                    break;
+                
+                case OfferKind.Special:
+                    ApplySpecial(offer.Def);
+                    break;
+            }
+
+            RefreshAbilityStat();
+            OnAugmentChanged?.Invoke();
+        }
+
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
+
+        #region 시작 설정
+
+        // 새로 추가 : 시작 무기증강 지급. 카드로 새 증강을 고른 것과 같은 흐름(Apply)을 그대로 쓴다
+        // (무기 생성 → 1레벨 수치 → 능력치 갱신 → 슬롯 UI 갱신 이벤트)
+        private void GiveStartWeapon(int augmentID)
+        {
+            if (augmentID < 0) return; // -1 = 시작 무기 없음
+
+            AugmentDef def = TableLoader.Instance.AugmentTable.GetOrNull(augmentID);
+            if (def == null)
+            {
+                Debug.LogWarning($"[AugmentManager] 시작 무기 {augmentID}번이 증강 표에 없습니다");
+                return;
+            }
+
+            AugmentOffer offer = new AugmentOffer();
+            offer.Kind = OfferKind.New;
+            offer.Def = def;
+            Apply(offer);
+        }
+
+        #endregion
+
+        #region 카드 만들기
+
         // 아직 없는 증강 -> 새 증강 카드
         private void AddNewOffers(List<AugmentOffer> candidates)
         {
@@ -134,7 +182,7 @@ namespace PROJECT3D
                 candidates.Add(offer);
             }
         }
-        
+
         // 보유 중인 증강 중 만렙이 아닌 것 -> 레벨업 카드
         private void AddLevelUpOffers(List<AugmentOffer> candidates)
         {
@@ -201,32 +249,6 @@ namespace PROJECT3D
 
         #region 카드 적용
 
-        // 카드를 골랐을 때 호출
-        public void Apply(AugmentOffer offer)
-        {
-            switch (offer.Kind)
-            {
-                case OfferKind.New:
-                    AddAugment(offer.Def);
-                    break;
-                
-                case OfferKind.LevelUp:
-                    offer.Target.LevelUp();
-                    break;
-                
-                case OfferKind.Arousal:
-                    offer.Target.Arousal();
-                    break;
-                
-                case OfferKind.Special:
-                    ApplySpecial(offer.Def);
-                    break;
-            }
-
-            RefreshAbilityStat();
-            OnAugmentChanged?.Invoke();
-        }
-
         private void AddAugment(AugmentDef def)
         {
             // 무기증강만 오브젝트 생성. 능력치증강은 데이터만 보관
@@ -239,6 +261,7 @@ namespace PROJECT3D
                     return;
                 }
                 weapon = Instantiate(def.Prefab, weaponRoot);
+                weapon.SetUnitWeapon(def.OwnerUnitID != -1); // 새로 추가 : 전용 증강이면 공격 레이어 사용
             }
 
             OwnedAugment owned = new OwnedAugment(def, weapon);
@@ -264,6 +287,8 @@ namespace PROJECT3D
         }
 
         #endregion
+
+        #region 도우미
 
         // 능력치증강들의 스탯을 처음부터 다시 더한다
         private void RefreshAbilityStat()
@@ -299,5 +324,9 @@ namespace PROJECT3D
             }
             return count;
         }
+
+        #endregion
+
+        #endregion
     }
 }

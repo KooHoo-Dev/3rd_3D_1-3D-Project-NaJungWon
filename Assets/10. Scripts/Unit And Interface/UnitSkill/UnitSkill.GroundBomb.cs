@@ -16,9 +16,50 @@ namespace PROJECT3D
         [SerializeField] private float maxRange = 15f; // 플레이어에서 최대 사거리 (수평 거리) // [변경] 기준 : 발사 위치 조준선 거리 → 플레이어 수평 거리
         [SerializeField] private LayerMask groundMask; // 새로 추가 : 화면 중앙 Ray가 맞을 바닥 레이어 (Terrain + Ground). 플레이어/몹 레이어는 빼야 함
 
+        #region 외부 설정
+
+        #region 조준 중 예상 범위
+
+        // ===== 새로 추가 : 조준 중 예상 범위 표시 =====
+        // [변경] 평면 원(DTT Circle Region) → 반투명 구 : 지형이 울퉁불퉁해도 구 판정 범위가 그대로 보이게
+        [Header("조준 중 예상 범위 (반투명 구. 없으면 표시 안 함)")]
+        [SerializeField] private GameObject previewPrefab; // SkillRange_Sphere 프리팹 (콜라이더 없음, 지름 1 구 메쉬). 처음 조준할 때 하나만 만들어 두고 켜고 끈다
+        private GameObject preview;
+
+        // 조준 중 매 프레임 : 지금 카메라 기준으로 떨어질 자리를 찾아 범위를 그 위치 / 크기로
+        public override void UpdateAim()
+        {
+            if (previewPrefab == null || zonePrefab == null) return;
+
+            if (preview == null) preview = Instantiate(previewPrefab);
+
+            bool hasRay = MakeScreenCenterRay(out Ray ray); // 발사 때 쓸 Ray와 같은 방식 (지금 카메라)
+            preview.transform.position = FindGroundPoint(hasRay, ray, Owner.transform.forward);
+
+            float radius = ApplyRangeBonus(zonePrefab.HitRadius);          // 실제 판정 반경과 같게 (범위 증가 적용)
+            preview.transform.localScale = Vector3.one * (radius * 2f);    // [변경] 구 메쉬는 지름 1 → 크기 = 반경 × 2
+            if (preview.activeSelf == false) preview.SetActive(true);
+        }
+
+        public override void EndAim()
+        {
+            if (preview != null) preview.SetActive(false);
+        }
+
+        private void OnDestroy()
+        {
+            if (preview != null) Destroy(preview);
+        }
+        // ===== 새로 추가 끝 =====
+
+        #endregion
+
+        #region 스킬 사용
+
         protected override void Use(Vector3 aimDirection)
         {
-            Vector3 groundPoint = FindGroundPoint(aimDirection);
+            bool hasRay = TryGetScreenCenterRay(out Ray ray);                   // [변경] 사용한 순간 저장해 둔 Ray
+            Vector3 groundPoint = FindGroundPoint(hasRay, ray, aimDirection); // [변경] Ray를 받아서 (조준 중 예상 범위와 같은 계산)
 
             // 몸을 시전 지점 쪽으로 돌린다 (수평만. 검기 스킬과 같은 방식)
             Vector3 flatDirection = groundPoint - Owner.transform.position;
@@ -29,13 +70,20 @@ namespace PROJECT3D
             FireHit(zonePrefab, groundPoint, flatDirection.normalized, GetDamage());
         }
 
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
+
         // [변경] 화면 중앙 Ray로 바닥 지점 찾기 (위 1~3번)
-        private Vector3 FindGroundPoint(Vector3 aimDirection)
+        // [변경] Ray를 매개변수로 받는다 (발사 = 저장한 Ray / 조준 중 예상 범위 = 지금 카메라 Ray)
+        private Vector3 FindGroundPoint(bool hasRay, Ray ray, Vector3 aimDirection)
         {
             Vector3 ownerPosition = Owner.transform.position;
             Vector3 point;
 
-            if (TryGetScreenCenterRay(out Ray ray)) // 부모 화면 중앙 Ray 재사용
+            if (hasRay)
             {
                 point = ray.GetPoint(AimDistance);                                                     // 1. 안 닿으면 Ray 끝 점
                 if (Physics.Raycast(ray, out RaycastHit hit, AimDistance, groundMask)) point = hit.point; // 1. 바닥에 닿은 점
@@ -55,6 +103,8 @@ namespace PROJECT3D
             point.y = (tile != null) ? tile.GroundHeight : ownerPosition.y;
             return point;
         }
+
+        #endregion
     }
 }
 // ===== 새로 추가 끝 =====

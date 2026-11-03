@@ -15,13 +15,7 @@ namespace PROJECT3D
 
         private int lastSecond = -1; // 초가 바뀔 때만 글자를 다시 쓴다
 
-        public void Init()
-        {
-            SetGold(0);
-            SetKillCount(0);
-            SetExp(0f);
-            lastSecond = -1;
-        }
+        #region UnityMethod
 
         private void Update()
         {
@@ -34,6 +28,18 @@ namespace PROJECT3D
             int minute = totalSecond / 60;
             int second = totalSecond % 60;
             timerText.SetText($"{minute:00}:{second:00}");
+        }
+
+        #endregion
+
+        #region 외부 설정
+
+        public void Init()
+        {
+            SetGold(0);
+            SetKillCount(0);
+            SetExp(0f);
+            lastSecond = -1;
         }
 
         public void SetGold(int gold)
@@ -51,5 +57,7 @@ namespace PROJECT3D
         {
             expBar.fillAmount = Mathf.Clamp01(ratio);
         }
+
+        #endregion
     }
 }

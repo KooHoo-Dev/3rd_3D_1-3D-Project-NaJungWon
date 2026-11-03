@@ -14,7 +14,7 @@ namespace PROJECT3D
         
         [Header("큰 구슬 확률 = 시작 + 분당 증가 × 경과 분 (최대값까지)")]
         [SerializeField] private float startBigOrbChance = 0.05f;
-        [SerializeField] private float bigOrbChancePerMinute = 0.01f;
+        [SerializeField] private float bigOrbChancePerMinute = 0.02f; // [변경] 0.01 → 0.02 (10분에 25%)
         [SerializeField] private float maxBigOrbChance = 0.8f;
 
         [Header("참조")]
@@ -24,27 +24,17 @@ namespace PROJECT3D
         public float CurrentExp { get; private set; }
         public int RequiredExp => TableLoader.Instance.LevelTable.GetRequiredExp(Level);
 
-        public float GetBigOrbChance()
-        {
-            float minutes = WorldClock.Instance.ElapsedTime / 60f;
-            float chance = startBigOrbChance + bigOrbChancePerMinute * minutes;
-            return Mathf.Min(chance, maxBigOrbChance);
-        }
-
         private int pendingLevelUp; // 아직 선택창을 열지 못한 레벨업 수
 
         public event Action<float> OnExpChanged; // 경험치 바 (0 ~ 1)
         public event Action<int> OnLevelChanged; // 레벨 글자
 
+        #region UnityMethod
+
         private void Awake()
         {
             if (Instance == null) Instance = this;
             else Destroy(this);
-        }
-
-        private void OnDestroy()
-        {
-            if (Instance == this) Instance = null;
         }
 
         private void Update()
@@ -55,6 +45,22 @@ namespace PROJECT3D
 
             pendingLevelUp--;
             selectPanel.OpenLevelUp();
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
+        #endregion
+
+        #region 외부 설정
+
+        public float GetBigOrbChance()
+        {
+            float minutes = WorldClock.Instance.ElapsedTime / 60f;
+            float chance = startBigOrbChance + bigOrbChancePerMinute * minutes;
+            return Mathf.Min(chance, maxBigOrbChance);
         }
 
         // 경험치 구슬을 먹은 플레이어가 호출 (아직 멀티 계산 안함)
@@ -75,5 +81,7 @@ namespace PROJECT3D
 
             OnExpChanged?.Invoke(CurrentExp / RequiredExp);
         }
+
+        #endregion
     }
 }

@@ -1,12 +1,55 @@
 ID	Name	SpriteKey	StatType	Level	Value	Cost
-0	최대 체력	PROJECT3D/Sprites/Stat/hp img	MaxHp	1	10	100
-0	최대 체력	PROJECT3D/Sprites/Stat/hp img	MaxHp	2	20	200
-0	최대 체력	PROJECT3D/Sprites/Stat/hp img	MaxHp	3	30	400
-1	공격력	PROJECT3D/Sprites/Stat/attack img	Damage	1	10	150
-1	공격력	PROJECT3D/Sprites/Stat/attack img	Damage	2	20	300
-1	공격력	PROJECT3D/Sprites/Stat/attack img	Damage	3	30	600
-2	이동 속도	PROJECT3D/Sprites/Stat/speed img	Speed	1	5	100
-2	이동 속도	PROJECT3D/Sprites/Stat/speed img	Speed	2	10	200
-3	체력 재생	PROJECT3D/Sprites/Stat/hp p img	HealthRegeneration	1	0.5	100
-3	체력 재생	PROJECT3D/Sprites/Stat/hp p img	HealthRegeneration	2	1	200
-4	투사체	PROJECT3D/Sprites/Stat/projectile img	ProjectileCount	1	1	1000
+0	최대 체력	PROJECT3D/Sprites/Stat/hp img	MaxHp	1	10	1500
+0	최대 체력	PROJECT3D/Sprites/Stat/hp img	MaxHp	2	20	2000
+0	최대 체력	PROJECT3D/Sprites/Stat/hp img	MaxHp	3	30	2500
+0	최대 체력	PROJECT3D/Sprites/Stat/hp img	MaxHp	4	40	3000
+0	최대 체력	PROJECT3D/Sprites/Stat/hp img	MaxHp	5	50	3500
+1	체력 재생	PROJECT3D/Sprites/Stat/hp p img	HealthRegeneration	1	0.3	1000
+1	체력 재생	PROJECT3D/Sprites/Stat/hp p img	HealthRegeneration	2	0.6	1400
+1	체력 재생	PROJECT3D/Sprites/Stat/hp p img	HealthRegeneration	3	0.9	1800
+1	체력 재생	PROJECT3D/Sprites/Stat/hp p img	HealthRegeneration	4	1.2	2200
+1	체력 재생	PROJECT3D/Sprites/Stat/hp p img	HealthRegeneration	5	1.5	2600
+2	공격력	PROJECT3D/Sprites/Stat/attack img	Damage	1	10	1500
+2	공격력	PROJECT3D/Sprites/Stat/attack img	Damage	2	20	2250
+2	공격력	PROJECT3D/Sprites/Stat/attack img	Damage	3	30	3000
+2	공격력	PROJECT3D/Sprites/Stat/attack img	Damage	4	40	3750
+2	공격력	PROJECT3D/Sprites/Stat/attack img	Damage	5	50	4500
+3	공격 속도	PROJECT3D/Sprites/Stat/atk speed	AttackSpeed	1	4	1500
+3	공격 속도	PROJECT3D/Sprites/Stat/atk speed	AttackSpeed	2	8	2100
+3	공격 속도	PROJECT3D/Sprites/Stat/atk speed	AttackSpeed	3	12	2700
+3	공격 속도	PROJECT3D/Sprites/Stat/atk speed	AttackSpeed	4	16	3300
+3	공격 속도	PROJECT3D/Sprites/Stat/atk speed	AttackSpeed	5	20	3900
+4	방어력	PROJECT3D/Sprites/Stat/defence img	Defense	1	10	1000
+4	방어력	PROJECT3D/Sprites/Stat/defence img	Defense	2	20	1300
+4	방어력	PROJECT3D/Sprites/Stat/defence img	Defense	3	30	1600
+4	방어력	PROJECT3D/Sprites/Stat/defence img	Defense	4	40	1900
+4	방어력	PROJECT3D/Sprites/Stat/defence img	Defense	5	50	2200
+5	이동 속도	PROJECT3D/Sprites/Stat/speed img	Speed	1	5	1750
+5	이동 속도	PROJECT3D/Sprites/Stat/speed img	Speed	2	10	2600
+5	이동 속도	PROJECT3D/Sprites/Stat/speed img	Speed	3	15	3450
+5	이동 속도	PROJECT3D/Sprites/Stat/speed img	Speed	4	20	4300
+6	치명타 확률	PROJECT3D/Sprites/Stat/critical img	CritChance	1	5	1750
+6	치명타 확률	PROJECT3D/Sprites/Stat/critical img	CritChance	2	10	2500
+6	치명타 확률	PROJECT3D/Sprites/Stat/critical img	CritChance	3	15	3250
+6	치명타 확률	PROJECT3D/Sprites/Stat/critical img	CritChance	4	20	4000
+7	투사체	PROJECT3D/Sprites/Stat/projectile img	ProjectileCount	1	1	5000
+7	투사체	PROJECT3D/Sprites/Stat/projectile img	ProjectileCount	2	2	15000
+8	공격 범위	PROJECT3D/Sprites/Stat/img img	AttackRange	1	5	1250
+8	공격 범위	PROJECT3D/Sprites/Stat/img img	AttackRange	2	10	1600
+8	공격 범위	PROJECT3D/Sprites/Stat/img img	AttackRange	3	15	1950
+8	공격 범위	PROJECT3D/Sprites/Stat/img img	AttackRange	4	20	2300
+9	지속 시간	PROJECT3D/Sprites/Stat/time img	Duration	1	5	1250
+9	지속 시간	PROJECT3D/Sprites/Stat/time img	Duration	2	10	1625
+9	지속 시간	PROJECT3D/Sprites/Stat/time img	Duration	3	15	2000
+9	지속 시간	PROJECT3D/Sprites/Stat/time img	Duration	4	20	2375
+10	획득 범위	PROJECT3D/Sprites/Stat/img	AcquisitionRange	1	25	3000
+10	획득 범위	PROJECT3D/Sprites/Stat/img	AcquisitionRange	2	50	3400
+10	획득 범위	PROJECT3D/Sprites/Stat/img	AcquisitionRange	3	75	3800
+11	경험치 획득량	PROJECT3D/Sprites/Stat/exp img	ExperienceGain	1	5	1000
+11	경험치 획득량	PROJECT3D/Sprites/Stat/exp img	ExperienceGain	2	10	1425
+11	경험치 획득량	PROJECT3D/Sprites/Stat/exp img	ExperienceGain	3	15	1850
+11	경험치 획득량	PROJECT3D/Sprites/Stat/exp img	ExperienceGain	4	20	2275
+11	경험치 획득량	PROJECT3D/Sprites/Stat/exp img	ExperienceGain	5	25	2700
+12	골드 획득량	PROJECT3D/Sprites/Stat/gold img	GoldGain	1	15	2500
+12	골드 획득량	PROJECT3D/Sprites/Stat/gold img	GoldGain	2	30	2950
+12	골드 획득량	PROJECT3D/Sprites/Stat/gold img	GoldGain	3	45	3400

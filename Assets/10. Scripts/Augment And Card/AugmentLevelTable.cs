@@ -12,6 +12,8 @@ namespace PROJECT3D
         // key : 증강 ID, value : 그 증강의 레벨별 데이터 (0번 = 1레벨)
         private Dictionary<int, List<AugmentLevelDef>> augmentLevelDefs = new();
 
+        #region 외부 설정
+
         // id 증강의 level 데이터를 가져온다
         public AugmentLevelDef Get(int id, int level)
         {
@@ -64,5 +66,7 @@ namespace PROJECT3D
                 augmentLevelDefs[dto.ID].Add(def);
             }
         }
+
+        #endregion
     }
 }

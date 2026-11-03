@@ -17,6 +17,8 @@ namespace PROJECT3D
 
         public StatType Type { get; private set; }
 
+        #region 외부 설정
+
         public void Bind(StatType type, Action<StatType> onClicked)
         {
             Type = type;
@@ -58,5 +60,7 @@ namespace PROJECT3D
             costText.SetText(next.Cost.ToString());
             buyButton.interactable = data.Gold >= next.Cost; // 골드가 모자라면 못 누른다
         }
+
+        #endregion
     }
 }

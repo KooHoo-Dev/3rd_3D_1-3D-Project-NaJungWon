@@ -1227,7 +1227,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.AirNormal
   separationDistance: 1.5
   attack: {fileID: 1589413552306792074}
-  attackRange: 5
+  attackRange: 9
   attackDelay: 0.5
   contactInterval: 1
   contactDamageRate: 1
@@ -1271,7 +1271,7 @@ MonoBehaviour:
   attackDelay: 0
   drawRangeGizmo: 1
   rangeGizmoColor: {r: 0, g: 1, b: 1, a: 1}
-  projectilePrefab: {fileID: 7363217913790623089, guid: 9ce51affb74112041b5aaf3281f6514a, type: 3}
+  projectilePrefab: {fileID: 8204589670866474617, guid: 4c46db2a947b4b34a15036758ebd7446, type: 3}
 --- !u!1 &5454283333316052812
 GameObject:
   m_ObjectHideFlags: 0

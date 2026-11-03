@@ -42,7 +42,7 @@ namespace PROJECT3D
         protected Vector3 LookDirection { get; set; }   // 바라볼 수평 방향 (Vector3.zero면 회전 안 함)
         
         [Header("접지 설정")]
-        [SerializeField] protected float yOffset = 1f;         // 몹좌표 offset
+        [SerializeField] protected float yOffset = 0f;         // 몹좌표 offset // 새로 추가
         [SerializeField] protected float snapRayHeight = 2f;   // 몸 위 이 높이에서 아래로 레이를 쏜다
         [SerializeField] protected float snapRayDistance = 5f; // 바닥을 찾는 최대 거리
         [SerializeField] protected LayerMask groundMask;       // 바닥으로 취급할 레이어만 검사
@@ -59,45 +59,23 @@ namespace PROJECT3D
         protected static readonly int IsDash = Animator.StringToHash("IsDash");
         protected static readonly int Die  = Animator.StringToHash("Die");
 
-        // 출현 연출(DoTween)의 목표 높이. 지상 = 바닥 + yOffset, 공중 = 바닥 + hoverHeight.
-        public float GetSpawnTargetY() => GetTargetHeight();
+        // 정지(스턴)
+        // time초 멈춤을 interval초마다 count번 반복 (BS 마법사 진화 : 0.5초 정지를 1초마다 3번)
+        // 정지 중에 또 맞으면 처음부터 다시 센다
+        private float stunTime;      // 한 번 멈추는 시간
+        private float stunInterval;  // 멈춤 시작 사이 간격
+        private int stunLeftCount;   // 남은 멈춤 횟수
+        private float stunTimer;     // 지금 멈춤의 남은 시간
+        private float stunNextTimer; // 다음 멈춤까지 남은 시간
 
-        #region 높이 설정
-
-        protected bool TryGetGroundHeight(out float groundY)
-        {
-            Vector3 origin = transform.position + Vector3.up * snapRayHeight;
-            float rayLength = snapRayHeight + snapRayDistance;
-            if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, rayLength, groundMask))
-            {
-                groundY = hit.point.y;
-                groundNormal = hit.normal; // 같은 레이에서 바닥 방향도 저장 (레이 추가 없음)
-                return true;
-            }
-
-            groundY = transform.position.y; // 아래에 바닥이 없으면(맵 밖) 지금 고도를 그대로 돌려준다
-            groundNormal = Vector3.up;
-            return false;
-        }
-        
-
-        // 목표 고도만 계산한다. 기본 = 바닥 + yOffset. 몹 종류별로 다르면 override.
-        protected virtual float GetTargetHeight()
-        {
-            if (TryGetGroundHeight(out float groundY) == false) return transform.position.y;
-            return groundY + yOffset;
-        }
-
-        #endregion
-        
-        #region Unity Methods
+        #region UnityMethod
 
         protected virtual void Awake()
         {
             Enemy = GetComponent<Enemy>();
             Animator = GetComponentInChildren<Animator>();
         }
-        
+
         protected virtual void OnEnable()
         {
             EnemyRegistry.AddRising(); // 명부 등록은 출현 연출이 끝난 뒤(FinishSpawnRise)로 미룸.
@@ -121,23 +99,6 @@ namespace PROJECT3D
                 .OnComplete(FinishSpawnRise); // 끝나야 명부 등록 + 추격 시작
         }
 
-        // 출현 연출 끝 → 이때부터 조준 / 피격 / 분리 대상 (올라오는 동안은 무적)
-        private void FinishSpawnRise()
-        {
-            EnemyRegistry.RemoveRising();
-            EnemyRegistry.Register(Enemy);
-            SpawnRiseDone = true;
-        }
-
-        protected virtual void OnDisable()
-        {
-            transform.DOKill(); // 올라오는 중에 꺼지면 FinishSpawnRise는 불리지 않는다
-
-            // 올라오는 중이었으면 그 수만 빼고, 아니면 명부에서 빼기
-            if (SpawnRiseDone) EnemyRegistry.Unregister(Enemy);
-            else EnemyRegistry.RemoveRising();
-        }
-        
         protected virtual void Update()
         {
             if (Enemy.Ready == false) return;   // 표 데이터가 들어오기 전에는 대기
@@ -181,10 +142,72 @@ namespace PROJECT3D
             UpdateAnimation();
         }
 
+        protected virtual void OnDisable()
+        {
+            transform.DOKill(); // 올라오는 중에 꺼지면 FinishSpawnRise는 불리지 않는다
+
+            // 올라오는 중이었으면 그 수만 빼고, 아니면 명부에서 빼기
+            if (SpawnRiseDone) EnemyRegistry.Unregister(Enemy);
+            else EnemyRegistry.RemoveRising();
+        }
+
+        // 몹은 수가 많아서 선택했을 때만 그린다
+        protected virtual void OnDrawGizmosSelected()
+        {
+            // 1. 공격 사거리 : 바닥 평면 거리라 높이 없는 원으로
+            if (attackRange > 0f)
+            {
+                Gizmos.color = Color.red;
+                HitGizmo.DrawCircle(transform.position, attackRange);
+            }
+        }
+
+        #endregion
+
+        #region 외부 설정
+
+        #region 높이 설정
+
+        // 출현 연출(DoTween)의 목표 높이. 지상 = 바닥 + yOffset, 공중 = 바닥 + hoverHeight.
+        public float GetSpawnTargetY() => GetTargetHeight();
+
+        protected bool TryGetGroundHeight(out float groundY)
+        {
+            Vector3 origin = transform.position + Vector3.up * snapRayHeight;
+            float rayLength = snapRayHeight + snapRayDistance;
+            if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, rayLength, groundMask))
+            {
+                groundY = hit.point.y;
+                groundNormal = hit.normal; // 같은 레이에서 바닥 방향도 저장 (레이 추가 없음)
+                return true;
+            }
+
+            groundY = transform.position.y; // 아래에 바닥이 없으면(맵 밖) 지금 고도를 그대로 돌려준다
+            groundNormal = Vector3.up;
+            return false;
+        }
+
+        // 목표 고도만 계산한다. 기본 = 바닥 + yOffset. 몹 종류별로 다르면 override.
+        protected virtual float GetTargetHeight()
+        {
+            if (TryGetGroundHeight(out float groundY) == false) return transform.position.y;
+            return groundY + yOffset;
+        }
+
+        // 기본 접지
+        protected virtual void UpdateHeight()
+        {
+            // 목표 고도까지 일정 속도로 오르고/내린다 (지상/공중 공통)
+            Vector3 position = transform.position;
+            float heightSpeed = MoveSpeed * heightSpeedRatio;
+            position.y = Mathf.MoveTowards(position.y, GetTargetHeight(), heightSpeed * WorldClock.Instance.DeltaTime);
+            transform.position = position;
+        }
+
         #endregion
 
         #region 이동 설정
-        
+
         protected virtual void Move(float deltaTime)
         {
             Vector3 chase = GetChaseDirection();
@@ -203,7 +226,7 @@ namespace PROJECT3D
 
             IsMoving = ApplyMovement(direction, deltaTime);
         }
-        
+
         // 계산한 방향으로 실제 위치를 옮기는 부분. 이번 프레임에 실제로 움직였으면 true.
         protected virtual bool ApplyMovement(Vector3 direction, float deltaTime)
         {
@@ -231,47 +254,33 @@ namespace PROJECT3D
                 }
             }
             
-            // 4. 그래도 막혀 있으면 이번 프레임은 제자리 (걷는 애니메이션도 꺼진다)
+            // 새로 추가 : 4. 칸 가장자리에서 옆 칸(턱)에 걸린 경우 → 흐름장이 가리키는 다음 칸 가운데를 향해 걷는다
+            if (Field.TryGetNextPoint(transform.position, out Vector3 nextPoint))
+            {
+                Vector3 toNext = nextPoint - transform.position;
+                toNext.y = 0f;
+                if (TryStep(toNext, deltaTime)) return true;
+            }
+
+            // 새로 추가 : 5. 벽에 비스듬히 막혔으면 벽을 따라 미끄러진다 (좌우 / 앞뒤 한 축씩)
+            Vector3 slide = chase.sqrMagnitude > 0.01f ? chase : direction;
+            if (TryStep(new Vector3(slide.x, 0f, 0f), deltaTime)) return true;
+            if (TryStep(new Vector3(0f, 0f, slide.z), deltaTime)) return true;
+
+            // 6. 그래도 막혀 있으면 이번 프레임은 제자리 (걷는 애니메이션도 꺼진다)
             return false;
         }
 
-        #endregion
-
-        #region 회전 설정
-
-        // 대상 쪽을 바라볼 방향으로 저장 (공격 중)
-        protected void LookAtTarget()
+        // 새로 추가 : move 방향으로 한 걸음 (그 칸으로 갈 수 있을 때만)
+        private bool TryStep(Vector3 move, float deltaTime)
         {
-            CombatEntity target = GetTargetOrNull();
-            if (target == null) return;
+            if (move.sqrMagnitude < 0.0001f) return false;
 
-            Vector3 toTarget = target.transform.position - transform.position;
-            toTarget.y = 0f;
-            if (toTarget.sqrMagnitude > 0.1f) LookDirection = toTarget;
-        }
+            Vector3 step = move.normalized * (MoveSpeed * deltaTime);
+            if (CanMoveTo(transform.position + step) == false) return false;
 
-        // 바라볼 방향으로 부드럽게 돌린다 (turnSpeed가 클수록 빨리 돈다)
-        protected virtual void UpdateRotation(float deltaTime)
-        {
-            Vector3 look = LookDirection;
-            look.y = 0f; // 몸이 기울지 않게 수평만
-            if (look.sqrMagnitude < 0.01f) return; // 방향이 없으면 회전 안 함
-
-            // 방향 벡터 Slerp → 회전값(Quaternion) Slerp
-            Quaternion targetRotation = Quaternion.LookRotation(look);
-            float t = 1f - Mathf.Exp(-turnSpeed * deltaTime);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, t);
-        }
-
-        #endregion
-        // 기본 접지
-        protected virtual void UpdateHeight()
-        {
-            // 목표 고도까지 일정 속도로 오르고/내린다 (지상/공중 공통)
-            Vector3 position = transform.position;
-            float heightSpeed = MoveSpeed * heightSpeedRatio;
-            position.y = Mathf.MoveTowards(position.y, GetTargetHeight(), heightSpeed * WorldClock.Instance.DeltaTime);
-            transform.position = position;
+            transform.position += step;
+            return true;
         }
 
         // 흐름장에서 지금 서 있는 칸의 추격 방향을 가져오기
@@ -304,6 +313,126 @@ namespace PROJECT3D
 
             return sum;
         }
+
+        #endregion
+
+        #region 회전 설정
+
+        // 대상 쪽을 바라볼 방향으로 저장 (공격 중)
+        protected void LookAtTarget()
+        {
+            CombatEntity target = GetTargetOrNull();
+            if (target == null) return;
+
+            Vector3 toTarget = target.transform.position - transform.position;
+            toTarget.y = 0f;
+            if (toTarget.sqrMagnitude > 0.1f) LookDirection = toTarget;
+        }
+
+        // 바라볼 방향으로 부드럽게 돌린다 (turnSpeed가 클수록 빨리 돈다)
+        protected virtual void UpdateRotation(float deltaTime)
+        {
+            Vector3 look = LookDirection;
+            look.y = 0f; // 몸이 기울지 않게 수평만
+            if (look.sqrMagnitude < 0.01f) return; // 방향이 없으면 회전 안 함
+
+            // 방향 벡터 Slerp → 회전값(Quaternion) Slerp
+            Quaternion targetRotation = Quaternion.LookRotation(look);
+            float t = 1f - Mathf.Exp(-turnSpeed * deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, t);
+        }
+
+        #endregion
+
+        #region 대상 판정
+
+        // 공격/돌진 대상. 지금은 로컬 플레이어 하나.
+        // 4인 멀티가 되면 여기만 '가장 가까운 플레이어'를 찾도록 수정할 것
+        protected CombatEntity GetTargetOrNull()
+        {
+            return LocalPlayer.Instance;
+        }
+
+        // 대상이 range 안에 있는지 판정 (높이는 무시하고 바닥 평면 거리)
+        protected bool IsTargetInRange(float range)
+        {
+            CombatEntity target = GetTargetOrNull();
+            if (target == null) return false;
+
+            Vector3 toTarget = target.transform.position - transform.position;
+            toTarget.y = 0f;
+            return toTarget.sqrMagnitude <= range * range;
+        }
+
+        // 내 피격 범위 기준 접촉 판정
+        protected bool IsTouchingTarget(CombatEntity target, float extraRadius)
+        {
+            float bodyRadius = Enemy.HurtRadius + extraRadius;
+            return target.IsHitBy(Enemy.HitCenter, bodyRadius, HitShape.Column, Enemy.HurtHalfHeight);
+        }
+
+        #endregion
+
+        #region 공격 설정
+
+        // 공격 실행 : 애니메이션 + 공격 컴포넌트에게 "쏴라"만 전한다.
+        protected virtual void ProcessAttack()
+        {
+            CombatEntity target = GetTargetOrNull();
+            if (target == null) return;
+            if (Animator == null) Debug.LogWarning($"[EnemyControllerBase] Animator가 null임");
+            Animator.SetTrigger(Attack); // 애니메이터에 "Attack" 트리거가 있을 때만 동작
+            attack.StartFire(target); // (애니메이션 / 딜레이 후 발사)
+        }
+
+        #endregion
+
+        #region 애니메이션
+
+        // 공통 애니메이션 : 이동/정지 상태를 애니메이터에 넘긴다.
+        protected virtual void UpdateAnimation()
+        {
+            if (Animator == null) return;
+
+            Animator.SetBool(IsMove, IsMoving);
+        }
+
+        public virtual void StartDead()
+        {
+            Animator.SetTrigger(Die);
+        }
+
+        #endregion
+
+        #region 스턴 설정
+
+        public void Stun(float time, int count, float interval)
+        {
+            stunTime = time;
+            stunInterval = interval;
+            stunLeftCount = count;
+            stunNextTimer = 0f; // 바로 첫 멈춤
+        }
+
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
+
+        #region 출현 연출
+
+        // 출현 연출 끝 → 이때부터 조준 / 피격 / 분리 대상 (올라오는 동안은 무적)
+        private void FinishSpawnRise()
+        {
+            EnemyRegistry.RemoveRising();
+            EnemyRegistry.Register(Enemy);
+            SpawnRiseDone = true;
+        }
+
+        #endregion
+
+        #region 이동 설정
 
         // 다음 위치로 이동해도 되는지 MapGrid 기준으로 검사
         // 같은 칸 안에서의 움직임은 칸 이동이 아니므로 항상 허용.
@@ -341,30 +470,9 @@ namespace PROJECT3D
             return true;
         }
 
-        // 공격/돌진 대상. 지금은 로컬 플레이어 하나.
-        // 4인 멀티가 되면 여기만 '가장 가까운 플레이어'를 찾도록 수정할 것
-        protected CombatEntity GetTargetOrNull()
-        {
-            return LocalPlayer.Instance;
-        }
+        #endregion
 
-        // 대상이 range 안에 있는지 판정 (높이는 무시하고 바닥 평면 거리)
-        protected bool IsTargetInRange(float range)
-        {
-            CombatEntity target = GetTargetOrNull();
-            if (target == null) return false;
-
-            Vector3 toTarget = target.transform.position - transform.position;
-            toTarget.y = 0f;
-            return toTarget.sqrMagnitude <= range * range;
-        }
-
-        // 내 피격 범위 기준 접촉 판정
-        protected bool IsTouchingTarget(CombatEntity target, float extraRadius)
-        {
-            float bodyRadius = Enemy.HurtRadius + extraRadius;
-            return target.IsHitBy(Enemy.HitCenter, bodyRadius, HitShape.Column, Enemy.HurtHalfHeight);
-        }
+        #region 접촉 데미지
 
         // 몸이 대상에 닿아 있으면 contactInterval마다 접촉 데미지
         private void UpdateContactDamage(float deltaTime)
@@ -386,45 +494,9 @@ namespace PROJECT3D
             contactTimer = contactInterval; // 닿았을 때만 쿨타임 (안 닿아 있다가 닿으면 바로 때린다)
         }
 
-        // 공격 실행 : 애니메이션 + 공격 컴포넌트에게 "쏴라"만 전한다.
-        protected virtual void ProcessAttack()
-        {
-            CombatEntity target = GetTargetOrNull();
-            if (target == null) return;
-            if (Animator == null) Debug.LogWarning($"[EnemyControllerBase] Animator가 null임");
-            Animator.SetTrigger(Attack); // 애니메이터에 "Attack" 트리거가 있을 때만 동작
-            attack.StartFire(target); // (애니메이션 / 딜레이 후 발사)
-        }
+        #endregion
 
-        // 공통 애니메이션 : 이동/정지 상태를 애니메이터에 넘긴다.
-        protected virtual void UpdateAnimation()
-        {
-            if (Animator == null) return;
-
-            Animator.SetBool(IsMove, IsMoving);
-        }
-
-        public virtual void StartDead()
-        {
-            Animator.SetTrigger(Die);
-        }
-
-        // 정지(스턴)
-        // time초 멈춤을 interval초마다 count번 반복 (BS 마법사 진화 : 0.5초 정지를 1초마다 3번)
-        // 정지 중에 또 맞으면 처음부터 다시 센다
-        private float stunTime;      // 한 번 멈추는 시간
-        private float stunInterval;  // 멈춤 시작 사이 간격
-        private int stunLeftCount;   // 남은 멈춤 횟수
-        private float stunTimer;     // 지금 멈춤의 남은 시간
-        private float stunNextTimer; // 다음 멈춤까지 남은 시간
-
-        public void Stun(float time, int count, float interval)
-        {
-            stunTime = time;
-            stunInterval = interval;
-            stunLeftCount = count;
-            stunNextTimer = 0f; // 바로 첫 멈춤
-        }
+        #region 스턴 설정
 
         // 정지 시간 진행. 지금 멈춰 있어야 하면 true
         private bool UpdateStun(float deltaTime)
@@ -443,18 +515,7 @@ namespace PROJECT3D
             return stunTimer > 0f;
         }
 
-        #region DrawGizmos
-
-        // 몹은 수가 많아서 선택했을 때만 그린다
-        protected virtual void OnDrawGizmosSelected()
-        {
-            // 1. 공격 사거리 : 바닥 평면 거리라 높이 없는 원으로
-            if (attackRange > 0f)
-            {
-                Gizmos.color = Color.red;
-                HitGizmo.DrawCircle(transform.position, attackRange);
-            }
-        }
+        #endregion
 
         #endregion
     }

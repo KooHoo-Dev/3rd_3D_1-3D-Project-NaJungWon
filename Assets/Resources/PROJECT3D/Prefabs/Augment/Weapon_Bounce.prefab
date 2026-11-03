@@ -44,10 +44,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5bc9c3703a7462a9c9ac821999de0d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.Bounce
-  firePoint: {fileID: 0}
   mainStat: 3
   damageRatio: 1
+  animationSlot: 0
+  useAnimationTiming: 0
+  animationTiming: 0.5
+  attackDelay: 0
+  drawRangeGizmo: 1
+  rangeGizmoColor: {r: 0, g: 1, b: 1, a: 1}
   testAugmentID: 100
-  projectilePrefab: {fileID: 4972813151334627263, guid: e107bfdc7892ce3479fb6e76f63b97f1, type: 3}
+  projectilePrefab: {fileID: 7672726741239976399, guid: b954301be19f451090303d37fd74cc4b, type: 3}
+  searchRange: 10
   bounceCount: 3
   arousalBounceCount: 2147483647
+  arousalSpeedRate: 1.5

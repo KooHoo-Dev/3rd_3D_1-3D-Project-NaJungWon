@@ -7,15 +7,17 @@ namespace PROJECT3D
     {
         public static readonly MoveDirection[] All =
         {
-            MoveDirection.East, 
+            MoveDirection.East,
             MoveDirection.North,
-            MoveDirection.West, 
+            MoveDirection.West,
             MoveDirection.South,
-            MoveDirection.NorthEast, 
+            MoveDirection.NorthEast,
             MoveDirection.NorthWest,
-            MoveDirection.SouthWest, 
+            MoveDirection.SouthWest,
             MoveDirection.SouthEast
         };
+
+        #region 외부 설정
 
         public static Vector2Int ToOffset(MoveDirection direction)
         {
@@ -38,5 +40,7 @@ namespace PROJECT3D
             Vector2Int offset = ToOffset(direction);
             return new Vector3(offset.x, 0f, offset.y).normalized;
         }
+
+        #endregion
     }
 }

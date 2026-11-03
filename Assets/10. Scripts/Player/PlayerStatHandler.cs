@@ -31,15 +31,7 @@ namespace PROJECT3D
         private Player player;
         private List<StatBuff> buffs = new List<StatBuff>();
 
-        // 플레이어 생성 직후 Player.Init에서 호출
-        public void Init(Player player, StatClass chrStat, StatClass shopStat)
-        {
-            this.player = player;
-            ChrStat.CopyFrom(chrStat);   // 캐릭터 기본 스탯
-            ShopStat.CopyFrom(shopStat); // 로비에서 산 상점 스탯
-            Recalculate();
-            player.Stat.ResetToFull();
-        }
+        #region UnityMethod
 
         private void Update()
         {
@@ -61,6 +53,24 @@ namespace PROJECT3D
 
             if (removed) Recalculate();
         }
+
+        #endregion
+
+        #region 외부 설정
+
+        #region 초기화
+
+        // 플레이어 생성 직후 Player.Init에서 호출
+        public void Init(Player player, StatClass chrStat, StatClass shopStat)
+        {
+            this.player = player;
+            ChrStat.CopyFrom(chrStat);   // 캐릭터 기본 스탯
+            ShopStat.CopyFrom(shopStat); // 로비에서 산 상점 스탯
+            Recalculate();
+            player.Stat.ResetToFull();
+        }
+
+        #endregion
 
         #region 재료 스탯 바꾸기 (바꾼 뒤 항상 다시 계산)
 
@@ -112,13 +122,19 @@ namespace PROJECT3D
             }
         }
 
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
+
         // 상점/버프를 곱하는 스탯인지 체크
         private bool IsMultiplyStat(StatType type)
         {
             return type switch
             {
-                StatType.MaxHp 
-                    or StatType.Damage 
+                StatType.MaxHp
+                    or StatType.Damage
                     or StatType.AttackSpeed
                     or StatType.Defense
                     or StatType.Speed => true,

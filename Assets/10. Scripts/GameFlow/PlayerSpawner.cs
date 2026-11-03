@@ -9,6 +9,8 @@ namespace PROJECT3D
         [SerializeField] private Player playerPrefab;
         [SerializeField] private Transform[] startPositions; // 플레이어 시작 위치 (최대 4명)
 
+        #region 외부 설정
+
         // 슬롯 수만큼 생성하고, 내 플레이어를 돌려준다
         public Player SpawnPlayers()
         {
@@ -32,6 +34,10 @@ namespace PROJECT3D
             return localPlayer;
         }
 
+        #endregion
+
+        #region 내부 설정
+
         // 플레이어 생성 → 유닛 데이터 + 상점 스탯 넣기 → 컨트롤러에 플레이어 넘기기
         private Player Spawn(PlayerSlot slot, Transform start)
         {
@@ -53,5 +59,7 @@ namespace PROJECT3D
             Debug.LogWarning("[PlayerSawner] 스폰 좌표 수 또는 인덱스 문제 발생");
             return startPositions[0];
         }
+
+        #endregion
     }
 }

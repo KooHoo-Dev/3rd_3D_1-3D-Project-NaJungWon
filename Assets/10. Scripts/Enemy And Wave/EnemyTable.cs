@@ -12,7 +12,9 @@ namespace PROJECT3D
         private Dictionary<int, EnemyDef> enemyDefs = new();
 
         public int Count => enemyDefs.Count;
-        
+
+        #region 외부 설정
+
         public EnemyDef Get(int id) => enemyDefs[id];
 
         public void Load()
@@ -43,5 +45,7 @@ namespace PROJECT3D
                 };
             }
         }
+
+        #endregion
     }
 }

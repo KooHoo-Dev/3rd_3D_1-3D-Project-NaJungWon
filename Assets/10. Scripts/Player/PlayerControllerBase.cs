@@ -20,5 +20,6 @@ namespace PROJECT3D
         protected static readonly int Casting = Animator.StringToHash("IsCasting");
         protected static readonly int IsGrounded = Animator.StringToHash("IsGrounded"); 
         protected static readonly int Die = Animator.StringToHash("Die");
+        protected static readonly int Aiming = Animator.StringToHash("IsAiming"); // 새로 추가 : 조준 스킬을 누르고 있는 동안 (Unit_Aim 모션)
     }
 }

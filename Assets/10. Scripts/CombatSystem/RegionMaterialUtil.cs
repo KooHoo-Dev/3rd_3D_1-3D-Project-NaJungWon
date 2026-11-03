@@ -6,6 +6,8 @@ namespace PROJECT3D
     //  - 풀에서 처음 만들어질 때(Awake) 한 번만 부른다. 이후 DTT 코드의 sharedMaterial은 이 복사본을 가리킨다
     public static class RegionMaterialUtil
     {
+        #region 외부 설정
+
         public static void UseOwnMaterials(Component region)
         {
             if (region == null) return;
@@ -16,5 +18,7 @@ namespace PROJECT3D
                 renderers[i].sharedMaterial = new Material(renderers[i].sharedMaterial);
             }
         }
+
+        #endregion
     }
 }

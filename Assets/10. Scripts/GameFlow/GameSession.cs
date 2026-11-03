@@ -29,6 +29,22 @@ namespace PROJECT3D
         // 골드/구매/캐릭터가 바뀌었을 때 (로비 UI 갱신용)
         public event Action OnDataChanged;
 
+        #region UnityMethod
+
+        // 게임을 끌 때 저장 (로비 상점 구매 등)
+        // 인게임 도중에 끄면 저장하지 않는다 (이번 판 골드는 로비로 돌아가야 저장됨)
+        protected override void OnApplicationQuit()
+        {
+            if (SceneManager.GetActiveScene().name != SceneLoader.InGameScene) Save();
+            base.OnApplicationQuit();
+        }
+
+        #endregion
+
+        #region 외부 설정
+
+        #region 저장 데이터
+
         protected override void OnInitialize()
         {
             Data = SaveService.Load();
@@ -38,14 +54,8 @@ namespace PROJECT3D
         {
             SaveService.Save(Data);
         }
-        
-        // 게임을 끌 때 저장 (로비 상점 구매 등)
-        // 인게임 도중에 끄면 저장하지 않는다 (이번 판 골드는 로비로 돌아가야 저장됨)
-        protected override void OnApplicationQuit()
-        {
-            if (SceneManager.GetActiveScene().name != SceneLoader.InGameScene) Save();
-            base.OnApplicationQuit();
-        }
+
+        #endregion
 
         #region 방
 
@@ -128,6 +138,8 @@ namespace PROJECT3D
             OnDataChanged?.Invoke();
             return true;
         }
+
+        #endregion
 
         #endregion
     }

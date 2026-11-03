@@ -11,6 +11,10 @@ namespace PROJECT3D
         public Vector3 Origin { get; }
         private readonly Tile[,] tiles;
 
+        #region 외부 설정
+
+        #region 생성
+
         public SquareGrid(int width, int depth, float cellSize, Vector3 origin)
         {
             Width = Mathf.Max(1, width);
@@ -27,6 +31,10 @@ namespace PROJECT3D
                 }
             }
         }
+
+        #endregion
+
+        #region 타일 조회
 
         public bool InBounds(int x, int z)
         {
@@ -47,22 +55,6 @@ namespace PROJECT3D
         public Tile GetTileOrNull(Vector3 worldPosition)
         {
             return GetTileOrNull(WorldToCell(worldPosition));
-        }
-
-        // 화면의 가로·세로가 아니라 월드의 가로·깊이 좌표를 사용한다.
-        public Vector2Int WorldToCell(Vector3 worldPosition)
-        {
-            int x = Mathf.FloorToInt((worldPosition.x - Origin.x) / CellSize);
-            int z = Mathf.FloorToInt((worldPosition.z - Origin.z) / CellSize);
-            // 범위 밖 좌표는 끝 칸으로 보정하지 않고 조회할 때 null을 반환한다.
-            return new Vector2Int(x, z);
-        }
-
-        public Vector3 CellToWorld(Vector2Int coord)
-        {
-            return Origin + new Vector3(
-                (coord.x + 0.5f) * CellSize, 0f,
-                (coord.y + 0.5f) * CellSize);
         }
 
         public Tile GetNeighborOrNull(Tile tile, MoveDirection direction)
@@ -90,5 +82,29 @@ namespace PROJECT3D
             }
             return nearest;
         }
+
+        #endregion
+
+        #region 좌표 변환
+
+        // 화면의 가로·세로가 아니라 월드의 가로·깊이 좌표를 사용한다.
+        public Vector2Int WorldToCell(Vector3 worldPosition)
+        {
+            int x = Mathf.FloorToInt((worldPosition.x - Origin.x) / CellSize);
+            int z = Mathf.FloorToInt((worldPosition.z - Origin.z) / CellSize);
+            // 범위 밖 좌표는 끝 칸으로 보정하지 않고 조회할 때 null을 반환한다.
+            return new Vector2Int(x, z);
+        }
+
+        public Vector3 CellToWorld(Vector2Int coord)
+        {
+            return Origin + new Vector3(
+                (coord.x + 0.5f) * CellSize, 0f,
+                (coord.y + 0.5f) * CellSize);
+        }
+
+        #endregion
+
+        #endregion
     }
 }

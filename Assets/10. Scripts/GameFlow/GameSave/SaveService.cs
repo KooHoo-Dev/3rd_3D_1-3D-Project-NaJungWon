@@ -6,19 +6,36 @@ namespace PROJECT3D
 {
     // 내 데이터(PlayerData)를 파일에 저장하고 불러오는 담당
     // - 테이블/설정 : StreamingAssets (읽기만)
-    // - 유저 데이터 : persistentDataPath (읽고 쓰기)
+    // - 유저 데이터 : [변경] 에디터 = 프로젝트 폴더 안 SaveData/ (지우기 쉽게), 빌드 = persistentDataPath (읽고 쓰기)
     public static class SaveService
     {
         private const string FILE_NAME = "project3d_save.json";
-        
+        private const string SAVE_FOLDER = "SaveData"; // 새로 추가 : 에디터에서 저장할 폴더 (Assets 밖이라 유니티가 에셋으로 안 읽는다)
+
         private const string KEY_GOLD = "gold";
         private const string KEY_UNIT = "selectedUnit";
         private const string KEY_SHOP = "shopLevels";
 
+        // [변경] 에디터에서는 프로젝트 폴더/SaveData/ 에 저장 (폴더째 지우면 초기화). 빌드는 예전처럼 persistentDataPath
+        //  - Application.dataPath = 프로젝트/Assets 라서 ".." 로 한 칸 위(프로젝트 폴더)
+        //  - 빌드에서 dataPath(게임_Data 폴더)는 설치 위치에 따라 쓰기가 막힐 수 있어서 그대로 둔다
         private static string FilePath
-            => Path.Combine(Application.persistentDataPath, FILE_NAME);
+        {
+            get
+            {
+#if UNITY_EDITOR
+                string folder = Path.GetFullPath(Path.Combine(Application.dataPath, "..", SAVE_FOLDER));
+                if (Directory.Exists(folder) == false) Directory.CreateDirectory(folder);
+                return Path.Combine(folder, FILE_NAME);
+#else
+                return Path.Combine(Application.persistentDataPath, FILE_NAME);
+#endif
+            }
+        }
 
         public static bool HasSave => File.Exists(FilePath);
+
+        #region 외부 설정
 
         public static void Save(PlayerData data)
         {
@@ -61,5 +78,7 @@ namespace PROJECT3D
             Debug.Log($"[SaveService] Loaded : {FilePath} (저장 파일 있음 : {HasSave})");
             return data;
         }
+
+        #endregion
     }
 }

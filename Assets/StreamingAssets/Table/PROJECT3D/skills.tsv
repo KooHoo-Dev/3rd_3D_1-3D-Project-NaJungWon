@@ -1,5 +1,6 @@
 ID	Name	PrefabKey	IconKey	MaxHp	HealthRegeneration	Damage	Cooldown	Defense	Speed	CritChance	ProjectileCount	AttackRange	Duration	AcquisitionRange	ExperienceGain	GoldGain	Description
-00	대쉬	PROJECT3D/Prefabs/Skill/Skill_Dash	""	0	0	30	5	0	0	0	0	0	0	0	0	0	0
-01	검기	PROJECT3D/Prefabs/Skill/Skill_Slash	""	0	0	40	7	0	0	0	0	0	0	0	0	0	0
-02	파이어 볼	PROJECT3D/Prefabs/Skill/Skill_FireBall	""	0	0	50	10	0	0	0	0	0	0	0	0	0	0
-03	광역 마법	PROJECT3D/Prefabs/Skill/Skill_GroundBomb	""	0	0	60	10	0	0	0	0	0	0	0	0	0	0
+00	대쉬	PROJECT3D/Prefabs/Skill/Skill_Dash	PROJECT3D/Sprites/Skill/Warrior_Dash	0	0	30	5	0	0	0	0	0	0	0	0	0	0
+01	검기	PROJECT3D/Prefabs/Skill/Skill_Slash	PROJECT3D/Sprites/Skill/Warrior_Slash	0	0	40	7	0	0	0	0	0	0	0	0	0	0
+02	파이어 볼	PROJECT3D/Prefabs/Skill/Skill_FireBall	PROJECT3D/Sprites/Skill/Wizard_FireBall	0	0	50	10	0	0	0	0	0	0	0	0	0	0
+03	광역 마법	PROJECT3D/Prefabs/Skill/Skill_GroundBomb	PROJECT3D/Sprites/Skill/Wizard_Bomb	0	0	60	10	0	0	0	0	0	0	0	0	0	0
+04	처치 회복	PROJECT3D/Prefabs/Skill/Passive_KillHeal	""	0	0	0	0	0	0	0	0	0	0	0	0	0	적을 처치할 때마다 체력을 회복한다

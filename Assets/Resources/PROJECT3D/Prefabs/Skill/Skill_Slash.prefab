@@ -50,8 +50,12 @@ MonoBehaviour:
   useAnimationTiming: 1
   animationTiming: 0.3
   attackDelay: 0
-  wavePrefab: {fileID: 1943385224894676901, guid: d084aa3be9ec31f4ea42eef2af1f55c8, type: 3}
+  drawRangeGizmo: 1
+  rangeGizmoColor: {r: 0, g: 1, b: 1, a: 1}
   aimDistance: 500
   aimMask:
     serializedVersion: 2
     m_Bits: 0
+  aimEnemyDistance: 40
+  isAimSkill: 1
+  wavePrefab: {fileID: 6531601804157046593, guid: a0a7f7f25d214053a20789609f72b80d, type: 3}

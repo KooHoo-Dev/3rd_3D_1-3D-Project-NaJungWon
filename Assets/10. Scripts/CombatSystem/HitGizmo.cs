@@ -8,12 +8,16 @@ namespace PROJECT3D
     {
         private const int CircleSegments = 20; // 원을 몇 개의 선분으로 그릴지
 
+        #region 외부 설정
+
+        #region 그리기
+
         // 판정 모양대로 그린다 (구 / 원통). halfHeight는 원통일 때만 쓴다
         public static void Draw(Vector3 center, float radius, HitShape info, float halfHeight)
         {
             Draw(center, radius, info, halfHeight, Quaternion.identity, 0f); // [변경] 회전 / 두께 없는 그리기
         }
-        
+
         // rotation / halfDepth는 Cube만 사용
         public static void Draw(Vector3 center, float radius, HitShape info, float halfHeight, Quaternion rotation, float halfDepth)
         {
@@ -21,6 +25,10 @@ namespace PROJECT3D
             else if (info == HitShape.Cube) DrawCube(center, radius, halfHeight, halfDepth, rotation); // [변경]
             else DrawCylinder(center, radius, halfHeight);
         }
+
+        #endregion
+
+        #region 모양별 그리기
 
         // 바닥과 수직인 원통 : 위/아래 원 두 개 + 세로선 4개 (Gizmos에는 원통 그리기가 없다)
         public static void DrawCylinder(Vector3 center, float radius, float halfHeight)
@@ -50,7 +58,7 @@ namespace PROJECT3D
                 prev = next;
             }
         }
-        
+
         // 직육면체 (가로 = 반경 x2, 세로 = 절반 높이 x2, 앞뒤 = 절반 두께 x2)
         public static void DrawCube(Vector3 center, float radius, float halfHeight, float halfDepth, Quaternion rotation)
         {
@@ -58,5 +66,9 @@ namespace PROJECT3D
             Gizmos.DrawWireCube(Vector3.zero, new Vector3(radius * 2f, halfHeight * 2f, halfDepth * 2f));
             Gizmos.matrix = Matrix4x4.identity; // 다른 Gizmo에 영향 없게 되돌린다
         }
+
+        #endregion
+
+        #endregion
     }
 }

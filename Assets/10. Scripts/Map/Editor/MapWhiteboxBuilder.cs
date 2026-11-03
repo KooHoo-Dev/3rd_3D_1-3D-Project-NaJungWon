@@ -80,19 +80,6 @@ namespace PROJECT3D
             BlockType.RockCluster, BlockType.Foundation, BlockType.FlatRock, BlockType.LowWall,
         };
 
-        // 플레이어만 올라가는 장애물 안에서의 비율 : 큰 것일수록 작게 (30개 기준 개수)
-        private static float GetClimbObstacleWeight(BlockType type)
-        {
-            switch (type)
-            {
-                case BlockType.RockCluster: return 1f;  // 약 4개 (가장 큼)
-                case BlockType.Foundation: return 1.5f; // 약 6개
-                case BlockType.FlatRock: return 2f;     // 약 9개
-                case BlockType.LowWall: return 2.5f;    // 약 11개 (가장 작음)
-            }
-            return 0f;
-        }
-
         private static int groundLayer;
         private static int obstacleLayer;
         private static Material groundMaterial;
@@ -106,6 +93,8 @@ namespace PROJECT3D
 
         // 이미 놓은 오브젝트가 차지한 바닥 영역 (x, z 평면). 새 오브젝트가 겹치지 않게 검사한다.
         private static List<Rect> placedAreas = new List<Rect>();
+
+        #region 외부 설정
 
         [MenuItem("PROJECT3D/Map/화이트박스 만들기")]
         public static void Build()
@@ -179,6 +168,10 @@ namespace PROJECT3D
             Selection.activeGameObject = root;
             Debug.Log($"화이트박스 생성 완료 : 막는 장애물 {blocks.childCount}개, 오르는 지형물 {climbs.childCount}개 (경사로 포함)");
         }
+
+        #endregion
+
+        #region 내부 설정
 
         #region 배치 데이터 : 지형
 
@@ -304,6 +297,19 @@ namespace PROJECT3D
         #endregion
 
         #region 랜덤 배치
+
+        // 플레이어만 올라가는 장애물 안에서의 비율 : 큰 것일수록 작게 (30개 기준 개수)
+        private static float GetClimbObstacleWeight(BlockType type)
+        {
+            switch (type)
+            {
+                case BlockType.RockCluster: return 1f;  // 약 4개 (가장 큼)
+                case BlockType.Foundation: return 1.5f; // 약 6개
+                case BlockType.FlatRock: return 2f;     // 약 9개
+                case BlockType.LowWall: return 2.5f;    // 약 11개 (가장 작음)
+            }
+            return 0f;
+        }
 
         // 오르는 지형물 : 무너진 단(3~4m + 경사로)과 낮은 잔해 더미(0.9m). 평평한 곳에만 놓는다.
         // 플레이어만 오르는 장애물과 지형 오브젝트를 한 개씩 번갈아 놓아서 수를 50:50으로 맞춘다.
@@ -870,6 +876,8 @@ namespace PROJECT3D
             AssetDatabase.SaveAssets();
             return material;
         }
+
+        #endregion
 
         #endregion
     }

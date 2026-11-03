@@ -14,6 +14,8 @@ namespace PROJECT3D
     public class InGameUILinker : MonoBehaviour
     {
 #if UNITY_EDITOR
+        #region 외부 설정
+
         [ContextMenu("Link UI")]
         private void LinkUI()
         {
@@ -34,6 +36,10 @@ namespace PROJECT3D
             EditorSceneManager.MarkSceneDirty(gameObject.scene);
             Debug.Log("[InGameUILinker] 인게임 UI 연결 완료");
         }
+
+        #endregion
+
+        #region 내부 설정
 
         #region 영역별 연결
 
@@ -285,6 +291,8 @@ namespace PROJECT3D
                 property.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
             }
         }
+
+        #endregion
 
         #endregion
 #endif

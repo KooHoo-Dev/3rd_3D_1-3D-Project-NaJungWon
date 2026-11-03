@@ -13,6 +13,8 @@ namespace PROJECT3D
         [SerializeField] private float bigOrbMultiplier = 5f; // 큰 구슬 경험치 배수
         [SerializeField] private float spawnHeight = 0.5f; // [변경] 떨어진 뒤 바닥에서 띄울 높이
 
+        #region UnityMethod
+
         private void OnEnable()
         {
             Enemy.OnAnyDied += HandleEnemyDied;
@@ -22,6 +24,10 @@ namespace PROJECT3D
         {
             Enemy.OnAnyDied -= HandleEnemyDied;
         }
+
+        #endregion
+
+        #region 내부 설정
 
         private void HandleEnemyDied(Enemy enemy)
         {
@@ -58,5 +64,7 @@ namespace PROJECT3D
             if (landY < position.y) return landY;
             return position.y;
         }
+
+        #endregion
     }
 }

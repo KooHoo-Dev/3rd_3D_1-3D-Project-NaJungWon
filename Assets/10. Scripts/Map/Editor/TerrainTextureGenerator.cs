@@ -19,6 +19,8 @@ namespace PROJECT3D
         private const int TextureSize = 512;
         private const int MacroSize = 256;
 
+        #region 외부 설정
+
         [MenuItem("PROJECT3D/Map/지형 텍스처 만들고 입히기")]
         public static void GenerateAndApply()
         {
@@ -79,6 +81,12 @@ namespace PROJECT3D
             ApplyToMap(material);
         }
 
+        #endregion
+
+        #region 내부 설정
+
+        #region 지형에 입히기
+
         // Map_DragonNest/Ground 아래 모든 지형(바닥, 고원, 언덕, 산비탈)에 머티리얼을 입힌다
         private static void ApplyToMap(Material material)
         {
@@ -100,6 +108,8 @@ namespace PROJECT3D
             EditorSceneManager.MarkSceneDirty(root.scene);
             Debug.Log($"지형 머티리얼을 {count}개 지형에 입혔습니다.");
         }
+
+        #endregion
 
         #region 텍스처 그리기
 
@@ -338,6 +348,8 @@ namespace PROJECT3D
             CreateFolder(parent);
             AssetDatabase.CreateFolder(parent, name);
         }
+
+        #endregion
 
         #endregion
     }

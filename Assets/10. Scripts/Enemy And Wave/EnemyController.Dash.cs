@@ -44,6 +44,8 @@ namespace PROJECT3D
         // 돌진 중일 때만 속도를 변경
         protected override float MoveSpeed => state == DashState.Dash ? dashSpeed : base.MoveSpeed;
 
+        #region UnityMethod
+
         // 범위표시 머티리얼을 몹마다 따로 (풀에서 처음 만들어질 때 한 번)
         protected override void Awake()
         {
@@ -61,6 +63,19 @@ namespace PROJECT3D
             ChangeState(DashState.Chase, dashCooldown); // 풀에서 다시 나와도 처음 상태로
             SetWarningActive(false); // 새로 추가
         }
+
+        // 돌진 거리(보라 원. 멈추는 거리 attackRange는 부모의 빨간 원) + 돌진 명중 범위(몸 + hitRadius) Gizmo
+        protected override void OnDrawGizmosSelected()
+        {
+            base.OnDrawGizmosSelected(); // 공격 사거리 / 접촉 범위
+
+            Gizmos.color = Color.magenta;
+            HitGizmo.DrawCircle(transform.position, attackRange * 2f);  // 새로 추가 : 돌진 거리 (멈추는 거리 attackRange 원은 부모가 그린다)
+        }
+
+        #endregion
+
+        #region 외부 설정
 
         protected override void Move(float deltaTime)
         {
@@ -112,6 +127,28 @@ namespace PROJECT3D
             }
         }
 
+        // 죽으면 범위표시도 끈다 (죽은 뒤에는 Move가 안 불려서 남아 있게 됨)
+        public override void StartDead()
+        {
+            base.StartDead();
+            SetWarningActive(false);
+        }
+        // ===== 새로 추가 끝 =====
+
+        protected override void UpdateAnimation()
+        {
+            base.UpdateAnimation();
+            bool isDash = state == DashState.Dash;
+            Animator.SetBool(IsDash, isDash);
+            if (isDash) Animator.SetBool(IsMove, false);
+        }
+
+        #endregion
+
+        #region 내부 설정
+
+        #region 돌진
+
         private void ChangeState(DashState next, float time)
         {
             state = next;
@@ -141,6 +178,26 @@ namespace PROJECT3D
             moved.y = 0f;
             return moved.magnitude;
         }
+
+        // 돌진 중 내 몸이 대상의 피격 원통에 닿으면 한 번 데미지
+        private void TryHitTarget()
+        {
+            if (hasHit) return;
+
+            CombatEntity target = GetTargetOrNull();
+            if (target == null || CombatSystem.Instance == null) return;
+
+            // 내 몸을 기둥 공격 범위로 사용
+            if (IsTouchingTarget(target, hitRadius) == false) return;
+
+            int damage = Mathf.RoundToInt(Enemy.Unit.Damage * damageMultiplier);
+            CombatSystem.Instance.SendDamage(Enemy, target, damage, target.HitCenter);
+            hasHit = true;
+        }
+
+        #endregion
+
+        #region 범위표시
 
         // 범위표시
         private void SetWarningActive(bool active)
@@ -172,45 +229,8 @@ namespace PROJECT3D
             dashWarning.FillProgress = (readyTime > 0f) ? 1f - stateTimer / readyTime : 1f;
         }
 
-        // 죽으면 범위표시도 끈다 (죽은 뒤에는 Move가 안 불려서 남아 있게 됨)
-        public override void StartDead()
-        {
-            base.StartDead();
-            SetWarningActive(false);
-        }
-        // ===== 새로 추가 끝 =====
-        
-        // 돌진 중 내 몸이 대상의 피격 원통에 닿으면 한 번 데미지
-        private void TryHitTarget()
-        {
-            if (hasHit) return;
+        #endregion
 
-            CombatEntity target = GetTargetOrNull();
-            if (target == null || CombatSystem.Instance == null) return;
-
-            // 내 몸을 기둥 공격 범위로 사용
-            if (IsTouchingTarget(target, hitRadius) == false) return;
-
-            int damage = Mathf.RoundToInt(Enemy.Unit.Damage * damageMultiplier);
-            CombatSystem.Instance.SendDamage(Enemy, target, damage, target.HitCenter);
-            hasHit = true;
-        }
-
-        protected override void UpdateAnimation()
-        {
-            base.UpdateAnimation();
-            bool isDash = state == DashState.Dash;
-            Animator.SetBool(IsDash, isDash);
-            if (isDash) Animator.SetBool(IsMove, false);
-        }
-
-        // 돌진 거리(보라 원. 멈추는 거리 attackRange는 부모의 빨간 원) + 돌진 명중 범위(몸 + hitRadius) Gizmo
-        protected override void OnDrawGizmosSelected()
-        {
-            base.OnDrawGizmosSelected(); // 공격 사거리 / 접촉 범위
-
-            Gizmos.color = Color.magenta;
-            HitGizmo.DrawCircle(transform.position, attackRange * 2f);  // 새로 추가 : 돌진 거리 (멈추는 거리 attackRange 원은 부모가 그린다)
-        }
+        #endregion
     }
 }

@@ -16,6 +16,8 @@ namespace PROJECT3D
 
         public UnitDef Def { get; private set; }
 
+        #region 외부 설정
+
         public void Bind(UnitDef def, Action<UnitDef> onClicked)
         {
             Def = def;
@@ -33,5 +35,7 @@ namespace PROJECT3D
         {
             selectedMark.SetActive(selected);
         }
+
+        #endregion
     }
 }

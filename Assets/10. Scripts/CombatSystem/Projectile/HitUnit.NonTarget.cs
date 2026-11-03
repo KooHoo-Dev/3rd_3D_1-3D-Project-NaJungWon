@@ -18,20 +18,7 @@ namespace PROJECT3D
         private float moved;                                                     // 지금까지 날아간 거리
         private HashSet<CombatEntity> hitTargets = new HashSet<CombatEntity>(); // 이미 맞힌 대상 (관통 시 중복 방지)
 
-        public override void Launch(Vector3 from, Vector3 direction, int damage, CombatEntity owner)
-        {
-            base.Launch(from, direction, damage, owner);
-            this.direction = direction.normalized;
-            currentRange = range;
-            moved = 0f;
-            hitTargets.Clear();
-        }
-
-        public override void ApplyBonus(float rangeRate, float durationRate)
-        {
-            base.ApplyBonus(rangeRate, durationRate); // 반경
-            currentRange = range * rangeRate;         // 사거리
-        }
+        #region UnityMethod
 
         private void Update()
         {
@@ -63,5 +50,26 @@ namespace PROJECT3D
 
             if (moved >= currentRange) ReturnToPool();
         }
+
+        #endregion
+
+        #region 외부 설정
+
+        public override void Launch(Vector3 from, Vector3 direction, int damage, CombatEntity owner)
+        {
+            base.Launch(from, direction, damage, owner);
+            this.direction = direction.normalized;
+            currentRange = range;
+            moved = 0f;
+            hitTargets.Clear();
+        }
+
+        public override void ApplyBonus(float rangeRate, float durationRate)
+        {
+            base.ApplyBonus(rangeRate, durationRate); // 반경
+            currentRange = range * rangeRate;         // 사거리
+        }
+
+        #endregion
     }
 }

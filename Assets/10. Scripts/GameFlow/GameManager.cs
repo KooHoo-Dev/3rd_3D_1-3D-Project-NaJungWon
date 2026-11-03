@@ -15,16 +15,30 @@ namespace PROJECT3D
         [SerializeField] private PlayerSpawner playerSpawner; // 로비에서 고른 캐릭터 + 상점 스탯으로 플레이어 생성
         [SerializeField] private InGameUI inGameUI;           // 새로 추가 : 인게임 HUD
         [SerializeField] private GameOverPanel gameOverPanel; // 새로 추가 : 패배 결과창
+        [SerializeField] private StructureManager structureManager; // 새로 추가 : 구조물 소환 / 상호작용 (비워 두면 시작할 때 기본값으로 만든다)
         public bool IsReady { get; private set; }
         public event Action OnGameReady;           // 준비가 끝났을 때 (로딩 화면 끄기 등)
 
         private Player localPlayer; // 내 플레이어 (사망 / 기록 확인용)
         private bool isGameOver;    // 패배 처리가 두 번 돌지 않게
-        
+
+        #region UnityMethod
+
         private void Start()
         {
             BootAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
+
+        private void OnDestroy()
+        {
+            if (localPlayer != null) localPlayer.OnDead -= HandlePlayerDead;
+        }
+
+        #endregion
+
+        #region 내부 설정
+
+        #region 게임 시작
 
         private async UniTaskVoid BootAsync(CancellationToken token)
         {
@@ -62,13 +76,16 @@ namespace PROJECT3D
             IsReady = true;
             OnGameReady?.Invoke();
             WaveManager.Instance.StartWaves();
+
+            // 새로 추가 : 구조물 소환 시작 (씬에 안 넣었으면 기본값으로 만든다)
+            if (structureManager == null) structureManager = new GameObject("StructureManager").AddComponent<StructureManager>();
+            structureManager.StartSpawn();
             Debug.Log("[GameManager] 6. 게임 시작");
         }
-        
-        private void OnDestroy()
-        {
-            if (localPlayer != null) localPlayer.OnDead -= HandlePlayerDead;
-        }
+
+        #endregion
+
+        #region 패배
 
         private void HandlePlayerDead()
         {
@@ -87,5 +104,9 @@ namespace PROJECT3D
 
             gameOverPanel.Open(localPlayer.KillCount, localPlayer.Gold, WorldClock.Instance.ElapsedTime);
         }
+
+        #endregion
+
+        #endregion
     }
 }

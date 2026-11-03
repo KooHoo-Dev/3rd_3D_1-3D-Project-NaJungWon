@@ -14,11 +14,17 @@ namespace PROJECT3D
         [SerializeField] private TMP_Text surviveTimeText;  // 생존 시간
         [SerializeField] private Button lobbyButton;        // 로비로 나가기
 
+        #region UnityMethod
+
         private void Awake()
         {
             panel.SetActive(false);
             lobbyButton.onClick.AddListener(GoLobby);
         }
+
+        #endregion
+
+        #region 외부 설정
 
         public void Open(int killCount, int gold, float surviveTime)
         {
@@ -34,10 +40,16 @@ namespace PROJECT3D
             panel.SetActive(true);
         }
 
+        #endregion
+
+        #region 내부 설정
+
         private void GoLobby()
         {
             lobbyButton.interactable = false; // 두 번 눌러서 씬을 두 번 부르지 않게
             SceneLoader.LoadLobby();
         }
+
+        #endregion
     }
 }

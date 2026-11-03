@@ -11,6 +11,10 @@
         public bool IsArousal { get; private set; }
         public WeaponAugment Weapon { get; private set; } //무기증강일 때만 있음. 능력치증강은 null
 
+        #region 외부 설정
+
+        #region 생성
+
         public OwnedAugment(AugmentDef def, WeaponAugment weapon)
         {
             Def = def;
@@ -21,6 +25,10 @@
             if (Weapon != null) Weapon.SetMainStat(def.MainStat);
             LevelUp(); // 1레벨로 시작
         }
+
+        #endregion
+
+        #region 레벨 / 진화
 
         public bool IsMaxLevel()
         {
@@ -49,5 +57,9 @@
             IsArousal = true;
             if (Weapon != null) Weapon.SetArousal();
         }
+
+        #endregion
+
+        #endregion
     }
 }

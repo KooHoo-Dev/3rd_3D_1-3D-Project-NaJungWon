@@ -1910,13 +1910,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.GroundNormal
   separationDistance: 1.5
   attack: {fileID: -2248784464880298634}
-  attackRange: 10
+  attackRange: 20
   attackDelay: 0.5
   contactInterval: 1
   contactDamageRate: 1
   moveSmooth: 4
   turnSpeed: 10
-  yOffset: 1
+  yOffset: 0
   snapRayHeight: 2
   snapRayDistance: 10
   groundMask:

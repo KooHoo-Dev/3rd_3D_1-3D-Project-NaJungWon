@@ -16,6 +16,10 @@ namespace PROJECT3D
         [SerializeField] private TMP_Text cooldownText;
         [SerializeField] private TMP_Text levelText; // 레벨 칸이 없는 칸(패시브)은 비워둔다
 
+        #region 외부 설정
+
+        #region 아이콘
+
         // 빈 칸 : 아이콘 끄고 글자 지우기 (레벨 칸 자체는 그대로 보인다)
         public void SetEmpty()
         {
@@ -29,6 +33,10 @@ namespace PROJECT3D
             icon.sprite = sprite;
             icon.enabled = sprite != null;
         }
+
+        #endregion
+
+        #region 레벨
 
         // 무기/능력치 증강 레벨
         public void SetLevel(int level)
@@ -44,11 +52,19 @@ namespace PROJECT3D
         }
         // ===== 새로 추가 끝 =====
 
+        #endregion
+
+        #region 쿨타임
+
         // 남은 쿨타임(초). 0이면 글자를 지운다
         public void SetCooldown(float remain)
         {
             if (remain <= 0f) cooldownText.SetText("");
             else cooldownText.SetText(remain.ToString("0.0"));
         }
+
+        #endregion
+
+        #endregion
     }
 }

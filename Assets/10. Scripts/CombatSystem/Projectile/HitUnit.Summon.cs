@@ -26,41 +26,13 @@ namespace PROJECT3D
         private float currentDuration;
         private float timer;       // 생기고 나서 지난 시간
         private float nextHitTime; // 다음 판정 시각
-        
+
+        #region UnityMethod
+
         protected override void Awake()
         {
             base.Awake();
             RegionMaterialUtil.UseOwnMaterials(warningCircle); // 여러 개가 동시에 떠도 진행도가 따로 보이게
-        }
-
-        // 반경은 판정 반경(currentHitRadius)과 같게, 진행도는 생기고 지난 시간 / delay. 첫 판정 뒤에는 끈다
-        private void UpdateWarning()
-        {
-            if (warningCircle == null) return;
-
-            bool isWarning = timer < delay;
-            if (warningCircle.gameObject.activeSelf != isWarning) warningCircle.gameObject.SetActive(isWarning);
-            if (isWarning == false) return;
-
-            float scale = warningCircle.transform.lossyScale.x;            // 범위 증가로 커진 크기를 빼고 넣어야 판정과 크기가 같다
-            warningCircle.Radius = (scale > 0f) ? currentHitRadius / scale : currentHitRadius;
-            warningCircle.FillProgress = timer / delay;
-        }
-
-        public override void Launch(Vector3 from, Vector3 direction, int damage, CombatEntity owner)
-        {
-            base.Launch(from, direction, damage, owner);
-            currentDuration = duration;
-            timer = 0f;
-            nextHitTime = delay;
-            followOffset = from - owner.transform.position; // 생길 때 주인과의 거리를 기억
-            hitTargets.Clear();                             // 풀 재사용 시 이전 기록 지우기
-        }
-
-        public override void ApplyBonus(float rangeRate, float durationRate)
-        {
-            base.ApplyBonus(rangeRate, durationRate); // 반경
-            currentDuration = duration * durationRate; // 지속시간
         }
 
         private void Update()
@@ -78,6 +50,9 @@ namespace PROJECT3D
             // 판정 시간이 끝난 뒤(이펙트만 남은 시간)에는 때리지 않는다
             if (timer >= nextHitTime && nextHitTime <= hitEndTime)
             {
+                // 새로 추가 : 첫 판정 순간 폭발 이펙트 (포격 / 지점 폭발. explodeEffect가 없으면 생략)
+                if (nextHitTime <= delay) ObjectPoolManager.PlayEffect(ExplodeEffect, transform.position);
+
                 List<CombatEntity> targets = FindTouching();
                 for (int i = 0; i < targets.Count; i++)
                 {
@@ -91,5 +66,45 @@ namespace PROJECT3D
             // 판정이 끝나고, lifeTime도 지나면 풀로 (한 번형은 첫 판정 직후, 지속형은 시간이 다 되면)
             if (timer >= Mathf.Max(hitEndTime, lifeTime)) ReturnToPool();
         }
+
+        #endregion
+
+        #region 외부 설정
+
+        public override void Launch(Vector3 from, Vector3 direction, int damage, CombatEntity owner)
+        {
+            base.Launch(from, direction, damage, owner);
+            currentDuration = duration;
+            timer = 0f;
+            nextHitTime = delay;
+            followOffset = from - owner.transform.position; // 생길 때 주인과의 거리를 기억
+            hitTargets.Clear();                             // 풀 재사용 시 이전 기록 지우기
+        }
+
+        public override void ApplyBonus(float rangeRate, float durationRate)
+        {
+            base.ApplyBonus(rangeRate, durationRate); // 반경
+            currentDuration = duration * durationRate; // 지속시간
+        }
+
+        #endregion
+
+        #region 내부 설정
+
+        // 반경은 판정 반경(currentHitRadius)과 같게, 진행도는 생기고 지난 시간 / delay. 첫 판정 뒤에는 끈다
+        private void UpdateWarning()
+        {
+            if (warningCircle == null) return;
+
+            bool isWarning = timer < delay;
+            if (warningCircle.gameObject.activeSelf != isWarning) warningCircle.gameObject.SetActive(isWarning);
+            if (isWarning == false) return;
+
+            float scale = warningCircle.transform.lossyScale.x;            // 범위 증가로 커진 크기를 빼고 넣어야 판정과 크기가 같다
+            warningCircle.Radius = (scale > 0f) ? currentHitRadius / scale : currentHitRadius;
+            warningCircle.FillProgress = timer / delay;
+        }
+
+        #endregion
     }
 }

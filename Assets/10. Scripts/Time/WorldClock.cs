@@ -57,13 +57,7 @@ namespace PROJECT3D
         // 일시정지 직전에 쓰던 배속. 일시정지가 끝나면 되돌아가기 위해 필요한 변수
         private int lastRunningStep = DEFAULT_STEP;
 
-        protected override void OnInitialize()
-        {
-            base.OnInitialize();
-            ScaleStep = DEFAULT_STEP;
-            // DOTween의 타임 스케일을 WorldClock의 스케일로 바꿔준다
-            DOTween.timeScale = Scale;
-        }
+        #region UnityMethod
 
         private void Update()
         {
@@ -74,18 +68,18 @@ namespace PROJECT3D
             AdvanceTick(delta);
         }
 
-        #region 시간 진행
+        #endregion
 
-        private void AdvanceTick(float delta)
+        #region 외부 설정
+
+        #region 초기화
+
+        protected override void OnInitialize()
         {
-            // 틱타이머를 갱신해주고
-            tickTimer += delta;
-            // 임계점에 도달하지 않았으면 return
-            if (tickTimer < tickInterval) return;
-
-            tickTimer = 0f;
-            // OnTick을 구독하는 객체들에게 알려준다
-            OnTick?.Invoke();
+            base.OnInitialize();
+            ScaleStep = DEFAULT_STEP;
+            // DOTween의 타임 스케일을 WorldClock의 스케일로 바꿔준다
+            DOTween.timeScale = Scale;
         }
 
         #endregion
@@ -123,11 +117,29 @@ namespace PROJECT3D
             ElapsedTime = 0f;
             tickTimer = 0f;
         }
-        
+
         public void TogglePause()
         {
             if (IsPaused) Resume();
             else Pause();
+        }
+
+        #endregion
+
+        #endregion
+
+        #region 내부 설정
+
+        private void AdvanceTick(float delta)
+        {
+            // 틱타이머를 갱신해주고
+            tickTimer += delta;
+            // 임계점에 도달하지 않았으면 return
+            if (tickTimer < tickInterval) return;
+
+            tickTimer = 0f;
+            // OnTick을 구독하는 객체들에게 알려준다
+            OnTick?.Invoke();
         }
 
         #endregion

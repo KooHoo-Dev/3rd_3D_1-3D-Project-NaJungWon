@@ -13,6 +13,8 @@ namespace PROJECT3D
         private const string MaterialFolder = "Assets/00. 3D Game/Material/Sky";
         private const string MaterialPath = MaterialFolder + "/M_Sky.mat";
 
+        #region 외부 설정
+
         [MenuItem("PROJECT3D/Map/하늘 적용")]
         public static void Apply()
         {
@@ -52,6 +54,8 @@ namespace PROJECT3D
             Selection.activeObject = material;
             Debug.Log($"[SkyboxSetup] 하늘 적용 완료 : {MaterialPath}");
         }
+
+        #endregion
     }
 }
 // ===== 새로 추가 끝 =====

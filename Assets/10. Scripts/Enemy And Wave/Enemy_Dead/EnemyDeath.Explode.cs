@@ -12,6 +12,20 @@ namespace PROJECT3D
         [SerializeField] private float damageMultiplier = 1f;   // 표의 Damage에 곱할 배율
         [SerializeField] private ParticleEffect explosionEffect; // 폭발 이펙트 (없으면 생략)
 
+        #region UnityMethod
+
+        // 씬 화면에 폭발 범위를 그린다 (선택했을 때만)
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = new Color(1f, 0.5f, 0f); // 주황
+            Vector3 center = Owner != null ? Owner.HitCenter : transform.position;
+            Gizmos.DrawWireSphere(center, explodeRadius);
+        }
+
+        #endregion
+
+        #region 외부 설정
+
         public override void Apply()
         {
             Vector3 center = Owner.HitCenter; // 몸 중심에서 터진다
@@ -32,12 +46,6 @@ namespace PROJECT3D
             }
         }
 
-        // 씬 화면에 폭발 범위를 그린다 (선택했을 때만)
-        private void OnDrawGizmosSelected()
-        {
-            Gizmos.color = new Color(1f, 0.5f, 0f); // 주황
-            Vector3 center = Owner != null ? Owner.HitCenter : transform.position;
-            Gizmos.DrawWireSphere(center, explodeRadius);
-        }
+        #endregion
     }
 }

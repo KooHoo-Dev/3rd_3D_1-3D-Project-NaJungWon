@@ -20,35 +20,29 @@ namespace PROJECT3D
 
         protected CombatEntity Owner { get; private set; }
         protected StatClass OwnerStat => Owner.BaseStat.unitStat;
-
+        // 이 공격 자체의 수치 (무기증강 = 레벨 수치, 스킬 = 스킬 테이블 수치). 몹 공격은 비어 있음(전부 0)
+        protected StatClass AttackStat { get; private set; } = new StatClass();
         protected Vector3 FirePosition => FirePoint != null ? FirePoint.position : transform.position;
-
+        
         [Header("데미지 계수")]
         [SerializeField] protected StatType mainStat = StatType.Damage; // 데미지에 쓰는 스탯 (기본 공격력)
         [SerializeField] protected float damageRatio = 1f;              // 메인스탯 계수 (1 = 100%)
 
-        // 이 공격 자체의 수치 (무기증강 = 레벨 수치, 스킬 = 스킬 테이블 수치). 몹 공격은 비어 있음(전부 0)
-        protected StatClass AttackStat { get; private set; } = new StatClass();
-
-        // 공격범위 배율 : 1 + (공격 범위% + 주인 범위%) / 100
-        protected float RangeRate => 1f + (AttackStat.AttackRange + OwnerStat.AttackRange) / 100f;
-
-        // 지속시간 배율 : 1 + (공격 지속% + 주인 지속%) / 100
-        protected float DurationRate => 1f + (AttackStat.Duration + OwnerStat.Duration) / 100f;
-
         [Header("공격 애니메이션 / 시점")]
+        private Animator ownerAnimator;                                            // 주인의 애니메이터 (처음 쓸 때 찾는다)
+        protected Animator OwnerAnimator => ownerAnimator;                         // 자식(무기증강)이 공격 레이어 / 공속 파라미터를 바꿀 때 사용
         [SerializeField] private AnimationSlot animationSlot = AnimationSlot.None; // 공격할 때 재생할 애니메이션 (None = 재생 안 함)
         [SerializeField] private bool useAnimationTiming = false;                  // 켜면 : 애니메이션 진행률(0~1)에서 공격 / 끄면 : attackDelay(초) 후 공격
         [SerializeField] [Range(0f, 1f)] private float animationTiming = 0.5f;     // 공격 애니메이션의 이 지점(0~1)에서 공격
         [SerializeField] private float attackDelay = 0f;                           // 토글을 끈 경우 : 공격까지 시간(초). 0이면 바로
         private const float AnimationWaitLimit = 2f; // 애니메이션 신호가 안 오면 이 시간 뒤에 그냥 공격 (멈춤 방지)
-
         private float attackDelayTimer;              // 남은 시간
-        private Animator ownerAnimator;              // 주인의 애니메이터 (처음 쓸 때 찾는다)
+        // 공격범위 배율 : 1 + (공격 범위% + 주인 범위%) / 100
+        protected float RangeRate => 1f + (AttackStat.AttackRange + OwnerStat.AttackRange) / 100f;
+        // 지속시간 배율 : 1 + (공격 지속% + 주인 지속%) / 100
+        protected float DurationRate => 1f + (AttackStat.Duration + OwnerStat.Duration) / 100f;
         public bool IsDelaying { get; private set; } // 공격 시점을 기다리는 중인지
-
-        protected Animator OwnerAnimator => ownerAnimator; // 자식(무기증강)이 공격 레이어 / 공속 파라미터를 바꿀 때 사용
-
+        
         [Header("공격 범위 Gizmo")]
         [SerializeField] private bool drawRangeGizmo = true;          // 끄면 이 공격의 범위를 안 그린다
         [SerializeField] private Color rangeGizmoColor = Color.cyan;

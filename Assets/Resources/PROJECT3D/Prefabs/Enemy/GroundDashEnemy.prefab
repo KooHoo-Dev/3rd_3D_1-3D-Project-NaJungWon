@@ -1234,7 +1234,7 @@ MonoBehaviour:
   readyTime: 1
   dashSpeed: 20
   restTime: 1
-  hitRadius: 0.3
+  dashHitPrefab: {fileID: 5100000000000000003, guid: 9bd973ba6b054ed3b6ecf273f04bc038, type: 3}
   damageMultiplier: 2
   dashWarning: {fileID: 795787725143366521, guid: 1b40bff14bb60674aaef8e1377ca515e, type: 3}
   warningHeight: 0.05

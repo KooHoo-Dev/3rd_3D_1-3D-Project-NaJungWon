@@ -28,6 +28,8 @@ namespace PROJECT3D
         private float currentDelay; // 이번 생성의 첫 판정까지 시간 (기본 delay. 투사체 폭발은 SetDelay(0)으로 바로)
         private float timer;       // 생기고 나서 지난 시간
         private float nextHitTime; // 다음 판정 시각
+        private bool isFollowing;  // 지금 주인을 따라가는 중 (followOwner로 시작, Finish에서 멈춤)
+        private ParticleEffect followEffect; // 따라가기형일 때 같이 옮길 폭발 이펙트 (돌진 이펙트가 몸을 따라오게)
 
         #region UnityMethod
 
@@ -42,8 +44,11 @@ namespace PROJECT3D
             timer += WorldClock.Instance.DeltaTime;
 
             // 따라가기형은 판정 전에 위치부터 맞춘다 (주인이 죽어서 꺼졌으면 그 자리에 멈춤)
-            if (followOwner && owner != null && owner.gameObject.activeInHierarchy)
+            if (isFollowing && owner != null && owner.gameObject.activeInHierarchy) // [변경] followOwner → isFollowing (Finish 뒤에는 멈춘 자리에 남는다)
+            {
                 transform.position = owner.transform.position + followOffset;
+                MoveFollowEffect(); // 새로 추가 : 폭발 이펙트도 같이
+            }
 
             UpdateWarning(); // 범위표시 진행도
 
@@ -53,7 +58,7 @@ namespace PROJECT3D
             if (timer >= nextHitTime && nextHitTime <= hitEndTime)
             {
                 // 첫 판정 순간 폭발 이펙트 (포격 / 지점 폭발. explodeEffect가 없으면 생략)
-                if (nextHitTime <= currentDelay) ObjectPoolManager.PlayEffect(explodeEffect, transform.position);
+                if (nextHitTime <= currentDelay) PlayExplodeEffect(); // [변경] PlayEffect → 따라가기형이면 이펙트를 기억해 두고 같이 옮긴다
 
                 List<CombatEntity> targets = FindTouching();
                 for (int i = 0; i < targets.Count; i++)
@@ -82,6 +87,8 @@ namespace PROJECT3D
             nextHitTime = delay;
             followOffset = from - owner.transform.position; // 생길 때 주인과의 거리를 기억
             hitTargets.Clear();                             // 풀 재사용 시 이전 기록 지우기
+            isFollowing = followOwner;
+            followEffect = null;
         }
 
         public override void ApplyBonus(float rangeRate, float durationRate)
@@ -98,9 +105,55 @@ namespace PROJECT3D
             nextHitTime = time;
         }
 
+        // 판정 시간 바꾸기 (ApplyBonus 뒤에 부른다. 지속시간 증가는 적용 안 함)
+        //  - 돌진처럼 공격 쪽이 시간을 정하는 범위용 : 돌진 시간 동안 몸을 따라가며 판정
+        public void SetDuration(float time)
+        {
+            currentDuration = time;
+        }
+
+        // 지금 바로 판정 끝내기 (돌진이 벽에 막혀 일찍 멈췄을 때 등)
+        //  - 따라가기도 멈춘다 → 남은 이펙트는 멈춘 자리에서 lifeTime까지 재생되고 풀로
+        public void Finish()
+        {
+            if (gameObject.activeSelf == false) return; // 이미 풀로 돌아갔으면 무시
+            currentDuration = Mathf.Max(0f, timer - currentDelay);
+            isFollowing = false;
+            followEffect = null; // 이펙트는 멈춘 자리에서 마저 재생
+        }
+
         #endregion
 
         #region 내부 설정
+
+        // 폭발 이펙트 (따라가기형은 같이 옮긴다)
+        // 첫 판정 순간 내 위치 / 방향으로 폭발 이펙트를 띄운다 (돌진 이펙트처럼 방향이 있는 이펙트도 진행 방향을 보게)
+        private void PlayExplodeEffect()
+        {
+            if (explodeEffect == null) return;
+
+            ParticleEffect effect = ObjectPoolManager.Instance.GetObjectOrNull(explodeEffect.gameObject) as ParticleEffect;
+            if (effect == null) return;
+
+            effect.transform.SetPositionAndRotation(transform.position, transform.rotation);
+            effect.gameObject.SetActive(true);
+
+            if (isFollowing) followEffect = effect; // 따라가는 동안 같이 옮긴다
+        }
+
+        // 따라가는 중이면 폭발 이펙트를 내 위치로 (이펙트가 먼저 끝나 풀로 돌아갔으면 놓는다)
+        private void MoveFollowEffect()
+        {
+            if (followEffect == null) return;
+
+            if (followEffect.gameObject.activeSelf == false)
+            {
+                followEffect = null;
+                return;
+            }
+
+            followEffect.transform.position = transform.position;
+        }
 
         // 반경은 판정 반경(currentHitRadius)과 같게, 진행도는 생기고 지난 시간 / delay. 첫 판정 뒤에는 끈다
         private void UpdateWarning()

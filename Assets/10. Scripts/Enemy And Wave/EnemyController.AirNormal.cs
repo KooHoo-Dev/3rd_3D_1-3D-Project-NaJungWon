@@ -6,7 +6,7 @@ namespace PROJECT3D
     //  - 수평 이동 : 흐름장을 쓰지 않고 플레이어에게 직진한다
     //  - 높이      : 발밑 표면 + hoverHeight 를 유지 (플레이어가 바닥에 있으면 플레이어 위까지)
     //  - 장애물    : 앞쪽 표면이 내 높이보다 높으면 수평 이동을 멈추고 먼저 위로 올라간 뒤 넘어간다
-    //  ※ '표면' = 위에서 아래로 레이를 쐈을 때 처음 맞는 지형/장애물 꼭대기
+    //  ※ '표면' = 지형/장애물 꼭대기 높이 (MapGrid가 구울 때 저장한 SurfaceHeight)
     //  ※ 공격은 프리팹에 붙인 EnemyAttack(SingleShot 등)이 한다
     public class AirNormal : EnemyControllerBase
     {
@@ -15,8 +15,6 @@ namespace PROJECT3D
         [SerializeField] private float abovePlayer = 2f;       // 플레이어가 바닥에 있을 때 그 위로 뜰 높이
         [SerializeField] private float flyClearance = 1f;      // 장애물 꼭대기와 띄울 여유 높이
         [SerializeField] private float lookAhead = 1f;         // 앞쪽 장애물을 검사할 거리 (보통 칸 크기)
-        [SerializeField] private float surfaceRayHeight = 50f; // 표면 레이를 쏘기 시작할 높이 (가장 높은 장애물보다 높게)
-        [SerializeField] private LayerMask surfaceMask;        // 지형 + 장애물 레이어 둘 다 체크
 
         private float aheadSurfaceY = float.MinValue; // 앞쪽 표면 높이 (ApplyMovement에서 재고 UpdateHeight에서 쓴다)
         private CharacterController3D playerMovement; // 플레이어 접지 판정용
@@ -73,7 +71,7 @@ namespace PROJECT3D
             targetY = Mathf.Max(targetY, aheadSurfaceY + flyClearance);    // 2. 앞 장애물을 넘을 높이
 
             if (IsPlayerGrounded())                                        // 3. 플레이어 위 (점프/낙하 중엔 제외)
-                targetY = Mathf.Max(targetY, GetTargetOrNull().transform.position.y + abovePlayer); // [변경] LocalPlayer 직접 참조 → 부모 GetTargetOrNull (멀티 때 한 곳만 바꾸면 되게)
+                targetY = Mathf.Max(targetY, GetTargetOrNull().transform.position.y + abovePlayer); // 부모 GetTargetOrNull (멀티 때 한 곳만 바꾸면 되게)
 
             return targetY;
         }
@@ -83,15 +81,11 @@ namespace PROJECT3D
         #region 내부 설정
 
         // 해당 XZ 지점의 표면(지형/장애물 꼭대기) 높이를 위에서 아래로 레이를 쏴서 잰다
+        // MapGrid에 구워 둔 표면 높이 (주변 4칸 중 가장 높은 값)
         private bool TryGetSurfaceHeight(Vector3 point, out float surfaceY)
         {
-            Vector3 origin = new Vector3(point.x, transform.position.y + surfaceRayHeight, point.z);
-            if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit,
-                                surfaceRayHeight * 2f, surfaceMask, QueryTriggerInteraction.Ignore))
-            {
-                surfaceY = hit.point.y;
-                return true;
-            }
+            MapGrid map = MapGrid.Instance;
+            if (map != null && map.TryGetSurfaceHeight(point, out surfaceY)) return true;
 
             surfaceY = 0f;
             return false;
@@ -101,7 +95,7 @@ namespace PROJECT3D
         private bool IsPlayerGrounded()
         {
             if (playerMovement == null) 
-                playerMovement = GetTargetOrNull().GetComponent<CharacterController3D>(); // [변경] 부모 GetTargetOrNull 재사용
+                playerMovement = GetTargetOrNull().GetComponent<CharacterController3D>();
 
             return playerMovement.IsGrounded;
         }

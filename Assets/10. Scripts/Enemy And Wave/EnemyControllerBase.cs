@@ -43,9 +43,6 @@ namespace PROJECT3D
         
         [Header("접지 설정")]
         [SerializeField] protected float yOffset = 0f;         // 몹좌표 offset // 새로 추가
-        [SerializeField] protected float snapRayHeight = 2f;   // 몸 위 이 높이에서 아래로 레이를 쏜다
-        [SerializeField] protected float snapRayDistance = 5f; // 바닥을 찾는 최대 거리
-        [SerializeField] protected LayerMask groundMask;       // 바닥으로 취급할 레이어만 검사
         [SerializeField] protected float heightSpeedRatio = 2f;  // 오르내리는 속도 = 이동속도의 몇 배
         [SerializeField] private BodyTilt bodyTilt;              // 모델 기울기 연출 (공중몹은 비워 둔다)
         private Vector3 groundNormal = Vector3.up;               // 높이 레이가 맞힌 바닥 방향
@@ -115,7 +112,7 @@ namespace PROJECT3D
             }
 
             // 공격 컴포넌트가 있는 몹이 사거리 안에 들어오면 멈춰서 공격
-            if (attack != null && Enemy.Unit.AttackSpeed > 0f && IsTargetInRange(attackRange)) // [변경] 공용 거리 판정
+            if (attack != null && Enemy.Unit.AttackSpeed > 0f && IsTargetInRange(attackRange))
             {
                 IsMoving = false;
 
@@ -166,18 +163,15 @@ namespace PROJECT3D
         // 출현 연출(DoTween)의 목표 높이. 지상 = 바닥 + yOffset, 공중 = 바닥 + hoverHeight.
         public float GetSpawnTargetY() => GetTargetHeight();
 
+        //  MapGrid에 구워 둔 바닥 높이 / 경사를 주변 4칸 보간
+        //  - 절벽처럼 넘을 수 없는 칸은 섞지 않는다. 절벽을 오르내리는 것 자체는 지금처럼 MapGrid.CanMove가 막는다
+        //  - 1층 / 2층이 겹치는 터널 구조는 한 칸에 높이 하나라 표현할 수 없다
         protected bool TryGetGroundHeight(out float groundY)
         {
-            Vector3 origin = transform.position + Vector3.up * snapRayHeight;
-            float rayLength = snapRayHeight + snapRayDistance;
-            if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, rayLength, groundMask))
-            {
-                groundY = hit.point.y;
-                groundNormal = hit.normal; // 같은 레이에서 바닥 방향도 저장 (레이 추가 없음)
+            if (MapGrid != null && MapGrid.TryGetGroundHeight(transform.position, out groundY, out groundNormal))
                 return true;
-            }
 
-            groundY = transform.position.y; // 아래에 바닥이 없으면(맵 밖) 지금 고도를 그대로 돌려준다
+            groundY = transform.position.y; // 맵 밖이면 지금 고도를 그대로 돌려준다
             groundNormal = Vector3.up;
             return false;
         }
@@ -249,7 +243,7 @@ namespace PROJECT3D
                 }
             }
             
-            // 새로 추가 : 4. 칸 가장자리에서 옆 칸(턱)에 걸린 경우 → 흐름장이 가리키는 다음 칸 가운데를 향해 걷는다
+            // 4. 칸 가장자리에서 옆 칸(턱)에 걸린 경우 → 흐름장이 가리키는 다음 칸 가운데를 향해 걷는다
             if (Field.TryGetNextPoint(transform.position, out Vector3 nextPoint))
             {
                 Vector3 toNext = nextPoint - transform.position;
@@ -257,7 +251,7 @@ namespace PROJECT3D
                 if (TryStep(toNext, deltaTime)) return true;
             }
 
-            // 새로 추가 : 5. 벽에 비스듬히 막혔으면 벽을 따라 미끄러진다 (좌우 / 앞뒤 한 축씩)
+            // 5. 벽에 비스듬히 막혔으면 벽을 따라 미끄러진다 (좌우 / 앞뒤 한 축씩)
             Vector3 slide = chase.sqrMagnitude > 0.01f ? chase : direction;
             if (TryStep(new Vector3(slide.x, 0f, 0f), deltaTime)) return true;
             if (TryStep(new Vector3(0f, 0f, slide.z), deltaTime)) return true;
@@ -266,7 +260,7 @@ namespace PROJECT3D
             return false;
         }
 
-        // 새로 추가 : move 방향으로 한 걸음 (그 칸으로 갈 수 있을 때만)
+        // move 방향으로 한 걸음 (그 칸으로 갈 수 있을 때만)
         private bool TryStep(Vector3 move, float deltaTime)
         {
             if (move.sqrMagnitude < 0.0001f) return false;
@@ -376,7 +370,7 @@ namespace PROJECT3D
             CombatEntity target = GetTargetOrNull();
             if (target == null) return;
             if (Animator == null) Debug.LogWarning($"[EnemyControllerBase] Animator가 null임");
-            Animator.SetTrigger(AnimatorKeys.Attack); // 애니메이터에 "Attack" 트리거가 있을 때만 동작
+            Animator.SetTrigger(AnimatorKeys.Attack);
             attack.StartFire(target); // (애니메이션 / 딜레이 후 발사)
         }
 

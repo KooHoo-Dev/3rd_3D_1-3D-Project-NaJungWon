@@ -43,7 +43,6 @@ namespace PROJECT3D
         public float Speed => PlayerStat.Speed;
 
         // 사망 모션
-        private const string DeadStateName = "Unit_Dead"; // UnitController의 사망 상태 이름
         private const float DieWaitLimit = 5f;           // 상태 이름이 안 맞아도 이 시간이 지나면 끝난 걸로 (실제 시간)
 
         #region UnityMethod
@@ -134,7 +133,7 @@ namespace PROJECT3D
         {
             if (anim == null) return;
 
-            anim.SetTrigger(Die);
+            anim.SetTrigger(AnimatorKeys.Die);
 
             float waited = 0f;
             while (waited < DieWaitLimit)
@@ -220,7 +219,7 @@ namespace PROJECT3D
             aimingSkill = skill;
             aimingKey = key;
             if (aimCamera != null) aimCamera.Priority = aimActivePriority; // [변경] SetActive(true) → Priority 올리기
-            if (anim != null) anim.SetBool(Aiming, true);
+            if (anim != null) anim.SetBool(AnimatorKeys.IsAiming, true);
             movement.SetAimFacing(true);
             SetAttackLayerWeight(1f); // 새로 추가 : 조준 자세(상체) 보이게
         }
@@ -231,7 +230,7 @@ namespace PROJECT3D
             aimingSkill.EndAim(); // 새로 추가 : 스킬별 조준 끝 처리 (예상 범위 표시 끄기 등)
             aimingSkill = null;
             if (aimCamera != null) aimCamera.Priority = aimRestingPriority; // [변경] SetActive(false) → Priority 내리기
-            if (anim != null) anim.SetBool(Aiming, false);
+            if (anim != null) anim.SetBool(AnimatorKeys.IsAiming, false);
             movement.SetAimFacing(false);
             SetAttackLayerWeight(0f); // 새로 추가 : 조준 자세(상체) 끄기
         }
@@ -239,9 +238,7 @@ namespace PROJECT3D
         // 새로 추가 : AttackLayer(상체) 가중치. Unit_Aim이 AttackLayer에 있어서 조준 중에는 1
         private void SetAttackLayerWeight(float weight)
         {
-            if (anim == null) return;
-            int layerIndex = anim.GetLayerIndex("AttackLayer");
-            if (layerIndex >= 0) anim.SetLayerWeight(layerIndex, weight);
+            AnimatorKeys.SetAttackLayerWeight(anim, weight);
         }
         // ===== 새로 추가 끝 =====
 
@@ -254,9 +251,9 @@ namespace PROJECT3D
             if (anim == null) return; // 모델이 아직 없으면
 
             bool isMoving = SimpleInput.GetMoveAxisRaw().sqrMagnitude > 0.01f && IsCasting == false;
-            anim.SetBool(IsMove, isMoving);
-            anim.SetBool(IsGrounded, movement.IsGrounded); // Fall / Jump → Idle 착지 전환용
-            anim.SetBool(Casting, IsCasting);              // 스킬 사용 중에는 Fall로 넘어가지 않게
+            anim.SetBool(AnimatorKeys.IsMove, isMoving);
+            anim.SetBool(AnimatorKeys.IsGrounded, movement.IsGrounded); // Fall / Jump → Idle 착지 전환용
+            anim.SetBool(AnimatorKeys.IsCasting, IsCasting);            // 스킬 사용 중에는 Fall로 넘어가지 않게
 
             // 새로 추가 : 조준 중에는 매 프레임 1로 유지 (조준 직전에 나가던 기본공격 상태가 끝나면서 AttackTimingSender가 0으로 끄는 것 덮어쓰기)
             if (IsAiming) SetAttackLayerWeight(1f);
@@ -265,7 +262,7 @@ namespace PROJECT3D
         // 점프 시작 (2단 점프 포함)
         private void HandleJumpStart()
         {
-            anim.SetTrigger(Jump);
+            anim.SetTrigger(AnimatorKeys.Jump);
         }
 
         // 최고점을 지나 내려가기 시작 (걸어서 떨어질 때 포함)
@@ -273,7 +270,7 @@ namespace PROJECT3D
         {
             if (anim == null) return; // [변경]
             if (IsSkillAnimationPlaying()) return; // 새로 추가 : 스킬 모션은 끊지 않는다 (끝나면 애니메이터가 공중이면 Fall로 넘김)
-            anim.SetTrigger(Fall);
+            anim.SetTrigger(AnimatorKeys.Fall);
         }
 
         // [변경] 지금 스킬 모션을 재생 중이거나 그쪽으로 넘어가는 중인지
@@ -286,8 +283,8 @@ namespace PROJECT3D
         // 착지 : 남은 공중 트리거 정리 + 낙하 데미지 (계산은 Player가)
         private void HandleLanded(float fallHeight)
         {
-            anim.ResetTrigger(Fall);
-            anim.ResetTrigger(Jump);
+            anim.ResetTrigger(AnimatorKeys.Fall);
+            anim.ResetTrigger(AnimatorKeys.Jump);
             Player.ApplyFallDamage(fallHeight);
         }
 
@@ -321,7 +318,7 @@ namespace PROJECT3D
         {
             if (anim.IsInTransition(0)) return false;
             AnimatorStateInfo state = anim.GetCurrentAnimatorStateInfo(0);
-            return state.IsName(DeadStateName) && state.normalizedTime >= 1f;
+            return state.shortNameHash == AnimatorKeys.DeadState && state.normalizedTime >= 1f;
         }
 
         #endregion

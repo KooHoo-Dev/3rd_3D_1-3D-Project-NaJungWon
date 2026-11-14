@@ -54,11 +54,6 @@ namespace PROJECT3D
         [SerializeField] private float riseDuration = 1f; // 바닥 -> 자기 높이 상승 시간
         public bool SpawnRiseDone = false; // 출현 연출 종료 여부
         
-        protected static readonly int Attack = Animator.StringToHash("Attack");
-        protected static readonly int IsMove = Animator.StringToHash("IsMove");
-        protected static readonly int IsDash = Animator.StringToHash("IsDash");
-        protected static readonly int Die  = Animator.StringToHash("Die");
-
         // 정지(스턴)
         // time초 멈춤을 interval초마다 count번 반복 (BS 마법사 진화 : 0.5초 정지를 1초마다 3번)
         // 정지 중에 또 맞으면 처음부터 다시 센다
@@ -381,7 +376,7 @@ namespace PROJECT3D
             CombatEntity target = GetTargetOrNull();
             if (target == null) return;
             if (Animator == null) Debug.LogWarning($"[EnemyControllerBase] Animator가 null임");
-            Animator.SetTrigger(Attack); // 애니메이터에 "Attack" 트리거가 있을 때만 동작
+            Animator.SetTrigger(AnimatorKeys.Attack); // 애니메이터에 "Attack" 트리거가 있을 때만 동작
             attack.StartFire(target); // (애니메이션 / 딜레이 후 발사)
         }
 
@@ -394,12 +389,12 @@ namespace PROJECT3D
         {
             if (Animator == null) return;
 
-            Animator.SetBool(IsMove, IsMoving);
+            Animator.SetBool(AnimatorKeys.IsMove, IsMoving);
         }
 
         public virtual void StartDead()
         {
-            Animator.SetTrigger(Die);
+            Animator.SetTrigger(AnimatorKeys.Die);
         }
 
         #endregion

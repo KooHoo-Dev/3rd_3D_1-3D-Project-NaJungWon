@@ -6,10 +6,6 @@ namespace PROJECT3D
     // 쿨타임 체크도 부모가 하고, 자식은 Attack()만
     public abstract class WeaponAugment : UnitAttack
     {
-        // 애니메이터 파라미터
-        private static readonly int AttackSpeed = Animator.StringToHash("AttackSpeed");
-        private static readonly int IsAiming    = Animator.StringToHash("IsAiming");
-
         [Header("증강 설정")]
         [SerializeField] protected float searchRange = 10f; // 적을 찾는 범위 (범위 증가 적용)
         [SerializeField] private float fireDistance = 1f; // 몸 중심에서 이만큼 떨어진 곳에서 발사 (범위 증가 적용 안 함)
@@ -192,9 +188,8 @@ namespace PROJECT3D
         {
             if (isUnitWeapon == false || OwnerAnimator == null) return;
 
-            int layerIndex = OwnerAnimator.GetLayerIndex("AttackLayer");
-            if (layerIndex >= 0) OwnerAnimator.SetLayerWeight(layerIndex, 1f);
-            OwnerAnimator.SetFloat(AttackSpeed, Mathf.Max(1f, OwnerStat.AttackSpeed));
+            AnimatorKeys.SetAttackLayerWeight(OwnerAnimator, 1f);
+            OwnerAnimator.SetFloat(AnimatorKeys.AttackSpeed, Mathf.Max(1f, OwnerStat.AttackSpeed));
         }
 
         // 지금 스킬 모션 / 조준 중인지 (이때 기본 무기는 공격 모션 없이 바로 발사)
@@ -204,7 +199,7 @@ namespace PROJECT3D
         private bool IsSkillAnimationPlaying()
         {
             if (Owner.IsSkillMotion) return true;
-            return OwnerAnimator != null && OwnerAnimator.GetBool(IsAiming);
+            return OwnerAnimator != null && OwnerAnimator.GetBool(AnimatorKeys.IsAiming);
         }
 
         #endregion

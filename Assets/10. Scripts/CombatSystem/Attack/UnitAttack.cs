@@ -241,7 +241,7 @@ namespace PROJECT3D
                 Debug.LogWarning($"[UnitAttack] 애니메이터를 찾을 수 없음");
                 return;
             }
-            ownerAnimator.SetTrigger(animationSlot.ToString());
+            ownerAnimator.SetTrigger(AnimatorKeys.GetSlotTrigger(animationSlot));
         }
 
         #endregion

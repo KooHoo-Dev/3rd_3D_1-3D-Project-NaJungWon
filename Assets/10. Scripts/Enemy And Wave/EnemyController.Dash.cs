@@ -26,7 +26,7 @@ namespace PROJECT3D
         [SerializeField] private float restTime = 1f;      // 돌진 후 멈춰 있는 시간
 
         [Header("돌진 데미지")]
-        [SerializeField] private HitUnit dashHitPrefab;       // [변경] hitRadius 대신 : 돌진하는 동안 몸을 따라가는 범위 공격 (SummonHit. 반경 / 이펙트는 프리팹에서)
+        [SerializeField] private HitUnit dashHitPrefab;       // 돌진하는 동안 몸을 따라가는 범위 공격
         [SerializeField] private float damageMultiplier = 2f; // 표의 Damage에 곱할 배율 (BS: 돌진 중 2배)
 
         [Header("범위표시 (DTT Line Region. 몹 프리팹 자식)")]
@@ -143,8 +143,8 @@ namespace PROJECT3D
         {
             base.UpdateAnimation();
             bool isDash = state == DashState.Dash;
-            Animator.SetBool(IsDash, isDash);
-            if (isDash) Animator.SetBool(IsMove, false);
+            Animator.SetBool(AnimatorKeys.IsDash, isDash);
+            if (isDash) Animator.SetBool(AnimatorKeys.IsMove, false);
         }
 
         #endregion

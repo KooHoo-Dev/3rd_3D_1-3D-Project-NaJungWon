@@ -11,13 +11,14 @@ namespace PROJECT3D
     public class AirNormal : EnemyControllerBase
     {
         [Header("공중 설정")]
-        [SerializeField] private float hoverHeight = 3f;       // 발밑 표면에서 떠 있는 기본 높이
-        [SerializeField] private float abovePlayer = 2f;       // 플레이어가 바닥에 있을 때 그 위로 뜰 높이
-        [SerializeField] private float flyClearance = 1f;      // 장애물 꼭대기와 띄울 여유 높이
-        [SerializeField] private float lookAhead = 1f;         // 앞쪽 장애물을 검사할 거리 (보통 칸 크기)
+        [SerializeField] private float hoverHeight  = 3f; // 발밑 표면에서 떠 있는 기본 높이
+        [SerializeField] private float abovePlayer  = 2f; // 플레이어가 바닥에 있을 때 그 위로 뜰 높이
+        [SerializeField] private float flyClearance = 1f; // 장애물 꼭대기와 띄울 여유 높이
+        [SerializeField] private float lookAhead    = 1f; // 앞쪽 장애물을 검사할 거리 (보통 칸 크기)
 
-        private float aheadSurfaceY = float.MinValue; // 앞쪽 표면 높이 (ApplyMovement에서 재고 UpdateHeight에서 쓴다)
-        private CharacterController3D playerMovement; // 플레이어 접지 판정용
+        // 내부 설정
+        private float                 aheadSurfaceY = float.MinValue; // 앞쪽 표면 높이 (ApplyMovement에서 재고 UpdateHeight에서 쓴다)
+        private CharacterController3D playerMovement;                 // 플레이어 접지 판정용
 
         #region UnityMethod
 

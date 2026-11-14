@@ -8,29 +8,30 @@ namespace PROJECT3D
     // 씬의 지형을 검사하여 타일 정보를 채운다. 방향 계산은 하지 않는다.
     public class MapGrid : MonoBehaviour
     {
-        public static MapGrid Instance { get; private set; }
-        public SquareGrid Grid { get; private set; }
-        public event Action OnGridChanged;
+        [Header("격자 설정 (이 오브젝트 위치가 맵의 왼쪽 아래 기준점)")]
+        public int   width    = 200; // 가로 칸 수
+        public int   depth    = 200; // 세로 칸 수
+        public float cellSize = 1f;  // 칸 크기
 
-        [Header("격자: 이 오브젝트 위치가 맵의 왼쪽 아래 기준점")]
-        public int width = 200;
-        public int depth = 200;
-        public float cellSize = 1f;
+        [Header("레이어 설정")]
+        public LayerMask groundMask;   // 바닥 레이어
+        public LayerMask obstacleMask; // 장애물 레이어
 
-        [Header("바닥/장애물 레이어")]
-        public LayerMask groundMask;
-        public LayerMask obstacleMask;
+        [Header("몹 이동 기준 설정")]
+        public float mobHeight      = 1.8f; // 몹 키 (바닥 위에 이만큼 빈 공간이 있어야 이동 가능)
+        public float maxStepUp      = 1f;   // 옆 칸으로 오를 수 있는 높이
+        public float maxDropDown    = 4f;   // 옆 칸으로 내려갈 수 있는 높이
+        [Range(0f, 89f)]
+        public float maxSlopeAngle  = 40f;  // 이보다 가파르면 막힌 칸
+        public float rayStartHeight = 100f; // 굽기 레이를 쏘기 시작할 높이 (가장 높은 지형보다 높게)
 
-        [Header("몹 이동 기준")]
-        public float mobHeight = 1.8f;
-        public float maxStepUp = 1f;
-        public float maxDropDown = 4f;
-        [Range(0f, 89f)] public float maxSlopeAngle = 40f;
-        public float rayStartHeight = 100f;
+        [Header("굽기 설정")]
+        [SerializeField] private int rowsPerFrame = 20; // 한 프레임에 굽는 줄 수 (크면 빨리 끝나지만 화면이 멈칫한다)
 
-        [Header("굽기")]
-        // 한 프레임에 굽는 줄 수 (크면 빨리 끝나지만 화면이 멈칫한다고 한다.)
-        [SerializeField] private int rowsPerFrame = 20;
+        // 외부 공개
+        public static MapGrid Instance { get; private set; } // 씬에 하나
+        public SquareGrid     Grid     { get; private set; } // 칸 데이터
+        public event Action   OnGridChanged;                 // 굽기 / 다시 굽기가 끝났을 때
 
         #region UnityMethod
 

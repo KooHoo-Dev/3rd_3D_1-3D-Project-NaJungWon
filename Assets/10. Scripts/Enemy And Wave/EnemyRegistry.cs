@@ -7,28 +7,23 @@ namespace PROJECT3D
     // 몹을 '칸(cell)'별 리스트로 나눠 담아 두고, 주변 칸만 검사.
     public static class EnemyRegistry
     {
-        [Header("기본 설정")]
-        // 칸 크기. separationDistance(1.5)보다 크게 잡으면 주변 9칸만 보면 된다.
-        // MapGrid의 칸(지형용)과는 다른, 몹 검색 전용 칸이다.
+        // 몹 검색 전용 칸 크기. separationDistance(1.5)보다 크게 잡으면 주변 9칸만 보면 된다
+        //  (MapGrid의 칸(지형용)과는 다른 칸)
         private const float CellSize = 2f;
-        
-        // 칸 좌표 → 그 칸에 있는 몹들
-        private static readonly Dictionary<Vector2Int, List<Enemy>> cells = new Dictionary<Vector2Int, List<Enemy>>();
 
-        // FindNearest에서 후보를 담아 둘 리스트 (매번 new 하지 않고 재사용)
-        private static List<Enemy> nearestBuffer = new List<Enemy>();
-        
+        // 외부 공개
+        public static int Count       { get; private set; }  // 지금 명부에 있는(살아 있는) 몹 수
+        public static int RisingCount { get; private set; }  // 출현 연출 중인 몹 수 (소환 수 제한은 올라오는 중인 몹도 세야 해서 따로 센다)
+        public static int AliveCount  => Count + RisingCount; // 소환 수 제한용 : 명부 + 올라오는 중
+
+        // 내부 설정
+        private static readonly Dictionary<Vector2Int, List<Enemy>> cells = new Dictionary<Vector2Int, List<Enemy>>(); // 칸 좌표 → 그 칸에 있는 몹들
+        private static List<Enemy> nearestBuffer = new List<Enemy>(); // FindNearest 후보 (매번 new 하지 않고 재사용)
+
         // 등록된 몹 중 '몹 위치(피벗)에서 피격 원통의 가장 먼 모서리까지' 가장 긴 거리.
         // 격자는 피벗 위치로 나뉘어 있어서, 공격 판정 때 이만큼 넉넉하게 후보를 가져와야
         // 몸이 크거나 HitPivot이 피벗에서 떨어진 몹을 놓치지 않는다.
         private static float maxHitReach = 0f;
-
-        public static int Count { get; private set; } // 새로 추가 : 지금 명부에 있는(살아 있는) 몹 수
-
-        [Header("출현 연출 설정")]
-        // 소환 수 제한(WaveManager)은 올라오는 중인 몹도 세야 해서 따로 센다
-        public static int RisingCount { get; private set; } // 출현 연출 중인 몹 수
-        public static int AliveCount => Count + RisingCount; // 소환 수 제한용 : 명부 + 올라오는 중
 
         #region 외부 설정
 
@@ -53,7 +48,7 @@ namespace PROJECT3D
         {
             enemy.RegistryCell = ToCell(enemy.transform.position);
             GetOrCreateCell(enemy.RegistryCell).Add(enemy);
-            Count++; // 새로 추가
+            Count++;
 
             // 피벗 → 원통 중심 거리 + 원통 중심 → 가장 먼 모서리 거리(√(반경² + 절반높이²))
             float offset = (enemy.HitCenter - enemy.transform.position).magnitude;
@@ -76,7 +71,7 @@ namespace PROJECT3D
             Vector2Int now = ToCell(enemy.transform.position);
             if (now == enemy.RegistryCell) return; // 같은 칸이면 할 일 없음
 
-            // [변경] Unregister(enemy) → 이전 칸 리스트에서만 빼기
+            // Unregister(enemy) → 이전 칸 리스트에서만 빼기
             //  Unregister는 몹 수(Count)도 줄여서, 칸을 옮길 때마다 Count가 1씩 줄었다 (다시 더하지 않음)
             //  → 살아 있는 몹 수가 실제보다 작게 세져서 최대 몹 수(maxAliveEnemies) 제한이 안 걸리고,
             //    MinAlive(너무 적으면 바로 채움)가 계속 켜져 상시 소환이 끝없이 나오던 문제

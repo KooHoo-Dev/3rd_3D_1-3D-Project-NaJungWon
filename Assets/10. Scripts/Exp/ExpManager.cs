@@ -10,24 +10,24 @@ namespace PROJECT3D
     // - 시간이 지날수록 큰 경험치 구슬이 나올 확률이 오른다
     public class ExpManager : MonoBehaviour
     {
-        public static ExpManager Instance { get; private set; }
-        
-        [Header("큰 구슬 확률 = 시작 + 분당 증가 × 경과 분 (최대값까지)")]
-        [SerializeField] private float startBigOrbChance = 0.05f;
-        [SerializeField] private float bigOrbChancePerMinute = 0.02f; // [변경] 0.01 → 0.02 (10분에 25%)
-        [SerializeField] private float maxBigOrbChance = 0.8f;
+        [Header("큰 구슬 확률 설정 (시작 + 분당 증가 × 경과 분, 최대값까지)")]
+        [SerializeField] private float startBigOrbChance     = 0.05f; // 시작 확률
+        [SerializeField] private float bigOrbChancePerMinute = 0.02f; // 1분마다 늘어나는 확률 (10분에 25%)
+        [SerializeField] private float maxBigOrbChance       = 0.8f;  // 최대 확률
 
-        [Header("참조")]
-        [SerializeField] private AugmentSelectPanel selectPanel;
+        [Header("참조 설정")]
+        [SerializeField] private AugmentSelectPanel selectPanel; // 레벨업 증강 선택창
 
-        public int Level { get; private set; } = 1;
-        public float CurrentExp { get; private set; }
-        public int RequiredExp => TableLoader.Instance.LevelTable.GetRequiredExp(Level);
+        // 외부 공개
+        public static ExpManager Instance { get; private set; }                                     // 씬에 하나
+        public int   Level       { get; private set; } = 1;                                         // 현재 레벨
+        public float CurrentExp  { get; private set; }                                              // 현재 경험치
+        public int   RequiredExp => TableLoader.Instance.LevelTable.GetRequiredExp(Level);          // 다음 레벨까지 필요 경험치
+        public event Action<float> OnExpChanged;   // 경험치 바 (0 ~ 1)
+        public event Action<int>   OnLevelChanged; // 레벨 글자
 
+        // 내부 설정
         private int pendingLevelUp; // 아직 선택창을 열지 못한 레벨업 수
-
-        public event Action<float> OnExpChanged; // 경험치 바 (0 ~ 1)
-        public event Action<int> OnLevelChanged; // 레벨 글자
 
         #region UnityMethod
 
@@ -41,7 +41,7 @@ namespace PROJECT3D
         {
             // 선택창이 닫혀 있을 때만 남은 레벨업을 하나씩 연다
             if (pendingLevelUp <= 0) return;
-            if (selectPanel.IsOpen) return; // [변경] activeSelf → IsOpen (씬에 켜진 채 저장돼 있으면 영영 안 열리던 버그)
+            if (selectPanel.IsOpen) return; // activeSelf → IsOpen (씬에 켜진 채 저장돼 있으면 영영 안 열리던 버그)
 
             pendingLevelUp--;
             selectPanel.OpenLevelUp();

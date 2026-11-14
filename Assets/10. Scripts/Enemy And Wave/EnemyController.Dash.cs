@@ -21,25 +21,26 @@ namespace PROJECT3D
 
         [Header("돌진 설정")]
         [SerializeField] private float dashCooldown = 5f;  // 돌진 쿨타임
-        [SerializeField] private float readyTime = 1f;     // 범위표시가 차오르는 시간 (Fill Progress 0 → 1)
-        [SerializeField] private float dashSpeed = 20f;    // 돌진 속도
-        [SerializeField] private float restTime = 1f;      // 돌진 후 멈춰 있는 시간
+        [SerializeField] private float readyTime    = 1f;  // 범위표시가 차오르는 시간 (Fill Progress 0 → 1)
+        [SerializeField] private float dashSpeed    = 20f; // 돌진 속도
+        [SerializeField] private float restTime     = 1f;  // 돌진 후 멈춰 있는 시간
 
-        [Header("돌진 데미지")]
-        [SerializeField] private HitUnit dashHitPrefab;       // 돌진하는 동안 몸을 따라가는 범위 공격
-        [SerializeField] private float damageMultiplier = 2f; // 표의 Damage에 곱할 배율 (BS: 돌진 중 2배)
+        [Header("돌진 데미지 설정")]
+        [SerializeField] private HitUnit dashHitPrefab;         // 돌진하는 동안 몸을 따라가는 범위 공격
+        [SerializeField] private float   damageMultiplier = 2f; // 표의 Damage에 곱할 배율 (BS: 돌진 중 2배)
 
-        [Header("범위표시 (DTT Line Region. 몹 프리팹 자식)")]
-        [SerializeField] private LineRegion dashWarning; // Line 3 Region을 자식으로 넣고 연결 (없으면 범위표시 없이 돌진)
-        [SerializeField] private float warningHeight = 0.05f; // 바닥에서 살짝 띄우기 (바닥과 겹쳐 깜빡이지 않게)
+        [Header("범위표시 설정 (DTT Line Region. 몹 프리팹 자식)")]
+        [SerializeField] private LineRegion dashWarning;            // Line 3 Region을 자식으로 넣고 연결 (없으면 범위표시 없이 돌진)
+        [SerializeField] private float      warningHeight = 0.05f;  // 바닥에서 살짝 띄우기 (바닥과 겹쳐 깜빡이지 않게)
 
-        private DashState state;
-        private Vector3 dashDirection; // 준비 시작 때 정한 돌진 방향 (돌진 중에는 안 바뀐다)
-        private Vector3 dashStart;     // 돌진 시작 위치 (간 거리 재기용)
-        private float stateTimer;      // 지금 상태에서 남은 시간
-        private SummonHit dashHit;     // 이번 돌진에 띄운 범위 공격
+        // 내부 설정
+        private DashState state;         // 지금 상태
+        private Vector3   dashDirection; // 준비 시작 때 정한 돌진 방향 (돌진 중에는 안 바뀐다)
+        private Vector3   dashStart;     // 돌진 시작 위치 (간 거리 재기용)
+        private float     stateTimer;    // 지금 상태에서 남은 시간
+        private SummonHit dashHit;       // 이번 돌진에 띄운 범위 공격
 
-        private float DashDistance => attackRange * 2f; // 돌진 거리
+        private float DashDistance => attackRange * 2f; // 돌진 거리 (플레이어를 지나 반대편 같은 거리까지)
 
         // 돌진 중일 때만 속도를 변경
         protected override float MoveSpeed => state == DashState.Dash ? dashSpeed : base.MoveSpeed;

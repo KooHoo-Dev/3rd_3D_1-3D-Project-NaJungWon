@@ -7,12 +7,13 @@ namespace PROJECT3D
     // 한 격자의 타일에 결과를 저장하므로, 한 격자에는 하나의 공유 흐름장을 사용한다.
     public class FlowField
     {
-        private readonly MapGrid map;
-        private readonly SquareGrid grid;
-        private readonly Queue<Tile> searchQueue = new Queue<Tile>();
+        private const int UnreachedSearchRadius = 10; // 플레이어 주변 이 칸 수 안에서 못 닿은 땅을 찾는다
+        private const int MaxExtraTargets       = 4;  // 못 닿은 땅 덩어리를 최대 몇 개까지 이어 줄지
 
-        private const int UnreachedSearchRadius = 10; // 새로 추가 : 플레이어 주변 이 칸 수 안에서 못 닿은 땅을 찾는다
-        private const int MaxExtraTargets = 4;        // 새로 추가 : 못 닿은 땅 덩어리를 최대 몇 개까지 이어 줄지
+        // 내부 설정
+        private readonly MapGrid     map;                            // 이동 가능 판정
+        private readonly SquareGrid  grid;                           // 칸 데이터
+        private readonly Queue<Tile> searchQueue = new Queue<Tile>(); // 거리 계산(BFS) 대기열 (재사용)
 
         #region 외부 설정
 
@@ -29,7 +30,7 @@ namespace PROJECT3D
             ResetTiles();
             AddTargets(targets);
             FillDistances();
-            AddUnreachedTargets(targets); // 새로 추가 : 경사 때문에 못 올라가는 곳에 플레이어가 있을 때
+            AddUnreachedTargets(targets); // 경사 때문에 못 올라가는 곳에 플레이어가 있을 때
             FillDirections();
         }
 
@@ -45,7 +46,7 @@ namespace PROJECT3D
             return tile.DirectionVector;
         }
 
-        // 새로 추가 : 흐름장이 가리키는 다음 칸의 가운데 (방향이 없으면 false)
+        // 흐름장이 가리키는 다음 칸의 가운데 (방향이 없으면 false)
         //  - 칸 가장자리에서 방향 그대로 걸으면 옆 칸(턱)으로 들어가 막힐 수 있어서, 막혔을 때 다음 칸 가운데를 향해 걷는다
         public bool TryGetNextPoint(Vector3 worldPosition, out Vector3 point)
         {
@@ -102,7 +103,7 @@ namespace PROJECT3D
             }
         }
 
-        // ===== 새로 추가 : 플레이어에게 못 닿는 땅도 플레이어 근처로 모이게 =====
+        // 플레이어에게 못 닿는 땅도 플레이어 근처로 모이게
         // 플레이어가 경사 때문에 못 올라가는 곳(Ground 레이어라 이동 가능 칸)에 있으면, 아래 땅은 거리가 없어서(-1) 몹이 멈췄다
         // → 장애물(Obstacle) 위에 있을 때처럼(AddTargets의 FindNearestWalkable) 플레이어와 가장 가까운 "못 닿은 칸"을 목표로 하나 더 넣는다
         //   그 덩어리의 몹은 그 칸(경사 밑)으로 모인다. 덩어리가 여러 개면 MaxExtraTargets번까지 반복
@@ -144,7 +145,6 @@ namespace PROJECT3D
             }
             return nearest;
         }
-        // ===== 새로 추가 끝 =====
 
         private void FillDistances()
         {

@@ -10,43 +10,43 @@ namespace PROJECT3D
     // 소환 시점의 시간에 맞춰 체력 / 공격력이 강해짐
     public class WaveManager : SingletonBase<WaveManager>
     {
-        [Header("Settings")]
-        public MapGrid mapGrid;
+        [Header("참조 설정")]
+        public MapGrid mapGrid; // 소환 자리 검사용 (Init에서 넣는다)
 
-        [Header("이벤트 소환 (waves.tsv)")]
-        private readonly List<WaveDef> waveDefs = new(); // ID 순서대로 정렬된 웨이브 리스트
-        private int nextWaveIndex = 0;                   // 다음에 시작할 웨이브 번호
-        private float elapsed;                           // 웨이브 시작 후 누적 시간(초)
+        [Header("상시 소환 설정 (spawnRules.tsv)")]
+        [SerializeField] private int maxAliveEnemies = 300; // 이벤트 포함 전체 최대 몹 수 (상시 소환은 표의 MaxAlive로 시간대별 제한)
 
-        [Header("상시 소환 (spawnRules.tsv)")]
-        [SerializeField] private int maxAliveEnemies = 300;           // [변경] 800 → 300 : 이벤트 포함 전체 최대 몹 수 (상시 소환은 표의 MaxAlive로 시간대별 제한)
-        private readonly List<SpawnRuleDef> spawnRules = new();       // 상시 소환 규칙
-        private float[] ruleTimers = new float[0];                    // 규칙마다 다음 소환까지 남은 시간 (규칙과 같은 순서)
-
-        [Header("시간 비례 강화 (1분마다 곱해지는 비율)")]
-        [SerializeField] private float hpGrowthPerMinute = 0.2f;      // [변경] 0.25 → 0.2 : 1분마다 체력 x1.2 (5분 약 2.5배, 10분 약 6.2배)
-        [SerializeField] private float damageGrowthPerMinute = 0.15f; // 0.15 = 1분마다 공격력 x1.15 (10분이면 약 4배)
+        [Header("시간 비례 강화 설정 (1분마다 곱해지는 비율)")]
+        [SerializeField] private float hpGrowthPerMinute     = 0.2f;  // 1분마다 체력 x1.2 (5분 약 2.5배, 10분 약 6.2배)
+        [SerializeField] private float damageGrowthPerMinute = 0.15f; // 1분마다 공격력 x1.15 (10분이면 약 4배)
 
         [Header("스폰 위치 설정")]
-        [SerializeField] private float minSpawnDistance = 8f; // 플레이어와의 최소거리
-        [SerializeField] private float maxSpawnDistance = 30f; // 플레이어와의 최대거리 // 새로 추가
-        // 새로 추가 : 상시 소환은 더 멀리 넓게 (이벤트 거리의 약 3배). 가까운 링에 계속 쌓이면 플레이어 주변에 몰려서
-        [SerializeField] private float ruleMinSpawnDistance = 12f; // 상시 소환 : 플레이어와의 최소거리
-        [SerializeField] private float ruleMaxSpawnDistance = 30f; // 상시 소환 : 플레이어와의 최대거리
-        [SerializeField] private float minEnemyGap = 2f; // 몹끼리 최소 간격
-        [SerializeField] private int maxTryCount = 20; //최대 시도 횟수
+        [SerializeField] private float minSpawnDistance     = 8f;   // 이벤트 소환 : 플레이어와의 최소거리
+        [SerializeField] private float maxSpawnDistance     = 30f;  // 이벤트 소환 : 플레이어와의 최대거리
+        [SerializeField] private float ruleMinSpawnDistance = 12f;  // 상시 소환 : 플레이어와의 최소거리 (가까운 링에 쌓여 몰리지 않게 더 멀리)
+        [SerializeField] private float ruleMaxSpawnDistance = 30f;  // 상시 소환 : 플레이어와의 최대거리
+        [SerializeField] private float minEnemyGap          = 2f;   // 몹끼리 최소 간격
+        [SerializeField] private int   maxTryCount          = 20;   // 자리 찾기 최대 시도 횟수
+        [SerializeField] private float recentSpawnKeepTime  = 1.5f; // 방금 소환한 자리를 기억하는 시간(초) (몹 riseDuration보다 길게)
 
-        public bool IsWaveActive { get; private set; }
+        // 외부 공개
+        public bool IsWaveActive { get; private set; } // 웨이브 진행 중인지
 
-        private List<Enemy> nearEnemies = new List<Enemy>(); // 겹침 검사용 (재사용)
+        // 내부 설정 : 이벤트 소환 (waves.tsv)
+        private readonly List<WaveDef> waveDefs = new(); // ID 순서대로 정렬된 웨이브 리스트
+        private int                    nextWaveIndex;    // 다음에 시작할 웨이브 번호
+        private float                  elapsed;          // 웨이브 시작 후 누적 시간(초)
 
-        // ===== 새로 추가 : 방금 소환한 자리 (겹침 검사용) =====
-        // 몹은 출현 연출(riseDuration)이 끝나야 EnemyRegistry에 등록돼서, 그 전에는 명부 검사로 안 보인다
-        // → 한 번에 여러 마리를 소환하면 같은 자리에 겹쳐 나오던 문제. 최근 소환 자리를 따로 기억해서 같이 검사
-        [SerializeField] private float recentSpawnKeepTime = 1.5f; // 이 시간(초) 동안 기억 (몹 riseDuration보다 길게)
-        private List<Vector3> recentSpawnPositions = new List<Vector3>();
-        private List<float> recentSpawnTimes = new List<float>();   // 각 자리를 소환한 시각 (elapsed 기준)
-        // ===== 새로 추가 끝 =====
+        // 내부 설정 : 상시 소환 (spawnRules.tsv)
+        private readonly List<SpawnRuleDef> spawnRules = new();          // 상시 소환 규칙
+        private float[]                     ruleTimers = new float[0];   // 규칙마다 다음 소환까지 남은 시간 (규칙과 같은 순서)
+
+        // 내부 설정 : 소환 자리 겹침 검사
+        //  몹은 출현 연출(riseDuration)이 끝나야 EnemyRegistry에 등록돼서, 그 전에는 명부 검사로 안 보인다
+        //  → 한 번에 여러 마리를 소환하면 같은 자리에 겹쳐 나오던 문제. 최근 소환 자리를 따로 기억해서 같이 검사
+        private List<Enemy>   nearEnemies          = new List<Enemy>();   // 주변 몹 (재사용)
+        private List<Vector3> recentSpawnPositions = new List<Vector3>(); // 방금 소환한 자리
+        private List<float>   recentSpawnTimes     = new List<float>();   // 각 자리를 소환한 시각 (elapsed 기준)
 
         #region UnityMethod
 
@@ -76,7 +76,7 @@ namespace PROJECT3D
             for (int i = 0; i < waveTable.Count; i++)
                 waveDefs.Add(waveTable.Get(i));
 
-            // 새로 추가 : 상시 소환 규칙
+            // 상시 소환 규칙
             SpawnRuleTable ruleTable = TableLoader.Instance.SpawnRuleTable;
             spawnRules.Clear();
             for (int i = 0; i < ruleTable.Count; i++)
@@ -90,9 +90,9 @@ namespace PROJECT3D
         {
             elapsed = 0f;
             nextWaveIndex = 0;
-            recentSpawnPositions.Clear(); // 새로 추가
-            recentSpawnTimes.Clear();     // 새로 추가
-            for (int i = 0; i < ruleTimers.Length; i++) ruleTimers[i] = 0f; // 새로 추가 : 시작하자마자 첫 소환
+            recentSpawnPositions.Clear();
+            recentSpawnTimes.Clear();
+            for (int i = 0; i < ruleTimers.Length; i++) ruleTimers[i] = 0f; // 시작하자마자 첫 소환
             IsWaveActive = true;
         }
 
@@ -129,7 +129,7 @@ namespace PROJECT3D
                 if (elapsed < rule.StartTime || elapsed >= rule.EndTime) continue; // 이 규칙의 구간이 아님
 
                 ruleTimers[i] -= deltaTime;
-                if (rule.MaxAlive > 0 && EnemyRegistry.AliveCount >= rule.MaxAlive) continue; // 새로 추가 : 이 시간대 상시 최대 몹 수에 닿으면 대기 (줄어들면 바로 소환)
+                if (rule.MaxAlive > 0 && EnemyRegistry.AliveCount >= rule.MaxAlive) continue; // 이 시간대 상시 최대 몹 수에 닿으면 대기 (줄어들면 바로 소환)
 
                 bool isTooFew = EnemyRegistry.AliveCount < rule.MinAlive; // 맵에 몹이 너무 적으면 주기를 안 기다리고 소환
                 if (ruleTimers[i] > 0f && isTooFew == false) continue;
@@ -143,7 +143,7 @@ namespace PROJECT3D
 
         #region 공용 소환
 
-        // [변경] minDistance / maxDistance 추가 : 이벤트 / 상시 소환이 다른 거리를 쓴다
+        // minDistance / maxDistance 추가 : 이벤트 / 상시 소환이 다른 거리를 쓴다
         private void SpawnEnemies(EnemyDef def, int count, float minDistance, float maxDistance)
         {
             if (def == null) return;
@@ -153,8 +153,8 @@ namespace PROJECT3D
             float hpRate = Mathf.Pow(1f + hpGrowthPerMinute, minutes);
             float damageRate = Mathf.Pow(1f + damageGrowthPerMinute, minutes);
 
-            RemoveOldSpawnPositions(); // 새로 추가 : 연출이 끝나 명부에 올라간 몹의 자리는 지운다
-            int skipCount = 0;         // 새로 추가 : 자리를 못 찾아 건너뛴 수 (로그용)
+            RemoveOldSpawnPositions(); // 연출이 끝나 명부에 올라간 몹의 자리는 지운다
+            int skipCount = 0;         // 자리를 못 찾아 건너뛴 수 (로그용)
 
             for (int i = 0; i < count; i++)
             {
@@ -179,16 +179,16 @@ namespace PROJECT3D
                 enemy.Init(def, hpRate, damageRate); // 시간 비례 강화
                 enemy.gameObject.SetActive(true);
 
-                // 새로 추가 : 이 자리를 기억 (같은 소환 / 바로 다음 소환의 몹이 겹치지 않게)
+                // 이 자리를 기억 (같은 소환 / 바로 다음 소환의 몹이 겹치지 않게)
                 recentSpawnPositions.Add(spawnPosition);
                 recentSpawnTimes.Add(elapsed);
             }
 
-            // 새로 추가 : 플레이어 주변 링(min ~ maxSpawnDistance)이 좁아 자리가 모자라면 여기 찍힌다
+            // 플레이어 주변 링(min ~ maxSpawnDistance)이 좁아 자리가 모자라면 여기 찍힌다
             if (skipCount > 0) Debug.Log($"[WaveManager] {def.Name} {count}마리 중 {skipCount}마리는 빈 자리를 못 찾아 생략");
         }
 
-        // 새로 추가 : recentSpawnKeepTime이 지난 자리 지우기
+        // recentSpawnKeepTime이 지난 자리 지우기
         private void RemoveOldSpawnPositions()
         {
             for (int i = recentSpawnTimes.Count - 1; i >= 0; i--)
@@ -204,7 +204,7 @@ namespace PROJECT3D
         #region 스폰 위치
 
         // 스폰 좌표 지정
-        // [변경] 거리 범위를 매개변수로 (이벤트 = min/maxSpawnDistance, 상시 = ruleMin/ruleMaxSpawnDistance)
+        // 거리 범위를 매개변수로 (이벤트 = min/maxSpawnDistance, 상시 = ruleMin/ruleMaxSpawnDistance)
         private bool TrySpawnPosition(float minDistance, float maxDistance, out Vector3 position)
         {
             for (int i = 0; i < maxTryCount; i++)
@@ -238,9 +238,9 @@ namespace PROJECT3D
         private bool IsOverlappingEnemies(Vector3 position)
         {
             EnemyRegistry.FindInRange(position, minEnemyGap, ref nearEnemies);
-            if (nearEnemies.Count > 0) return true; // [변경]
+            if (nearEnemies.Count > 0) return true;
 
-            // 새로 추가 : 아직 명부에 없는(출현 연출 중인) 방금 소환한 자리와도 비교 (높이는 무시)
+            // 아직 명부에 없는(출현 연출 중인) 방금 소환한 자리와도 비교 (높이는 무시)
             float gapSqr = minEnemyGap * minEnemyGap;
             for (int i = 0; i < recentSpawnPositions.Count; i++)
             {
@@ -248,7 +248,7 @@ namespace PROJECT3D
                 offset.y = 0f;
                 if (offset.sqrMagnitude < gapSqr) return true;
             }
-            return false; // [변경]
+            return false;
         }
 
         #endregion

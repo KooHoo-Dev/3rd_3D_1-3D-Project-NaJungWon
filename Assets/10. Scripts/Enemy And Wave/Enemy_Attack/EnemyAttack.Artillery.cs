@@ -11,8 +11,8 @@ namespace PROJECT3D
     public class Artillery : EnemyAttack
     {
         [Header("포격 설정")]
-        [SerializeField] private HitUnit zonePrefab; // SummonHit 프리팹
-        [SerializeField] private float groundOffset = 0.01f; // 바닥에서 살짝 띄우기 (바닥과 딱 겹치면 범위표시가 안 보임)
+        [SerializeField] private HitUnit zonePrefab;           // SummonHit 프리팹
+        [SerializeField] private float   groundOffset = 0.01f; // 바닥에서 살짝 띄우기 (바닥과 딱 겹치면 범위표시가 안 보임)
 
         #region 외부 설정
 

@@ -8,55 +8,56 @@ namespace PROJECT3D
     // - 공격 내용은 프리팹에 붙은 EnemyAttack 컴포넌트가 실행 (없으면 추격 전용 몹)
     public abstract class EnemyControllerBase : MonoBehaviour
     {
-        [Header("Settings")]
-        protected Enemy Enemy { get; private set; }
-        protected Animator Animator { get; private set; }
-        private MapGrid MapGrid => MapGrid.Instance;
-        private FlowField Field => FlowFieldManager.Instance.Field;
-        
         [Header("분리(Separate) 설정")]
         [SerializeField] protected float separationDistance = 1.5f; // 몹끼리 멀어지는 거리
-        // 분리(Separate) 계산 때 주변 몹을 담아 두는 통 (매 프레임 새로 만들지 않고 재사용)
-        private List<Enemy> nearMonsters = new List<Enemy>();
-        
-        [Header("공격 설정")]
-        [SerializeField] private EnemyAttack attack; // 프리팹에 붙은 공격 컴포넌트 (없으면 추격 전용 몹)
-        [SerializeField] protected float attackRange = 1.5f; // 공격을 시작하는 거리
-        [SerializeField] private float attackDelay = 0.5f; //공격 딜레이
-        private float attackTimer;  // 공격 쿨타임 재기용
 
-        // 접촉 데미지 (모든 몹 공통)
-        [Header("접촉 데미지")]
-        [SerializeField] private float contactInterval = 1f;   // 같은 몹이 다시 접촉 데미지를 주기까지 (초)
+        [Header("공격 설정")]
+        [SerializeField] private   EnemyAttack attack;             // 프리팹에 붙은 공격 컴포넌트 (없으면 추격 전용 몹)
+        [SerializeField] protected float       attackRange = 1.5f; // 공격을 시작하는 거리
+
+        [Header("접촉 데미지 설정")]
+        [SerializeField] private float contactInterval   = 1f; // 같은 몹이 다시 접촉 데미지를 주기까지 (초)
         [SerializeField] private float contactDamageRate = 1f; // 공격력의 몇 배 (1 = 공격력 그대로, 0 = 접촉 데미지 없음)
-        private float contactTimer;                            // 다음 접촉 데미지까지 남은 시간
 
         [Header("이동 설정")]
         [SerializeField] private float moveSmooth = 8f; // 방향 전환 보간 속도 (클수록 빨리 꺾는다)
-        private Vector3 smoothChase;                    // 보간된 추격 방향 (칸마다 바뀌는 흐름장 방향을 부드럽게)
-        protected virtual float MoveSpeed => Enemy.Unit.Speed;
-        protected bool IsMoving { get; set; } // 추격 중인지 여부
-        
+
         [Header("회전 설정")]
         [SerializeField] private float turnSpeed = 10f; // 회전 보간 속도 (클수록 빨리 돈다)
-        protected Vector3 LookDirection { get; set; }   // 바라볼 수평 방향 (Vector3.zero면 회전 안 함)
-        
+
         [Header("접지 설정")]
-        [SerializeField] protected float yOffset = 0f;         // 몹좌표 offset // 새로 추가
-        [SerializeField] protected float heightSpeedRatio = 2f;  // 오르내리는 속도 = 이동속도의 몇 배
-        [SerializeField] private BodyTilt bodyTilt;              // 모델 기울기 연출 (공중몹은 비워 둔다)
-        private Vector3 groundNormal = Vector3.up;               // 높이 레이가 맞힌 바닥 방향
-        
+        [SerializeField] protected float    yOffset          = 0f; // 바닥에서 띄우는 높이 (몹 좌표 offset)
+        [SerializeField] protected float    heightSpeedRatio = 2f; // 오르내리는 속도 = 이동속도의 몇 배
+        [SerializeField] private   BodyTilt bodyTilt;              // 모델 기울기 연출 (공중몹은 비워 둔다)
+
         [Header("연출 설정")]
         [SerializeField] private float riseDuration = 1f; // 바닥 -> 자기 높이 상승 시간
-        public bool SpawnRiseDone = false; // 출현 연출 종료 여부
-        
-        // 정지(스턴)
-        // time초 멈춤을 interval초마다 count번 반복 (BS 마법사 진화 : 0.5초 정지를 1초마다 3번)
-        // 정지 중에 또 맞으면 처음부터 다시 센다
+
+        // 외부 공개
+        public    bool     SpawnRiseDone = false;             // 출현 연출 종료 여부
+        protected Enemy    Enemy         { get; private set; } // 이 몹
+        protected Animator Animator      { get; private set; } // 몹 애니메이터
+        protected bool     IsMoving      { get; set; }         // 추격 중인지 여부
+        protected Vector3  LookDirection { get; set; }         // 바라볼 수평 방향 (Vector3.zero면 회전 안 함)
+        protected virtual float MoveSpeed => Enemy.Unit.Speed; // 이동 속도 (돌진 몹 등은 재정의)
+
+        // 내부 설정 : 참조
+        private MapGrid   MapGrid => MapGrid.Instance;                 // 이동 가능 / 높이 판정
+        private FlowField Field   => FlowFieldManager.Instance.Field;  // 추격 방향
+
+        // 내부 설정 : 이동 / 공격
+        private List<Enemy> nearMonsters = new List<Enemy>(); // 분리 계산 때 주변 몹 (매 프레임 새로 만들지 않고 재사용)
+        private Vector3     smoothChase;                       // 보간된 추격 방향 (칸마다 바뀌는 흐름장 방향을 부드럽게)
+        private Vector3     groundNormal = Vector3.up;         // 발밑 바닥 방향 (MapGrid 보간값)
+        private float       attackTimer;                       // 공격 쿨타임 재기용
+        private float       contactTimer;                      // 다음 접촉 데미지까지 남은 시간
+
+        // 내부 설정 : 정지(스턴)
+        //  time초 멈춤을 interval초마다 count번 반복 (BS 마법사 진화 : 0.5초 정지를 1초마다 3번)
+        //  정지 중에 또 맞으면 처음부터 다시 센다
         private float stunTime;      // 한 번 멈추는 시간
         private float stunInterval;  // 멈춤 시작 사이 간격
-        private int stunLeftCount;   // 남은 멈춤 횟수
+        private int   stunLeftCount; // 남은 멈춤 횟수
         private float stunTimer;     // 지금 멈춤의 남은 시간
         private float stunNextTimer; // 다음 멈춤까지 남은 시간
 

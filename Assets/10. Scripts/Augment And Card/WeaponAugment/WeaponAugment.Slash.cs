@@ -1,27 +1,24 @@
 ﻿using UnityEngine;
 
-// ===== 새로 추가 : 파일 전체 (전사 기본 무기 검기) =====
 namespace PROJECT3D
 {
     // 전사 기본 무기 : 검기 베기
     //  - 범위(searchRange) 안에 적이 있으면 가장 가까운 적 방향, 없으면 캐릭터 정면으로 벤다 (캐릭터 기준 수평)
     //  - 플레이어 몸 중심에서 그 방향으로 spawnDistance만큼 떨어진 곳에 직육면체(Cube) 범위를 생성
-    //  - 판정 Cube와 이펙트는 몸(BodyPivot) 기울기를 따라 바닥 경사에 맞춰 기운다. 평지에서는 수평 // [변경]
-    //  - 따라가기 / 쓸고 지나가는 판정은 SummonHit 프리팹 설정(followOwner, hitOncePerTarget)으로 정한다 // [변경]
-    //  - 투사체 수만큼 벤다 : 첫 번째는 노린 방향, 나머지는 플레이어 둘레로 같은 간격 (BS 마법사 기본 공격과 같은 배치)
+    //  - 판정 Cube와 이펙트는 몸(BodyPivot) 기울기를 따라 바닥 경사에 맞춰 기운다. 평지에서는 수평
+    //  - 투사체 수만큼 벤다 : 첫 번째는 노린 방향, 나머지는 플레이어 둘레로 같은 간격
     //  - 범위 증가 : 탐색 범위 / 생성 거리 / 판정 크기는 수치로, 이펙트 크기는 HitUnit이 오브젝트 scale로 키운다
     public class Slash : WeaponAugment
     {
-        [Header("검기 베기")]
-        [SerializeField] private SummonHit slashPrefab;      // 베기 범위 (SummonHit, hitShape = Cube)
-        [SerializeField] private float searchRange = 4f;     // 이 무기의 기본 공격 범위 : 이 안의 적을 노린다 (범위 증가 적용)
-        [SerializeField] private float spawnDistance = 1.2f; // 몸 중심에서 이만큼 앞에 생성 (범위 증가 적용)
+        [Header("무기 설정")]
+        [SerializeField] private SummonHit slashPrefab;          // 베기 범위 (SummonHit, hitShape = Cube)
+        [SerializeField] private float     spawnDistance = 1.2f; // 몸 중심에서 이만큼 앞에 생성 (범위 증가 적용)
 
         #region 외부 설정
 
         protected override void Attack()
         {
-            Vector3 aimDirection = GetTargetOrForwardDirection(searchRange); // [변경] 부모(WeaponAugment) 공용 조준 재사용
+            Vector3 aimDirection = GetTargetOrForwardDirection(); // 부모(WeaponAugment) 공용 조준 재사용
 
             int slashCount = GetWeaponProjectileCount(); // 무기 기본 개수 + 플레이어 개수(상점 + 능력증강)
             float angleStep = 360f / slashCount;
@@ -34,20 +31,12 @@ namespace PROJECT3D
             }
         }
 
-        // [변경] 삭제 : GetSlashDirection → 마법사 기본공격도 같은 조준을 써서 부모 GetTargetOrForwardDirection으로 옮김
-
-        // [변경] 탐색 범위 Gizmo는 부모(UnitAttack)가 그린다 (범위 증가 적용값). 여기서는 기본 범위만 알려준다
-        protected override float GetBaseSearchRange()
-        {
-            return searchRange;
-        }
-
         #endregion
 
         #region 내부 설정
 
         // direction 쪽으로 한 번 벤다
-        // [변경] 몸(BodyPivot) 기울기를 따라 벤다 : 경사면에서는 베는 면도 바닥 경사에 맞춰 기운다 (판정 Cube도 같이)
+        // 몸(BodyPivot) 기울기를 따라 벤다 : 경사면에서는 베는 면도 바닥 경사에 맞춰 기운다 (판정 Cube도 같이)
         private void FireSlash(Vector3 direction)
         {
             Vector3 bodyUp = GetBodyUp();
@@ -57,13 +46,13 @@ namespace PROJECT3D
             if (tiltedDirection.sqrMagnitude < 0.01f) tiltedDirection = direction; // 거의 수직 (일어날 일은 거의 없음)
             tiltedDirection.Normalize();
 
-            Vector3 center = Owner.HitCenter + tiltedDirection * ApplyRangeBonus(spawnDistance); // [변경] 기울어진 방향으로 생성
+            Vector3 center = Owner.HitCenter + tiltedDirection * ApplyRangeBonus(spawnDistance); // 기울어진 방향으로 생성
 
             HitUnit hit = FireHit(slashPrefab, center, tiltedDirection, GetDamage());
-            if (hit != null) hit.transform.rotation = Quaternion.LookRotation(tiltedDirection, bodyUp); // [변경] 좌우 기울기까지 몸과 같게
+            if (hit != null) hit.transform.rotation = Quaternion.LookRotation(tiltedDirection, bodyUp); // 좌우 기울기까지 몸과 같게
         }
 
-        // 새로 추가 : 몸(BodyPivot)의 위쪽 = 지금 바닥 기울기 (BodyTilt가 기울인다). 없으면 똑바로 위
+        // 몸(BodyPivot)의 위쪽 = 지금 바닥 기울기 (BodyTilt가 기울인다). 없으면 똑바로 위
         private Vector3 GetBodyUp()
         {
             Player player = Owner as Player;
@@ -74,4 +63,3 @@ namespace PROJECT3D
         #endregion
     }
 }
-// ===== 새로 추가 끝 =====

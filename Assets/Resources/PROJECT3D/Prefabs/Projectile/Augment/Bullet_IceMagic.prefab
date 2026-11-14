@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1437702918653320476}
   - component: {fileID: 8851903327460176297}
+  - component: {fileID: 5200000000000000001}
   m_Layer: 0
   m_Name: Bullet_IceMagic
   m_TagString: Untagged
@@ -145,3 +146,15 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7459070775325551399, guid: 8ee144fa352342747b2c2588f0d5df2d, type: 3}
   m_PrefabInstance: {fileID: 5204417635880937462}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5200000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6620934718235570911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b0f2dcbb985482ebee047b92286b3dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.StunOnHit

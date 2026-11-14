@@ -1,21 +1,15 @@
-﻿using System.Collections.Generic; // 새로 추가
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-// ===== 새로 추가 : 파일 전체 (마법사 기본 무기 전격, BS 프로젝트 WizardAttackSetting / WizardBullet 기반) =====
 namespace PROJECT3D
 {
-    // 마법사 기본 무기 : 전격 구체
-    //  - 조준 : 범위(searchRange) 안 가장 가까운 적 쪽, 없으면 캐릭터 정면 (검기와 같은 공용 조준)
-    //  - 투사체 수만큼 플레이어 둘레에 같은 간격으로 생성 → 첫 번째는 조준 방향, 나머지는 자기 방향 칸 안의 적 쪽 (없으면 바깥쪽 직진) // [변경]
-    //  - 구체는 관통 직진 투사체(NonTargetHit, pierce 켬). 날아가는 거리 = 프리팹 range (BS : 속도 10 × 3초 = 30)
-    //  - 생성 거리(orbitRadius)와 구체 크기는 범위 증가를 받는다 (크기는 HitUnit이 scale로 키움)
-    //  - 진화 : 맞은 적을 arousalStunTime초 정지 × arousalStunCount번, arousalStunInterval초 간격 (정지 시간은 지속시간 증가 적용)
+    // 마법사 기본 무기 증강
     public class WizardBolt : WeaponAugment
     {
         [Header("전격 구체")]
         [SerializeField] private NonTargetHit boltPrefab;    // 구체 투사체 (pierce 켬)
         [SerializeField] private float searchRange = 8f;     // 조준할 적을 찾는 범위 (범위 증가 적용)
-        [SerializeField] private float orbitRadius = 1f;     // 플레이어 몸에서 이만큼 떨어진 둘레에 생성 (범위 증가 적용)
+        [SerializeField] private float orbitRadius = 1f;     // 플레이어 몸에서 이만큼 떨어진 둘레에 생성 (범위 증가 적용 -> 범위증가 적용되면 안됨.)
 
         [Header("진화 : 맞은 적 정지")]
         [SerializeField] private float arousalStunTime = 0.5f;     // 한 번 정지 시간 (지속시간 증가 적용)
@@ -28,8 +22,8 @@ namespace PROJECT3D
 
         protected override void Attack()
         {
-            Enemy target = FindTarget(searchRange);              // [변경] 대상을 직접 받아서 첫 구체가 높이까지 조준하게
-            Vector3 aimDirection = GetFlatDirectionTo(target);    // [변경] 생성 위치 배치용 수평 방향 (대상 없으면 캐릭터 정면)
+            Enemy target = FindTarget(searchRange);              // 대상을 직접 받아서 첫 구체가 높이까지 조준하게
+            Vector3 aimDirection = GetFlatDirectionTo(target);    // 생성 위치 배치용 수평 방향 (대상 없으면 캐릭터 정면)
 
             int boltCount = GetWeaponProjectileCount(); // 무기 기본 개수 + 플레이어 개수(상점 + 능력증강)
             float angleStep = 360f / boltCount;
@@ -57,7 +51,7 @@ namespace PROJECT3D
 
         #region 내부 설정
 
-        // 새로 추가 : flatDirection에서 수평 각도 halfAngle 안에 있는 적 중 가장 가까운 적 (없으면 null)
+        //  flatDirection에서 수평 각도 halfAngle 안에 있는 적 중 가장 가까운 적 (없으면 null)
         private Enemy FindTargetInDirection(Vector3 flatDirection, float halfAngle)
         {
             Vector3 center = Owner.transform.position;
@@ -80,7 +74,7 @@ namespace PROJECT3D
         }
 
         // 플레이어 둘레의 flatDirection 쪽 지점에서 쏜다
-        // [변경] target이 있으면 생성 지점 → 대상 피격 중심으로 (높이 차이 포함), 없으면 flatDirection으로 수평 직진
+        // target이 있으면 생성 지점 → 대상 피격 중심으로 (높이 차이 포함), 없으면 flatDirection으로 수평 직진
         private void FireBolt(Vector3 flatDirection, Enemy target)
         {
             Vector3 from = FirePosition + flatDirection * ApplyRangeBonus(orbitRadius);
@@ -95,10 +89,9 @@ namespace PROJECT3D
             HitUnit hit = FireHit(boltPrefab, from, direction, GetDamage());
             if (hit == null) return;
 
-            if (isArousal) hit.SetStun(arousalStunTime * DurationRate, arousalStunCount, arousalStunInterval);
+            if (isArousal && hit.TryGetComponent(out StunOnHit stun)) stun.Set(arousalStunTime * DurationRate, arousalStunCount, arousalStunInterval); // [변경] hit.SetStun → 투사체에 붙은 StunOnHit
         }
 
         #endregion
     }
 }
-// ===== 새로 추가 끝 =====

@@ -39,7 +39,7 @@ namespace PROJECT3D
                 HitUnit hit = FireHit(icePrefab, GetAimDirection(target), GetDamage());
                 if (hit == null) continue;
 
-                if (isArousal) hit.SetStun(arousalStunTime * DurationRate, 1, 0f); // 한 번만 정지
+                if (isArousal && hit.TryGetComponent(out StunOnHit stun)) stun.Set(arousalStunTime * DurationRate, 1, 0f); // 한 번만 정지 // [변경] hit.SetStun → 투사체에 붙은 StunOnHit
             }
         }
 

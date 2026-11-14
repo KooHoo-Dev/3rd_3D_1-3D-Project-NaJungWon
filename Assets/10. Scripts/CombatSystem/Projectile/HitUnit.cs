@@ -32,10 +32,7 @@ namespace PROJECT3D
         private List<CombatEntity> touching = new List<CombatEntity>();     // 이번에 닿은 대상 (재사용)
         private TrailRenderer[] trails; // 꼬리 (풀 재사용 시 이전 위치에서 선이 이어지지 않게 비운다)
 
-        // 맞은 몹 정지
-        private float stunTime;     // 한 번 멈추는 시간 (0이면 정지 효과 없음)
-        private int stunCount;      // 몇 번 멈추는지
-        private float stunInterval; // 멈춤 사이 간격
+        private IHitEffect[] hitEffects; // 이 프리팹에 붙은 부가 효과들(스턴/슬로우 등등) (맞힐 때마다 Apply)
 
         #region UnityMethod
 
@@ -43,6 +40,7 @@ namespace PROJECT3D
         {
             baseScale = transform.localScale; // 프리팹 원래 크기 저장
             trails = GetComponentsInChildren<TrailRenderer>(true);
+            hitEffects = GetComponents<IHitEffect>();
         }
 
         // 풀에서 꺼내 켤 때 (FireHit이 Launch로 자리를 옮긴 뒤에 켠다) 지난번 꼬리 점들을 지운다
@@ -82,7 +80,11 @@ namespace PROJECT3D
             transform.localScale = baseScale;    // 이전에 키운 크기 되돌리기 (풀 재사용)
             bonusRangeRate = 1f;    
             bonusDurationRate = 1f; 
-            stunTime = 0f;          // 정지 효과는 쓰는 공격만 SetStun으로 켜기
+            // 스턴 초기화 → 부가 효과 전부 초기화 (쓰는 공격만 발사 뒤에 다시 켠다)
+            for (int i = 0; i < hitEffects.Length; i++)
+            {
+                hitEffects[i].ResetEffect();
+            }
         }
 
         // 주인의 능력치 보너스 적용 (rangeRate = 1 + 범위 증가%, durationRate = 1 + 지속시간 증가%)
@@ -150,19 +152,12 @@ namespace PROJECT3D
         {
             CombatSystem.Instance.SendDamage(owner, target, damage, transform.position);
             if (impactEffect != null) ObjectPoolManager.PlayEffect(impactEffect, GetImpactPoint(target)); // 범위 중심 → 맞은 대상 표면 (범위 공격에서 이펙트가 한 자리에 겹치던 것)
-            ApplyStun(target); // 정지 효과가 있으면 스턴 적용
-        }
 
-        #endregion
-
-        #region 스턴 설정
-
-        // FireHit 뒤에 부른다. 풀 재사용을 위해 Launch에서 0으로 초기화된다
-        public void SetStun(float time, int count, float interval)
-        {
-            stunTime = time;
-            stunCount = count;
-            stunInterval = interval;
+            // ApplyStun → 붙어 있는 부가 효과(IHitEffect) 전부 적용 (스턴 등)
+            for (int i = 0; i < hitEffects.Length; i++)
+            {
+                hitEffects[i].Apply(target);
+            }
         }
 
         #endregion
@@ -191,17 +186,6 @@ namespace PROJECT3D
             if (toAttack.sqrMagnitude < 0.01f) return target.HitCenter;
 
             return target.HitCenter + toAttack.normalized * target.HurtRadius;
-        }
-
-        #endregion
-
-        #region 스턴 설정
-
-        private void ApplyStun(CombatEntity target)
-        {
-            if (stunTime <= 0f) return;
-            if (target is Enemy enemy && enemy.Controller != null)
-                enemy.Controller.Stun(stunTime, stunCount, stunInterval);
         }
 
         #endregion

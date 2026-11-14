@@ -31,8 +31,7 @@ Transform:
   m_LocalPosition: {x: -12.92482, y: 0.648, z: 25.15291}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
-  m_Children:
-  - {fileID: 1084212476457595671}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8986886153817219958
@@ -108,76 +107,13 @@ MonoBehaviour:
   hitRadius: 4
   hitHeight: 1
   hitDepth: 0.5
-  impactEffect: {fileID: 0}
+  impactEffect: {fileID: 7202277713751612694, guid: fa8ec4b8d07136a4b8bd812b178ac3c2, type: 3}
   rangeGizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  explodePrefab: {fileID: 0}
-  explodeEffect: {fileID: 7202277713751612694, guid: fa8ec4b8d07136a4b8bd812b178ac3c2, type: 3}
   delay: 0
   duration: 0
   tickInterval: 0.5
   lifeTime: 3
+  explodeEffect: {fileID: 5558959573404364585, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
   followOwner: 0
   hitOncePerTarget: 0
   warningCircle: {fileID: 0}
---- !u!1001 &2753731316187590425
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 8829820159162480489}
-    m_Modifications:
-    - target: {fileID: 2971493439142091790, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.4217801
-      objectReference: {fileID: 0}
-    - target: {fileID: 2971493439142091790, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.324
-      objectReference: {fileID: 0}
-    - target: {fileID: 2971493439142091790, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.045049667
-      objectReference: {fileID: 0}
-    - target: {fileID: 2971493439142091790, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2971493439142091790, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2971493439142091790, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2971493439142091790, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2971493439142091790, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2971493439142091790, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2971493439142091790, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4624634815465384431, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
-      propertyPath: m_Name
-      value: GroundBomb_Explosion
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
---- !u!4 &1084212476457595671 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2971493439142091790, guid: 3351f2386ebb4a30b6975b55764f8236, type: 3}
-  m_PrefabInstance: {fileID: 2753731316187590425}
-  m_PrefabAsset: {fileID: 0}

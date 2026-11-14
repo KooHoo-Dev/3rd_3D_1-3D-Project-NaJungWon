@@ -25,7 +25,7 @@ namespace PROJECT3D
             // 무기증강은 게임 중에 늘어나서 들어올 때마다 다시 모은다
             owner.GetComponentsInChildren(attacks);
 
-            if (IsSkillSlot()) owner.SetSkillMotion(true); // 새로 추가 : 스킬 모션 시작 (기본 무기가 이 동안 공격 모션 없이 발사)
+            if (IsSkillSlot()) owner.SetSkillMotion(true); // 스킬 모션 시작 (기본 무기가 이 동안 공격 모션 없이 발사)
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -53,17 +53,17 @@ namespace PROJECT3D
                 attack.OnAnimationTiming();
             }
 
-            // 새로 추가 : 기본 공격 상태를 빠져나가면 공격 레이어를 끈다 (켜는 건 UnitAttack.PlayAnimation)
+            // 기본 공격 상태를 빠져나가면 공격 레이어를 끈다 (켜는 건 UnitAttack.PlayAnimation)
             if (slot == AnimationSlot.Attack && layerIndex > 0) animator.SetLayerWeight(layerIndex, 0f);
 
-            if (IsSkillSlot() && owner != null) owner.SetSkillMotion(false); // 새로 추가 : 스킬 모션 끝
+            if (IsSkillSlot() && owner != null) owner.SetSkillMotion(false); // 스킬 모션 끝
         }
 
         #endregion
 
         #region 내부 설정
 
-        // 새로 추가 : E / Q 스킬 상태인지
+        // E / Q 스킬 상태인지
         private bool IsSkillSlot()
         {
             return slot == AnimationSlot.ESkill || slot == AnimationSlot.QSkill;

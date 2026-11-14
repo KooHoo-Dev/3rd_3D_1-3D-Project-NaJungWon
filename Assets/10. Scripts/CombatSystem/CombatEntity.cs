@@ -29,7 +29,7 @@ namespace PROJECT3D
 
         public GameObject GameObject => gameObject;
 
-        // 새로 추가 : E / Q 스킬 모션 재생 중인지 (AttackTimingSender가 스킬 상태에 들어갈 때 +1, 나갈 때 -1)
+        // E / Q 스킬 모션 재생 중인지 (AttackTimingSender가 스킬 상태에 들어갈 때 +1, 나갈 때 -1)
         // 개수로 세는 이유 : E → Q로 바로 이어지면 Q 들어가기가 E 나가기보다 먼저 불린다
         private int skillMotionCount;
         public bool IsSkillMotion => skillMotionCount > 0;
@@ -49,7 +49,7 @@ namespace PROJECT3D
 
         #region 스킬 모션
 
-        public void SetSkillMotion(bool isOn) // 새로 추가
+        public void SetSkillMotion(bool isOn)
         {
             skillMotionCount += isOn ? 1 : -1;
             if (skillMotionCount < 0) skillMotionCount = 0;

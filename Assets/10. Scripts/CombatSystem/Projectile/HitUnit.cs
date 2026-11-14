@@ -18,12 +18,8 @@ namespace PROJECT3D
         [SerializeField] private float hitDepth = 0.5f;         // 직육면체일 때만 사용 (앞뒤 절반 두께)
         [SerializeField] private ParticleEffect impactEffect;   // 맞은 자리에 터뜨릴 이펙트 (없으면 생략)
         [SerializeField] private Color rangeGizmoColor = Color.yellow;
-        public float HitRadius => hitRadius; // 새로 추가 : 프리팹 기본 반경 (스킬 조준 중 예상 범위 표시용)
-        protected ParticleEffect ExplodeEffect => explodeEffect; // 새로 추가 : 소환형(SummonHit)이 첫 판정 때 터뜨릴 이펙트
-
-        [Header("폭발 (없으면 폭발 안 함)")]
-        [SerializeField] private HitUnit explodePrefab;        // 터질 때 만들 범위 (SummonHit 프리팹. 반경은 프리팹에서)
-        [SerializeField] private ParticleEffect explodeEffect; // 폭발 이펙트 (없으면 생략)
+        
+        public float HitRadius => hitRadius; // 프리팹 기본 반경 (스킬 조준 중 예상 범위 표시용)
 
         protected int damage;
         protected float currentHitRadius;        // 이번 생성의 반경 (범위 증가 적용 후)
@@ -34,7 +30,7 @@ namespace PROJECT3D
 
         private List<Enemy> enemyBuffer = new List<Enemy>();               // 격자 검색 결과 (재사용)
         private List<CombatEntity> touching = new List<CombatEntity>();     // 이번에 닿은 대상 (재사용)
-        private TrailRenderer[] trails; // 새로 추가 : 꼬리 (풀 재사용 시 이전 위치에서 선이 이어지지 않게 비운다)
+        private TrailRenderer[] trails; // 꼬리 (풀 재사용 시 이전 위치에서 선이 이어지지 않게 비운다)
 
         // 맞은 몹 정지
         private float stunTime;     // 한 번 멈추는 시간 (0이면 정지 효과 없음)
@@ -46,10 +42,10 @@ namespace PROJECT3D
         protected virtual void Awake()
         {
             baseScale = transform.localScale; // 프리팹 원래 크기 저장
-            trails = GetComponentsInChildren<TrailRenderer>(true); // 새로 추가
+            trails = GetComponentsInChildren<TrailRenderer>(true);
         }
 
-        // 새로 추가 : 풀에서 꺼내 켤 때 (FireHit이 Launch로 자리를 옮긴 뒤에 켠다) 지난번 꼬리 점들을 지운다
+        // 풀에서 꺼내 켤 때 (FireHit이 Launch로 자리를 옮긴 뒤에 켠다) 지난번 꼬리 점들을 지운다
         protected virtual void OnEnable()
         {
             for (int i = 0; i < trails.Length; i++)
@@ -152,15 +148,8 @@ namespace PROJECT3D
         // 한 대상에게 데미지 + 이펙트
         protected void Hit(CombatEntity target)
         {
-            // 폭발형이면 직접 피해 대신 지금 자리에서 폭발
-            if (explodePrefab != null)
-            {
-                Explode(transform.position);
-                return;
-            }
-
             CombatSystem.Instance.SendDamage(owner, target, damage, transform.position);
-            if (impactEffect != null) ObjectPoolManager.PlayEffect(impactEffect, GetImpactPoint(target)); // [변경] 범위 중심 → 맞은 대상 표면 (범위 공격에서 이펙트가 한 자리에 겹치던 것)
+            if (impactEffect != null) ObjectPoolManager.PlayEffect(impactEffect, GetImpactPoint(target)); // 범위 중심 → 맞은 대상 표면 (범위 공격에서 이펙트가 한 자리에 겹치던 것)
             ApplyStun(target); // 정지 효과가 있으면 스턴 적용
         }
 
@@ -174,19 +163,6 @@ namespace PROJECT3D
             stunTime = time;
             stunCount = count;
             stunInterval = interval;
-        }
-
-        #endregion
-
-        #region 폭발
-
-        // position에 폭발 범위 + 이펙트 (폭발 프리팹이 없으면 아무것도 안 함)
-        protected virtual void Explode(Vector3 position)
-        {
-            if (explodePrefab == null) return;
-
-            SpawnHit(explodePrefab, position, transform.forward);
-            ObjectPoolManager.PlayEffect(explodeEffect, position);
         }
 
         #endregion
@@ -206,7 +182,7 @@ namespace PROJECT3D
 
         #region 판정
 
-        // 새로 추가 : 피격 이펙트 위치 = 대상 피격 원통 표면 중 이 공격 쪽 지점 (큰 몹이어도 몸에 가려지지 않게)
+        // 피격 이펙트 위치 = 대상 피격 원통 표면 중 이 공격 쪽 지점 (큰 몹이어도 몸에 가려지지 않게)
         // 높이는 대상 몸 중심 그대로. 공격이 대상 중심에 딱 겹치면 몸 중심
         private Vector3 GetImpactPoint(CombatEntity target)
         {
@@ -229,7 +205,7 @@ namespace PROJECT3D
         }
 
         #endregion
-
+        
         #endregion
     }
 }

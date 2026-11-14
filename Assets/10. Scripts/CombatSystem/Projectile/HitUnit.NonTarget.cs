@@ -11,7 +11,9 @@ namespace PROJECT3D
         [SerializeField] private float range = 15f;      // 기본 사거리 (범위 증가 적용)
         [SerializeField] private bool pierce = false;    // 관통 여부
         [SerializeField] private LayerMask blockMask;    // 지형 + 장애물 레이어
-        // [변경] explodePrefab / explodeEffect는 부모(HitUnit)로 옮김
+
+        [Header("폭발 (없으면 맞은 대상에게 직접 데미지 + 피격 이펙트)")]
+        [SerializeField] private HitUnit explodePrefab;  // 맞으면 직접 피해 대신 그 자리에 만들 범위 (SummonHit. 폭발 이펙트 / 피격 이펙트는 범위 프리팹에서)
 
         private Vector3 direction;
         private float currentRange;
@@ -27,7 +29,7 @@ namespace PROJECT3D
             // 이번 프레임에 지나갈 구간에 지형/장애물이 있으면 사라진다
             if (Physics.Raycast(transform.position, direction, out RaycastHit hit, step, blockMask, QueryTriggerInteraction.Ignore))
             {
-                Explode(hit.point); // [변경] 벽/바닥에 닿은 자리에서 폭발 (폭발 프리팹이 없으면 아무것도 안 함)
+                SpawnExplosion(hit.point); // 벽/바닥에 닿은 자리에서 폭발 (폭발 프리팹이 없으면 아무것도 안 함)
                 ReturnToPool();
                 return;
             }
@@ -40,7 +42,15 @@ namespace PROJECT3D
             {
                 if (hitTargets.Add(targets[i]) == false) continue; // 이미 맞힌 대상 (Add가 false = 이미 들어 있음)
 
-                Hit(targets[i]); // [변경] 폭발형이면 Hit 안에서 폭발한다
+                // 폭발형 : 직접 피해 대신 지금 자리에 범위를 만들고 사라진다 (데미지 / 피격 이펙트는 범위가 준다)
+                if (explodePrefab != null)
+                {
+                    SpawnExplosion(transform.position);
+                    ReturnToPool();
+                    return;
+                }
+
+                Hit(targets[i]);
                 if (pierce == false)
                 {
                     ReturnToPool();
@@ -68,6 +78,18 @@ namespace PROJECT3D
         {
             base.ApplyBonus(rangeRate, durationRate); // 반경
             currentRange = range * rangeRate;         // 사거리
+        }
+
+        #endregion
+
+        #region 내부 설정
+
+        // position에 폭발 범위(explodePrefab) 만들기 (없으면 아무것도 안 함)
+        //  - 범위의 예고 시간은 0으로 : 맞은 자리에서 바로 폭발 이펙트 + 범위 데미지 + 적마다 피격 이펙트
+        private void SpawnExplosion(Vector3 position)
+        {
+            HitUnit explosion = SpawnHit(explodePrefab, position, transform.forward);
+            if (explosion is SummonHit summon) summon.SetDelay(0f);
         }
 
         #endregion

@@ -8,7 +8,6 @@ namespace PROJECT3D
     {
         [Header("타겟팅 설정")]
         [SerializeField] private float speed = 10f;
-        // [변경] 탐색 범위(range / BaseRange) 삭제 : 대상을 찾는 범위는 쏘는 쪽(무기증강)이 정하고 SetTarget으로 넘겨준다
 
         private Enemy target;
         private int remainHit;
@@ -66,25 +65,22 @@ namespace PROJECT3D
             base.Launch(from, direction, damage, owner);
             target = null;
             remainHit = 1;          // SetTarget을 안 불렀을 때는 1번
-            currentRange = 0f;      // [변경] SetTarget을 안 불렀으면 재탐색 안 함
+            currentRange = 0f;      // SetTarget을 안 불렀으면 재탐색 안 함
             hitTargets.Clear();
             speedRate = 1f;         // 풀 재사용 시 초기화
         }
-
-        // 속도 배율 (FireHit 뒤에 부른다. 1 = 프리팹 속도 그대로)
-        public void SetSpeedRate(float rate)
-        {
-            speedRate = rate;
-        }
-
-        // [변경] ApplyBonus 재정의 삭제 (탐색 범위가 없어져서 부모의 반경 처리만 쓴다)
-
-        // [변경] searchRange 추가 : 쏘는 쪽이 대상을 찾은 범위(범위 증가 적용 값)를 그대로 재탐색에 쓴다
+        
         public void SetTarget(Enemy target, int hitCount, float searchRange)
         {
             this.target = target;
             remainHit = hitCount;
             currentRange = searchRange;
+        }
+        
+        // 속도 배율 (FireHit 뒤에 부른다. 1 = 프리팹 속도 그대로)
+        public void SetSpeedRate(float rate)
+        {
+            speedRate = rate;
         }
 
         #endregion

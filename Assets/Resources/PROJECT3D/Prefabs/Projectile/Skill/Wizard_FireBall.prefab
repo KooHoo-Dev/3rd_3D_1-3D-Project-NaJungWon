@@ -4960,7 +4960,6 @@ MonoBehaviour:
   impactEffect: {fileID: 0}
   rangeGizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   explodePrefab: {fileID: 4877221864152722571, guid: fb17a8ac964100746a266edf359916f3, type: 3}
-  explodeEffect: {fileID: 4209784674986831215, guid: bd12ac1699664a7a9efb11c3efc80ab4, type: 3}
   speed: 20
   range: 20
   pierce: 0

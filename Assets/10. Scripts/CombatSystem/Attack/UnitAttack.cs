@@ -47,7 +47,7 @@ namespace PROJECT3D
         private Animator ownerAnimator;              // 주인의 애니메이터 (처음 쓸 때 찾는다)
         public bool IsDelaying { get; private set; } // 공격 시점을 기다리는 중인지
 
-        protected Animator OwnerAnimator => ownerAnimator; // 새로 추가 : 자식(무기증강)이 공격 레이어 / 공속 파라미터를 바꿀 때 사용
+        protected Animator OwnerAnimator => ownerAnimator; // 자식(무기증강)이 공격 레이어 / 공속 파라미터를 바꿀 때 사용
 
         [Header("공격 범위 Gizmo")]
         [SerializeField] private bool drawRangeGizmo = true;          // 끄면 이 공격의 범위를 안 그린다
@@ -239,7 +239,7 @@ namespace PROJECT3D
             if (ownerAnimator == null)
             {
                 Debug.LogWarning($"[UnitAttack] 애니메이터를 찾을 수 없음");
-                return; // [변경] 로그 뒤에 바로 null에 SetTrigger 하던 것 방지
+                return;
             }
             ownerAnimator.SetTrigger(animationSlot.ToString());
         }

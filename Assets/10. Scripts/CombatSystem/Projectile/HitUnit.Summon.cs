@@ -12,6 +12,7 @@ namespace PROJECT3D
         [SerializeField] private float duration = 0f;       // 지속시간 (지속시간 증가 적용). 0 = 한 번만
         [SerializeField] private float tickInterval = 0.5f; // 지속형일 때 판정 간격
         [SerializeField] private float lifeTime = 0f;       // 판정이 끝나도 이 시간(초)까지는 남아 있다 (베기 이펙트를 보여줄 시간. 0 = 판정 끝나면 바로 사라짐)
+        [SerializeField] private ParticleEffect explodeEffect; // 부모(HitUnit)에서 옮김 : 첫 판정 순간 중심에 터뜨릴 폭발 이펙트 (없으면 생략)
 
         [Header("움직임 / 판정 방식")]
         [SerializeField] private bool followOwner = false;      // 켜면 주인을 따라 움직인다 (끄면 생긴 좌표에 고정)
@@ -24,6 +25,7 @@ namespace PROJECT3D
         private HashSet<CombatEntity> hitTargets = new HashSet<CombatEntity>(); // 이미 맞힌 적 (hitOncePerTarget용)
 
         private float currentDuration;
+        private float currentDelay; // 이번 생성의 첫 판정까지 시간 (기본 delay. 투사체 폭발은 SetDelay(0)으로 바로)
         private float timer;       // 생기고 나서 지난 시간
         private float nextHitTime; // 다음 판정 시각
 
@@ -45,13 +47,13 @@ namespace PROJECT3D
 
             UpdateWarning(); // 범위표시 진행도
 
-            float hitEndTime = delay + currentDuration; // 마지막 판정 시각
+            float hitEndTime = currentDelay + currentDuration; // 마지막 판정 시각 // [변경] delay → currentDelay
 
             // 판정 시간이 끝난 뒤(이펙트만 남은 시간)에는 때리지 않는다
             if (timer >= nextHitTime && nextHitTime <= hitEndTime)
             {
-                // 새로 추가 : 첫 판정 순간 폭발 이펙트 (포격 / 지점 폭발. explodeEffect가 없으면 생략)
-                if (nextHitTime <= delay) ObjectPoolManager.PlayEffect(ExplodeEffect, transform.position);
+                // 첫 판정 순간 폭발 이펙트 (포격 / 지점 폭발. explodeEffect가 없으면 생략)
+                if (nextHitTime <= currentDelay) ObjectPoolManager.PlayEffect(explodeEffect, transform.position);
 
                 List<CombatEntity> targets = FindTouching();
                 for (int i = 0; i < targets.Count; i++)
@@ -76,6 +78,7 @@ namespace PROJECT3D
             base.Launch(from, direction, damage, owner);
             currentDuration = duration;
             timer = 0f;
+            currentDelay = delay;
             nextHitTime = delay;
             followOffset = from - owner.transform.position; // 생길 때 주인과의 거리를 기억
             hitTargets.Clear();                             // 풀 재사용 시 이전 기록 지우기
@@ -87,6 +90,14 @@ namespace PROJECT3D
             currentDuration = duration * durationRate; // 지속시간
         }
 
+        // 첫 판정까지 시간 바꾸기 (Launch 뒤에 부른다)
+        //  - 투사체가 맞은 자리에 만든 폭발은 0으로 : 예고(warning) 없이 바로 폭발 이펙트 + 데미지 + 피격 이펙트
+        public void SetDelay(float time)
+        {
+            currentDelay = time;
+            nextHitTime = time;
+        }
+
         #endregion
 
         #region 내부 설정
@@ -96,13 +107,13 @@ namespace PROJECT3D
         {
             if (warningCircle == null) return;
 
-            bool isWarning = timer < delay;
+            bool isWarning = timer < currentDelay;
             if (warningCircle.gameObject.activeSelf != isWarning) warningCircle.gameObject.SetActive(isWarning);
             if (isWarning == false) return;
 
             float scale = warningCircle.transform.lossyScale.x;            // 범위 증가로 커진 크기를 빼고 넣어야 판정과 크기가 같다
             warningCircle.Radius = (scale > 0f) ? currentHitRadius / scale : currentHitRadius;
-            warningCircle.FillProgress = timer / delay;
+            warningCircle.FillProgress = timer / currentDelay;
         }
 
         #endregion

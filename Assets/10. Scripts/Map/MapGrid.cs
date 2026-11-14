@@ -119,9 +119,85 @@ namespace PROJECT3D
 
         #endregion
 
+        #region 높이 조회
+
+        // position의 바닥 높이 / 경사 : 주변 4칸 값을 거리 비율로 섞는다 (쌍선형 보간)
+        //  - 절벽처럼 넘을 수 없는 높이 차이의 칸은 섞지 않는다 (절벽 가장자리에서 몸이 뜨거나 가라앉지 않게)
+        //  - 맵 밖이면 false
+        public bool TryGetGroundHeight(Vector3 position, out float height, out Vector3 normal)
+        {
+            height = position.y;
+            normal = Vector3.up;
+            if (Grid == null) return false;
+
+            Tile own = Grid.GetTileOrNull(position);
+            if (own == null) return false;
+
+            // 왼쪽 아래 칸 중심 기준으로 4칸과 섞는 비율(tx, tz)
+            float fx = (position.x - Grid.Origin.x) / Grid.CellSize - 0.5f;
+            float fz = (position.z - Grid.Origin.z) / Grid.CellSize - 0.5f;
+            int x0 = Mathf.FloorToInt(fx);
+            int z0 = Mathf.FloorToInt(fz);
+            float tx = fx - x0;
+            float tz = fz - z0;
+
+            Tile t00 = GetBlendTile(own, x0, z0);
+            Tile t10 = GetBlendTile(own, x0 + 1, z0);
+            Tile t01 = GetBlendTile(own, x0, z0 + 1);
+            Tile t11 = GetBlendTile(own, x0 + 1, z0 + 1);
+
+            float bottom = Mathf.Lerp(t00.GroundHeight, t10.GroundHeight, tx);
+            float top = Mathf.Lerp(t01.GroundHeight, t11.GroundHeight, tx);
+            height = Mathf.Lerp(bottom, top, tz);
+
+            Vector3 normalBottom = Vector3.Lerp(t00.GroundNormal, t10.GroundNormal, tx);
+            Vector3 normalTop = Vector3.Lerp(t01.GroundNormal, t11.GroundNormal, tx);
+            normal = Vector3.Lerp(normalBottom, normalTop, tz).normalized;
+            return true;
+        }
+
+        // position 주변 4칸 중 가장 높은 표면 (바닥 + 장애물 꼭대기). 공중 몹이 장애물 모서리에 걸리지 않게 가장 높은 값
+        public bool TryGetSurfaceHeight(Vector3 position, out float height)
+        {
+            height = position.y;
+            if (Grid == null) return false;
+
+            Tile own = Grid.GetTileOrNull(position);
+            if (own == null) return false;
+
+            float fx = (position.x - Grid.Origin.x) / Grid.CellSize - 0.5f;
+            float fz = (position.z - Grid.Origin.z) / Grid.CellSize - 0.5f;
+            int x0 = Mathf.FloorToInt(fx);
+            int z0 = Mathf.FloorToInt(fz);
+
+            height = own.SurfaceHeight;
+            for (int z = z0; z <= z0 + 1; z++)
+            {
+                for (int x = x0; x <= x0 + 1; x++)
+                {
+                    Tile tile = Grid.GetTileOrNull(x, z);
+                    if (tile != null) height = Mathf.Max(height, tile.SurfaceHeight);
+                }
+            }
+            return true;
+        }
+
+        #endregion
+
         #endregion
 
         #region 내부 설정
+
+        // 높이 섞기에 쓸 칸. 없거나 / 막혔거나 / 내 칸과 넘을 수 없는 높이 차이(절벽)면 내 칸으로 대신
+        private Tile GetBlendTile(Tile own, int x, int z)
+        {
+            Tile tile = Grid.GetTileOrNull(x, z);
+            if (tile == null || tile.IsWalkable == false) return own;
+
+            float difference = tile.GroundHeight - own.GroundHeight;
+            if (difference > maxStepUp || -difference > maxStepUp) return own; // 한 걸음에 오르내릴 수 있는 높이까지만 섞는다
+            return tile;
+        }
 
         #region 굽기
 
@@ -131,6 +207,7 @@ namespace PROJECT3D
             tile.Kind = TileKind.Blocked;
             tile.GroundHeight = center.y;
             tile.GroundNormal = Vector3.up;
+            tile.SurfaceHeight = center.y;
 
             // 1. 위에서 아래로 검사하여 바닥을 찾기
             Vector3 start = center + Vector3.up * rayStartHeight;
@@ -141,6 +218,7 @@ namespace PROJECT3D
 
             tile.GroundHeight = hit.point.y;
             tile.GroundNormal = hit.normal;
+            tile.SurfaceHeight = GetSurfaceHeight(start, hit.point.y); // 장애물 꼭대기까지 (공중 몹 고도용)
 
             // 2. 바닥이 너무 가파르면 막힌 칸
             float angle = Vector3.Angle(hit.normal, Vector3.up);
@@ -156,6 +234,18 @@ namespace PROJECT3D
                 obstacleMask, QueryTriggerInteraction.Ignore)) return;
 
             tile.Kind = TileKind.Walkable;
+        }
+
+        // 위에서 아래로 바닥 + 장애물을 같이 검사해서 처음 맞는 표면 높이 (장애물이 없으면 바닥 높이)
+        //  - 굽는 순간에 한 번만 쏜다 → 공중 몹이 매 프레임 레이를 쏘지 않아도 된다
+        //  - 칸 중심 한 점만 재므로, 칸보다 가는 장애물은 빗나갈 수 있다
+        private float GetSurfaceHeight(Vector3 start, float groundHeight)
+        {
+            if (Physics.Raycast(start, Vector3.down, out RaycastHit hit,
+                rayStartHeight * 2f, groundMask | obstacleMask, QueryTriggerInteraction.Ignore))
+                return Mathf.Max(hit.point.y, groundHeight);
+
+            return groundHeight;
         }
 
         private RectInt GetAreaRect(Bounds area)

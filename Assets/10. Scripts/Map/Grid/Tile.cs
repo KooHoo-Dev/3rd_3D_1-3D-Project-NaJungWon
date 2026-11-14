@@ -28,6 +28,7 @@ namespace PROJECT3D
         public TileKind Kind;
         public float GroundHeight; //바닥 높이
         public Vector3 GroundNormal = Vector3.up; //바닥 경사
+        public float SurfaceHeight; // 맨 위 표면 높이 (바닥 + 장애물 꼭대기)
         
         public int Distance = -1;
         public MoveDirection Direction = MoveDirection.None;

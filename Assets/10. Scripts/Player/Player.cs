@@ -10,38 +10,42 @@ namespace PROJECT3D
 
     public abstract class Player : CombatEntity
     {
-        public PlayerStat Stat { get; set; } = new PlayerStat();
-        public PlayerStatHandler StatHandler { get; private set; } // 스탯 총합 계산기
-        public override BaseStat BaseStat => Stat;
-        public Transform BodyPivot; // 캐릭터 모델 넣을곳
-        public UnitDef unitDef;
+        [Header("참조 설정")]
+        public Transform BodyPivot; // 캐릭터 모델 넣을 곳
 
-        [Header("낙하 데미지")]
-        [SerializeField] private float safeFallHeight = 4f;     // 이 높이까지는 데미지 없음
+        [Header("낙하 데미지 설정")]
+        [SerializeField] private float safeFallHeight     = 4f; // 이 높이까지는 데미지 없음
         [SerializeField] private float fallDamagePerMeter = 5f; // 넘은 높이 1m당 데미지
+
+        [Header("획득 설정")]
         [SerializeField] private float basePickupRange = 3f; // 기본 획득 반경
 
-        // ===== 새로 추가 : 피격 무적 =====
-        [Header("피격 무적")]
+        [Header("피격 무적 설정")]
         [SerializeField] private float hitInvincibleTime = 0.5f; // 맞은 뒤 이 시간(게임 시간) 동안 데미지 무시
-        private float hitInvincibleEndTime;                      // 피격 무적이 끝나는 시각 (WorldClock.ElapsedTime 기준)
-        // ===== 새로 추가 끝 =====
 
-        public bool IsInvincible { get; set; } // 무적. 켜져 있으면 데미지x
-        public int KillCount { get; private set; } // 내가 죽인 몹 수
-        public int Gold { get; private set; }      // 이번 판에 번 골드
-        public event Action OnRecordChanged;
-        public event Action OnDead;
-        public event Action OnKill; // 새로 추가 : 몹을 처치할 때마다 (패시브 등)
+        // 외부 공개
+        public PlayerStat        Stat         { get; set; } = new PlayerStat(); // 플레이어 스탯
+        public PlayerStatHandler StatHandler  { get; private set; }             // 스탯 총합 계산기
+        public override BaseStat BaseStat     => Stat;                          // 공용 스탯 (CombatEntity)
+        public UnitDef           unitDef;                                       // 캐릭터 표 데이터
+        public bool              IsInvincible { get; set; }                     // 무적. 켜져 있으면 데미지 x
+        public int               KillCount    { get; private set; }             // 내가 죽인 몹 수
+        public int               Gold         { get; private set; }             // 이번 판에 번 골드
 
-        private float regenBuffer; // 새로 추가 : 체력 재생 누적량 (Hp가 정수라 1 이상 쌓이면 회복)
-        private HitFlash hitFlash; // 새로 추가 : 피격 시 모델 빨갛게
+        public event Action OnRecordChanged; // 처치 수 / 골드가 바뀌었을 때
+        public event Action OnDead;          // 죽었을 때
+        public event Action OnKill;          // 몹을 처치할 때마다 (패시브 등)
+
+        // 내부 설정
+        private float    hitInvincibleEndTime; // 피격 무적이 끝나는 시각 (WorldClock.ElapsedTime 기준)
+        private float    regenBuffer;          // 체력 재생 누적량 (Hp가 정수라 1 이상 쌓이면 회복)
+        private HitFlash hitFlash;             // 피격 시 모델 빨갛게
 
         #region UnityMethod
 
         protected virtual void OnEnable() => PlayerRegistry.Register(this);
 
-        // ===== 새로 추가 : 체력 재생 (원래 HealthRegeneration 스탯을 쓰는 곳이 없었다) =====
+        // 체력 재생
         protected virtual void Update()
         {
             UpdateHealthRegen();
@@ -66,7 +70,6 @@ namespace PROJECT3D
             regenBuffer -= heal;
             Stat.ApplyHeal(heal);
         }
-        // ===== 새로 추가 끝 =====
 
         protected virtual void OnDisable() => PlayerRegistry.Unregister(this);
 
@@ -81,7 +84,7 @@ namespace PROJECT3D
             unitDef = def;
             GameObject body = Instantiate(def.UnitBody, BodyPivot); // [변경] 피격 연출에 넘기려고 변수로
 
-            // 새로 추가 : 피격 시 모델이 빨갛게 물드는 연출 (프리팹에 HitFlash가 있을 때만)
+            // 피격 시 모델이 빨갛게 물드는 연출 (프리팹에 HitFlash가 있을 때만)
             hitFlash = GetComponent<HitFlash>();
             if (hitFlash != null) hitFlash.Init(body);
 
@@ -113,9 +116,9 @@ namespace PROJECT3D
             if (amount <= 0) return;
 
             float gainPercent = Stat.unitStat.GoldGain;
-            int gain = Mathf.RoundToInt(amount * (1f + gainPercent / 100f)); // [변경] 계산값을 변수로
+            int gain = Mathf.RoundToInt(amount * (1f + gainPercent / 100f)); // 계산값을 변수로
             Gold += gain;                                   // 이번 판 획득량 (HUD 표시용)
-            if (GameSession.Instance != null) GameSession.Instance.AddGold(gain); // 새로 추가 : 보유 골드에 바로 반영
+            if (GameSession.Instance != null) GameSession.Instance.AddGold(gain); // 보유 골드에 바로 반영
             OnRecordChanged?.Invoke();
         }
 
@@ -127,16 +130,16 @@ namespace PROJECT3D
         {
             if (IsInvincible) return;
             if (Stat.IsDead) return; // 이미 죽었으면 무시
-            if (IsHitInvincible()) return; // 새로 추가 : 방금 맞았으면 무시 (여러 마리 데미지가 한 번에 몰리는 것 방지)
+            if (IsHitInvincible()) return; // 방금 맞았으면 무시 (여러 마리 데미지가 한 번에 몰리는 것 방지)
 
             int damage = CalculateFinalDamage(combatEvent.Damage); // 받는 쪽 보정 (방어력 등은 나중에 여기서)
-            hitInvincibleEndTime = WorldClock.Instance.ElapsedTime + hitInvincibleTime; // 새로 추가 : 피격 무적 시작
-            if (hitFlash != null) hitFlash.Play(); // 새로 추가 : 피격 연출
+            hitInvincibleEndTime = WorldClock.Instance.ElapsedTime + hitInvincibleTime; // 피격 무적 시작
+            if (hitFlash != null) hitFlash.Play(); // 피격 연출
             if (Stat.ApplyDamage(damage)) Die();
             Debug.Log($"{combatEvent.Receiver.GameObject.name} 가 {combatEvent.Sender.GameObject.name}에게 {combatEvent.Damage}의 데미지를 받음");
         }
 
-        // 새로 추가 : 피격 무적 중인지 (게임 시간 기준이라 일시정지 중에는 무적 시간도 멈춘다)
+        // 피격 무적 중인지 (게임 시간 기준이라 일시정지 중에는 무적 시간도 멈춘다)
         public bool IsHitInvincible()
         {
             return WorldClock.Instance.ElapsedTime < hitInvincibleEndTime;

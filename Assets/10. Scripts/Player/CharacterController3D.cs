@@ -6,49 +6,47 @@ namespace PROJECT3D
     [RequireComponent(typeof(CharacterController))]
     public class CharacterController3D : MonoBehaviour
     {
-        [Header("Settings")]
-        [SerializeField] private float gravity = -9.81f;
-        [SerializeField] private float jumpHeight = 1.2f;
-        [SerializeField] private int jumpCount;
-        [SerializeField] private int maxJumpCount = 2;
+        [Header("점프 / 중력 설정")]
+        [SerializeField] private float gravity      = -9.81f; // 중력 가속도
+        [SerializeField] private float jumpHeight   = 1.2f;   // 점프 높이
+        [SerializeField] private int   maxJumpCount = 2;      // 최대 점프 횟수 (공중 점프 포함)
+        [SerializeField] private int   jumpCount;             // 지금까지 뛴 횟수 (착지하면 0. 인스펙터 확인용)
 
-        [Header("바닥 확인용")]
+        [Header("바닥 확인 설정")]
         [Tooltip("접지 중에 아래로 누르는 힘. 0이면 경사면에서 미끄러질 수 있다")]
-        [SerializeField] private float groundStickVelocity = -2f;
+        [SerializeField] private float     groundStickVelocity = -2f;
         [Tooltip("내려가는 중이어도 발밑 바닥이 이 거리 안이면 '떨어지기 시작'으로 보지 않는다 (작은 턱/내리막)")]
-        [SerializeField] private float nearGroundDistance = 0.4f;
-        [SerializeField] private LayerMask groundMask;            // 바닥 레이어 (꼭 지정)
+        [SerializeField] private float     nearGroundDistance  = 0.4f;
+        [SerializeField] private LayerMask groundMask;                 // 바닥 레이어 (꼭 지정)
 
-        [Header("회전 / 기울기")]
-        [SerializeField] private float turnSpeed = 15f;  // 이동 방향으로 도는 속도
-        [SerializeField] private BodyTilt bodyTilt;      // BodyPivot에 붙인 기울기 연출 (없으면 기울기 안 함)
-        private Vector3 groundNormal = Vector3.up;       // 밟고 있는 바닥 방향 (OnControllerColliderHit에서 받는다)
+        [Header("회전 / 기울기 설정")]
+        [SerializeField] private float    turnSpeed = 15f; // 이동 방향으로 도는 속도
+        [SerializeField] private BodyTilt bodyTilt;        // BodyPivot에 붙인 기울기 연출 (없으면 기울기 안 함)
 
-        private CharacterController controller;
-        private float moveX, moveZ; // 키를 따라 -1 ~ 1 사이를 부드럽게 움직이는 로직에 사용되는 축 값
-        private Vector3 velocity;
-        private bool jumpRequested;
+        // 외부 공개 : 상태 알림
+        public event Action        OnJumpStart; // 점프 시작
+        public event Action        OnFallStart; // 떨어지기 시작
+        public event Action<float> OnLanded;    // 착지했을 때 (떨어진 높이 = 공중 최고점 - 착지점)
+        public bool IsGrounded { get; private set; } // 바닥에 닿아 있는지
 
-        # region 상태 알림
-        public event Action OnJumpStart;
-        public event Action OnFallStart;
-        public event Action<float> OnLanded; // 착지했을 때 (떨어진 높이 = 공중 최고점 - 착지점)
+        // 내부 설정 : 이동
+        private CharacterController controller;                // 실제 이동 / 충돌 처리
+        private float               moveX, moveZ;              // 키를 따라 -1 ~ 1 사이를 부드럽게 움직이는 축 값
+        private Vector3             velocity;                  // 세로 속도 (중력 / 점프)
+        private bool                jumpRequested;             // 이번 프레임 점프 요청
+        private Vector3             groundNormal = Vector3.up; // 밟고 있는 바닥 방향 (OnControllerColliderHit에서 받는다)
+        private bool                useGravity   = true;       // 중력 적용 여부
+        private bool                isAimFacing;               // 조준 중에는 이동 방향 대신 카메라 좌우 방향(movementRotation)을 바라본다
 
-        private bool wasGrounded = true; // 지난 프레임 접지 상태
-        private bool isFallingDown;      // 이번 공중에서 OnFallStart를 이미 보냈는지
-        private float airPeakY;          // 공중에 있는 동안 가장 높았던 y
-        # endregion
+        // 내부 설정 : 받아오는 값 (PlayerController가 넣어 준다)
+        private Vector3    inputRaw         = Vector3.zero;        // 이동 입력
+        private Quaternion movementRotation = Quaternion.identity; // 카메라 좌우 회전 (입력 방향 기준)
+        private float      speed;                                  // 이동 속도
 
-        [Header("받아오는값")]
-        private Vector3 inputRaw = Vector3.zero;
-        private float speed;
-        private Quaternion movementRotation = Quaternion.identity;
-
-        public bool IsGrounded { get; private set; }
-        private bool useGravity = true; // 중력 적용 여부
-
-        // 새로 추가 : 조준 중에는 이동 방향 대신 카메라 좌우 방향(movementRotation)을 바라본다
-        private bool isAimFacing;
+        // 내부 설정 : 착지 / 낙하 확인
+        private bool  wasGrounded = true; // 지난 프레임 접지 상태
+        private bool  isFallingDown;      // 이번 공중에서 OnFallStart를 이미 보냈는지
+        private float airPeakY;           // 공중에 있는 동안 가장 높았던 y
 
         #region UnityMethod
 
@@ -88,7 +86,7 @@ namespace PROJECT3D
                 jumpCount = 0;
             }
 
-            UpdateAirState(); // 새로 추가 : 하강 시작 / 착지 알림
+            UpdateAirState(); // 하강 시작 / 착지 알림
 
             if (jumpRequested)
             {
@@ -97,9 +95,9 @@ namespace PROJECT3D
 
             // 몸 기울기 (공중이면 똑바로)
             if (IsGrounded == false) groundNormal = Vector3.up;
-            // 새로 추가 : 조준 중에는 똑바로 선다 (카메라는 경사를 따라 안 기울어서, 몸만 기울면 조준 자세 / 어깨 카메라가 화면과 어긋난다)
+            // 조준 중에는 똑바로 선다 (카메라는 경사를 따라 안 기울어서, 몸만 기울면 조준 자세 / 어깨 카메라가 화면과 어긋난다)
             Vector3 tiltNormal = isAimFacing ? Vector3.up : groundNormal;
-            if (bodyTilt != null) bodyTilt.SetGroundNormal(tiltNormal); // [변경] groundNormal → tiltNormal
+            if (bodyTilt != null) bodyTilt.SetGroundNormal(tiltNormal);
         }
 
         // CharacterController가 Move 중에 무언가에 닿으면 유니티가 불러 준다
@@ -160,7 +158,7 @@ namespace PROJECT3D
         // 이동 방향 바라보기
         private void RotateToMove(Vector3 moveVector)
         {
-            if (isAimFacing) moveVector = movementRotation * Vector3.forward; // 새로 추가 : 조준 중에는 옆/뒤로 걸어도 카메라 정면을 본다
+            if (isAimFacing) moveVector = movementRotation * Vector3.forward; // 조준 중에는 옆/뒤로 걸어도 카메라 정면을 본다
             moveVector.y = 0f;
             if (moveVector.sqrMagnitude < 0.01f) return; // 멈춰 있으면 마지막 방향 유지
 

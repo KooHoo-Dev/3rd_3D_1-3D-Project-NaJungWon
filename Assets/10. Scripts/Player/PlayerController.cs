@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using Cysharp.Threading.Tasks;
 using Study.Utilities;
-using Unity.Cinemachine; // 새로 추가 : 조준 카메라 Priority 전환
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,41 +9,36 @@ namespace PROJECT3D
 {
     public class PlayerController : PlayerControllerBase
     {
-        [Header("Ref")]
-        [SerializeField] private CharacterController3D movement;
-        [SerializeField] private CameraController cameraController;
+        [Header("참조 설정")]
+        [SerializeField] private CharacterController3D movement;         // 이동 / 점프 / 중력
+        [SerializeField] private CameraController      cameraController; // 마우스 카메라 회전
+        [SerializeField] private Transform             SkillPivot;       // 스킬 생성 좌표
 
-        [SerializeField] private Transform SkillPivot; //스킬 생성 좌표
+        [Header("스킬 설정")]
+        [SerializeField] private UnitSkill eSkill; // E 스킬
+        [SerializeField] private UnitSkill qSkill; // Q 스킬
 
-        public StatClass PlayerStat => Player.Stat.unitStat; //너무 길어서 임시로 뺌
+        [Header("조준 스킬 설정")]
+        [SerializeField] private CinemachineCamera aimCamera;                 // 조준 카메라 (켜 둔 채로 Priority만 바꾼다)
+        [SerializeField] private int               aimRestingPriority = 0;    // 평소 Priority
+        [SerializeField] private int               aimActivePriority  = 10;   // 조준 중 Priority
+        [SerializeField] private float             aimMoveSpeedRate   = 0.5f; // 조준 중 이동 속도 배율
 
-        [Header("스킬")]
-        [SerializeField] private UnitSkill eSkill;
-        [SerializeField] private UnitSkill qSkill;
-        // HUD 쿨타임 표시용
-        public UnitSkill UnitESkill => eSkill;
-        public UnitSkill UnitQSkill => qSkill;
+        // 외부 공개
+        public StatClass PlayerStat => Player.Stat.unitStat; // 플레이어 스탯 (너무 길어서 임시로 뺌)
+        public float     Speed      => PlayerStat.Speed;     // 이동 속도
+        public UnitSkill UnitESkill => eSkill;               // E 스킬 (HUD 쿨타임 표시용)
+        public UnitSkill UnitQSkill => qSkill;               // Q 스킬 (HUD 쿨타임 표시용)
+        public bool      IsAiming   => aimingSkill != null;  // 조준 중인지 (조준점 UI(PlayerInfoUI)가 확인)
 
-        // 스킬 사용 중이면 이동/점프/다른 스킬을 막는다
-        private bool IsCasting => (eSkill != null && eSkill.IsCasting) || (qSkill != null && qSkill.IsCasting);
-
-        // ===== 새로 추가 : 조준 스킬 (꾹 누르면 조준, 떼면 사용) =====
-        [Header("조준 스킬")]
-        [SerializeField] private CinemachineCamera aimCamera;     // [변경] GameObject → CinemachineCamera : 조준 카메라 (켜 둔 채로 Priority만 바꾼다. 높은 쪽으로 Brain이 블렌드)
-        [SerializeField] private int aimActivePriority = 10;      // 새로 추가 : 조준 중 Priority (평소 카메라보다 높게)
-        [SerializeField] private int aimRestingPriority = 0;      // 새로 추가 : 평소 Priority (평소 카메라보다 낮게)
-        [SerializeField] private float aimMoveSpeedRate = 0.5f;   // 조준 중 이동 속도 배율
-
+        // 내부 설정 : 스킬 / 조준
+        // 스킬 사용 중이면 이동 / 점프 / 다른 스킬을 막는다
+        private bool      IsCasting => (eSkill != null && eSkill.IsCasting) || (qSkill != null && qSkill.IsCasting);
         private UnitSkill aimingSkill; // 지금 조준 중인 스킬 (null = 조준 안 함)
-        private Key aimingKey;         // 그 스킬의 키 (떼면 사용)
-        public bool IsAiming => aimingSkill != null; // [변경] private → public : 조준점 UI(PlayerInfoUI)가 확인
-        // ===== 새로 추가 끝 =====
+        private Key       aimingKey;   // 그 스킬의 키 (떼면 사용)
 
-        // [변경] 이속 테스트용 고정값(7) 삭제 → 최종 스탯의 이동 속도 (유닛 표 + 상점 + 증강 + 버프)
-        public float Speed => PlayerStat.Speed;
-
-        // 사망 모션
-        private const float DieWaitLimit = 5f;           // 상태 이름이 안 맞아도 이 시간이 지나면 끝난 걸로 (실제 시간)
+        // 내부 설정 : 사망 모션
+        private const float DieWaitLimit = 5f; // 상태 이름이 안 맞아도 이 시간이 지나면 끝난 걸로 (실제 시간)
 
         #region UnityMethod
 
@@ -71,7 +66,7 @@ namespace PROJECT3D
             movement.OnJumpStart -= HandleJumpStart;
             movement.OnFallStart -= HandleFallStart;
             movement.OnLanded -= HandleLanded;
-            if (IsAiming) EndAim(); // 새로 추가 : 조준 중에 꺼지면 카메라 / 모션 되돌리기
+            if (IsAiming) EndAim(); // 조준 중에 꺼지면 카메라 / 모션 되돌리기
         }
 
         #endregion
@@ -80,13 +75,14 @@ namespace PROJECT3D
 
         #region 초기화
 
-        // 플레이어 데이터가 다 들어간 뒤 PlayerSpawner가 호출 // [변경] 주석 정정 (PlayerTester → PlayerSpawner)
+        // 플레이어 데이터가 다 들어간 뒤 PlayerSpawner가 호출
         public void Init(Player player)
         {
             Player = player;
             if (PlayerStat.Speed == 0) Debug.Log($"[PlayerController] PlayerStat.Speed가 0임");
             bodyRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
             anim = GetComponentInChildren<Animator>();
+            
             // 표에 스킬 프리팹 없으면 인스펙터에 넣은 스킬 그대로 (테스트용)
             if(player.unitDef == null) Debug.LogWarning($"[PlayerController] unitDef가 null임");
             UnitDef def = player.unitDef;
@@ -113,7 +109,7 @@ namespace PROJECT3D
                 qSkill.Init(def.QSkill);
             }
 
-            // 새로 추가 : 패시브 스킬 (표에 패시브 프리팹이 있을 때만)
+            // 패시브 스킬 (표에 패시브 프리팹이 있을 때만)
             if (def.PassiveSkill != null && def.PassiveSkill.Passive != null)
             {
                 PassiveSkill passive = Instantiate(def.PassiveSkill.Passive, SkillPivot);
@@ -160,8 +156,8 @@ namespace PROJECT3D
                 return;
             }
             Vector2 inputAxis = SimpleInput.GetMoveAxisRaw();
-            float moveSpeed = IsAiming ? Speed * aimMoveSpeedRate : Speed; // 새로 추가 : 조준 중에는 느리게
-            movement.SetValue(inputAxis, moveSpeed, cameraController.YawRotation); // [변경] Speed → moveSpeed
+            float moveSpeed = IsAiming ? Speed * aimMoveSpeedRate : Speed; // 조준 중에는 느리게
+            movement.SetValue(inputAxis, moveSpeed, cameraController.YawRotation);
             if (SimpleInput.GetKeyDown(Key.Space)) movement.RequestJump();
         }
 
@@ -178,29 +174,29 @@ namespace PROJECT3D
 
             Vector3 aimDirection = cameraController.GetAimDirection(); // 카메라가 바라보는 3D 방향
 
-            // 새로 추가 : 조준 중이면 키를 뗐을 때 사용 (다른 스킬 입력은 막는다)
+            // 조준 중이면 키를 뗐을 때 사용 (다른 스킬 입력은 막는다)
             // 일시정지 중에 뗀 경우도 있어서 GetKeyUp 대신 "안 누르고 있으면"으로 확인
             if (IsAiming)
             {
                 if (SimpleInput.GetKey(aimingKey))
                 {
-                    aimingSkill.UpdateAim(); // 새로 추가 : 조준 중 스킬별 처리 (GroundBomb 예상 범위 표시 등)
+                    aimingSkill.UpdateAim(); // 조준 중 스킬별 처리 (GroundBomb 예상 범위 표시 등)
                     return;
                 }
-                aimingSkill.TryUse(aimDirection); // [변경] 조준 끝내기 전에 사용 → 조준 카메라 기준 화면 중앙 Ray가 저장된다
-                EndAim(); // 새로 추가
+                aimingSkill.TryUse(aimDirection); // 조준 끝내기 전에 사용 → 조준 카메라 기준 화면 중앙 Ray가 저장된다
+                EndAim();
                 return;
             }
 
-            if (SimpleInput.GetKeyDown(Key.E) && eSkill != null) PressSkill(eSkill, Key.E, aimDirection); // [변경] TryUse → PressSkill (조준 스킬 구분)
-            if (SimpleInput.GetKeyDown(Key.Q) && qSkill != null) PressSkill(qSkill, Key.Q, aimDirection); // [변경]
+            if (SimpleInput.GetKeyDown(Key.E) && eSkill != null) PressSkill(eSkill, Key.E, aimDirection);
+            if (SimpleInput.GetKeyDown(Key.Q) && qSkill != null) PressSkill(qSkill, Key.Q, aimDirection);
         }
 
         #endregion
 
         #region 조준
 
-        // ===== 새로 추가 : 스킬 키를 눌렀을 때 (조준 스킬이면 조준 시작, 아니면 바로 사용) =====
+        // 스킬 키를 눌렀을 때 (조준 스킬이면 조준 시작, 아니면 바로 사용)
         private void PressSkill(UnitSkill skill, Key key, Vector3 aimDirection)
         {
             if (IsAiming) return; // 같은 프레임에 두 키를 눌렀을 때
@@ -213,34 +209,33 @@ namespace PROJECT3D
             skill.TryUse(aimDirection);
         }
 
-        // 조준 시작 : 조준 카메라 켜기 + Unit_Aim 모션(AttackLayer, 상체만 → 하체는 이동 모션) + 몸을 조준 방향으로 // [변경] 주석
+        // 조준 시작 : 조준 카메라 켜기 + Unit_Aim 모션(AttackLayer, 상체만 → 하체는 이동 모션) + 몸을 조준 방향으로
         private void StartAim(UnitSkill skill, Key key)
         {
             aimingSkill = skill;
             aimingKey = key;
-            if (aimCamera != null) aimCamera.Priority = aimActivePriority; // [변경] SetActive(true) → Priority 올리기
+            if (aimCamera != null) aimCamera.Priority = aimActivePriority; // Priority 올리기
             if (anim != null) anim.SetBool(AnimatorKeys.IsAiming, true);
             movement.SetAimFacing(true);
-            SetAttackLayerWeight(1f); // 새로 추가 : 조준 자세(상체) 보이게
+            SetAttackLayerWeight(1f); // 조준 자세(상체) 보이게
         }
 
         // 조준 끝 : 전부 되돌린다 (스킬 사용은 부르는 쪽에서)
         private void EndAim()
         {
-            aimingSkill.EndAim(); // 새로 추가 : 스킬별 조준 끝 처리 (예상 범위 표시 끄기 등)
+            aimingSkill.EndAim(); // 스킬별 조준 끝 처리 (예상 범위 표시 끄기 등)
             aimingSkill = null;
-            if (aimCamera != null) aimCamera.Priority = aimRestingPriority; // [변경] SetActive(false) → Priority 내리기
+            if (aimCamera != null) aimCamera.Priority = aimRestingPriority; // Priority 내리기
             if (anim != null) anim.SetBool(AnimatorKeys.IsAiming, false);
             movement.SetAimFacing(false);
-            SetAttackLayerWeight(0f); // 새로 추가 : 조준 자세(상체) 끄기
+            SetAttackLayerWeight(0f); // 조준 자세(상체) 끄기
         }
 
-        // 새로 추가 : AttackLayer(상체) 가중치. Unit_Aim이 AttackLayer에 있어서 조준 중에는 1
+        // AttackLayer(상체) 가중치. Unit_Aim이 AttackLayer에 있어서 조준 중에는 1
         private void SetAttackLayerWeight(float weight)
         {
-            AnimatorKeys.SetAttackLayerWeight(anim, weight);
+            AnimatorKeys.SetAttackLayerWeight(anim, weight); // [변경] 레이어 찾기 → AnimatorKeys (무기증강과 같이 씀)
         }
-        // ===== 새로 추가 끝 =====
 
         #endregion
 
@@ -255,7 +250,7 @@ namespace PROJECT3D
             anim.SetBool(AnimatorKeys.IsGrounded, movement.IsGrounded); // Fall / Jump → Idle 착지 전환용
             anim.SetBool(AnimatorKeys.IsCasting, IsCasting);            // 스킬 사용 중에는 Fall로 넘어가지 않게
 
-            // 새로 추가 : 조준 중에는 매 프레임 1로 유지 (조준 직전에 나가던 기본공격 상태가 끝나면서 AttackTimingSender가 0으로 끄는 것 덮어쓰기)
+            // 조준 중에는 매 프레임 1로 유지 (조준 직전에 나가던 기본공격 상태가 끝나면서 AttackTimingSender가 0으로 끄는 것 덮어쓰기)
             if (IsAiming) SetAttackLayerWeight(1f);
         }
 
@@ -268,13 +263,13 @@ namespace PROJECT3D
         // 최고점을 지나 내려가기 시작 (걸어서 떨어질 때 포함)
         private void HandleFallStart()
         {
-            if (anim == null) return; // [변경]
-            if (IsSkillAnimationPlaying()) return; // 새로 추가 : 스킬 모션은 끊지 않는다 (끝나면 애니메이터가 공중이면 Fall로 넘김)
+            if (anim == null) return;
+            if (IsSkillAnimationPlaying()) return; // 스킬 모션은 끊지 않는다 (끝나면 애니메이터가 공중이면 Fall로 넘김)
             anim.SetTrigger(AnimatorKeys.Fall);
         }
 
-        // [변경] 지금 스킬 모션을 재생 중이거나 그쪽으로 넘어가는 중인지
-        // [변경] 태그 "Skill" 확인 → E / Q 스킬 상태의 AttackTimingSender가 켜고 끄는 값 (태그 설정 필요 없음)
+        // 지금 스킬 모션을 재생 중이거나 그쪽으로 넘어가는 중인지
+        // E / Q 스킬 상태의 AttackTimingSender가 켜고 끄는 값
         private bool IsSkillAnimationPlaying()
         {
             return Player != null && Player.IsSkillMotion;

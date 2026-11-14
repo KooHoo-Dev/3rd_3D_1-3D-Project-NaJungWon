@@ -6,11 +6,9 @@ namespace PROJECT3D
 {
     public abstract class PlayerControllerBase : MonoBehaviour
     {
-        //여기 모델이랑 애니메이션 조작 부분만 담기
-        public Player Player;
-        public SkinnedMeshRenderer bodyRenderer;
-        public Animator anim;
-        
-        // 애니메이터 해시 → AnimatorKeys (플레이어 / 몹 / 공격 공용)
+        // 모델 / 애니메이션 참조 (여기에는 모델이랑 애니메이션 조작 부분만 담기)
+        public Player              Player;       // 이 컨트롤러가 움직이는 플레이어
+        public SkinnedMeshRenderer bodyRenderer; // 몸 렌더러
+        public Animator            anim;         // 캐릭터 애니메이터
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-// ===== 새로 추가 : 파일 전체 (피격 시 모델이 빨갛게 물드는 연출) =====
+// 피격 시 모델이 빨갛게 물드는 연출
 namespace PROJECT3D
 {
     // 맞으면 캐릭터 모델 색이 빨갛게 물들었다가 원래대로 돌아온다
@@ -11,15 +11,17 @@ namespace PROJECT3D
     //  - Player.Init에서 모델을 만든 뒤 Init(모델)로 렌더러를 모아 두고, 맞을 때마다 Play
     public class HitFlash : MonoBehaviour
     {
-        [SerializeField] private Color hitColor = new Color(1f, 0.15f, 0.15f, 1f); // 물드는 색
-        [SerializeField] private float flashTime = 0.25f;           // 빨강 → 원래 색으로 돌아오는 시간(초, 게임 시간)
-        [SerializeField] private string colorProperty = "_Color";   // 바꿀 색 속성 (lilToon 메인 색. URP Lit이면 _BaseColor)
+        [Header("피격 연출 설정")]
+        [SerializeField] private Color  hitColor      = new Color(1f, 0.15f, 0.15f, 1f); // 물드는 색
+        [SerializeField] private float  flashTime     = 0.25f;                           // 빨강 → 원래 색으로 돌아오는 시간(초, 게임 시간)
+        [SerializeField] private string colorProperty = "_Color";                        // 바꿀 색 속성 (lilToon 메인 색. URP Lit이면 _BaseColor)
 
-        private readonly List<Renderer> renderers = new List<Renderer>();
-        private readonly List<Color[]> originalColors = new List<Color[]>(); // 렌더러마다 머티리얼 칸별 원래 색
-        private MaterialPropertyBlock block;
-        private int colorId;
-        private float remainTime; // 남은 연출 시간 (0이면 연출 없음)
+        // 내부 설정
+        private readonly List<Renderer> renderers      = new List<Renderer>(); // 모델의 렌더러들
+        private readonly List<Color[]>  originalColors = new List<Color[]>();  // 렌더러마다 머티리얼 칸별 원래 색
+        private MaterialPropertyBlock   block;                                 // 색을 덮어쓸 블록 (머티리얼을 복사하지 않게)
+        private int                     colorId;                               // colorProperty 해시
+        private float                   remainTime;                            // 남은 연출 시간 (0이면 연출 없음)
 
         #region UnityMethod
 
@@ -118,4 +120,3 @@ namespace PROJECT3D
         #endregion
     }
 }
-// ===== 새로 추가 끝 =====

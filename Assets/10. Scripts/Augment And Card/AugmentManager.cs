@@ -49,7 +49,7 @@ namespace PROJECT3D
         {
             this.player = player;
             weaponRoot = root;
-            GiveStartWeapon(player.unitDef.StartWeaponID); // 새로 추가 : 캐릭터 기본 무기를 들고 시작
+            GiveStartWeapon(player.unitDef.StartWeaponID); // 캐릭터 기본 무기를 들고 시작
         }
 
         #endregion
@@ -138,7 +138,7 @@ namespace PROJECT3D
 
         #region 시작 설정
 
-        // 새로 추가 : 시작 무기증강 지급. 카드로 새 증강을 고른 것과 같은 흐름(Apply)을 그대로 쓴다
+        // 시작 무기증강 지급. 카드로 새 증강을 고른 것과 같은 흐름(Apply)을 그대로 쓴다
         // (무기 생성 → 1레벨 수치 → 능력치 갱신 → 슬롯 UI 갱신 이벤트)
         private void GiveStartWeapon(int augmentID)
         {

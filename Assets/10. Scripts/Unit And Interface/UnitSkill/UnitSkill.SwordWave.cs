@@ -8,8 +8,8 @@ namespace PROJECT3D
     //  - 조준은 부모(UnitSkill)의 GetScreenCenterDirection 사용 // [변경]
     public class SkillSwordWave : UnitSkill
     {
-        [Header("검기")]
-        [SerializeField] private NonTargetHit wavePrefab;   // 검기 투사체 (hitShape를 Cube로)
+        [Header("검기 설정")]
+        [SerializeField] private NonTargetHit wavePrefab; // 검기 투사체 (hitShape를 Cube로)
 
         #region 외부 설정
 

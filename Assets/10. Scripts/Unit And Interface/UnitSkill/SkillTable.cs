@@ -15,7 +15,7 @@ namespace PROJECT3D
 
         #region 외부 설정
 
-        // [변경] 없는 ID(-1 = 스킬 없음 등)면 null (원래는 바로 에러). 받는 쪽(UnitTable)이 null을 경고로 처리한다
+        // 없는 ID(-1 = 스킬 없음 등)면 null (원래는 바로 에러). 받는 쪽(UnitTable)이 null을 경고로 처리한다
         public SkillDef Get(int id)
         {
             if (skillDefs.TryGetValue(id, out SkillDef def)) return def;
@@ -31,8 +31,8 @@ namespace PROJECT3D
             {
                 Sprite icon = Resources.Load<Sprite>(dto.IconKey);
                 UnitSkill skill = Resources.Load<UnitSkill>(dto.PrefabKey);
-                PassiveSkill passive = Resources.Load<PassiveSkill>(dto.PrefabKey); // 새로 추가 : 패시브 스킬 프리팹
-                if(skill == null && passive == null) Debug.LogWarning($"[SkillTable] {dto.PrefabKey} 경로에 파일 없음"); // [변경] 패시브면 경고 안 함
+                PassiveSkill passive = Resources.Load<PassiveSkill>(dto.PrefabKey); // 패시브 스킬 프리팹
+                if(skill == null && passive == null) Debug.LogWarning($"[SkillTable] {dto.PrefabKey} 경로에 파일 없음");
 
                 skillDefs[dto.ID] = new SkillDef()
                 {

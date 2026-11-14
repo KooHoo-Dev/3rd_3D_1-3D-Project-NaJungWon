@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
 
-// ===== 새로 추가 : 파일 전체 (전사 패시브) =====
 namespace PROJECT3D
 {
     // 처치 회복 : 몹을 처치할 때마다 체력을 healPerKill만큼 회복
     //  - Player.OnKill(막타를 친 플레이어에게만 불린다)에 연결
     public class KillHealPassive : PassiveSkill
     {
-        [Header("처치 회복")]
+        [Header("처치 회복 설정")]
         [SerializeField] private int healPerKill = 2; // 처치 1번당 회복량
 
         #region UnityMethod
@@ -39,4 +38,3 @@ namespace PROJECT3D
         #endregion
     }
 }
-// ===== 새로 추가 끝 =====

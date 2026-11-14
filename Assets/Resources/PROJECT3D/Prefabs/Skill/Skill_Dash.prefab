@@ -55,7 +55,7 @@ MonoBehaviour:
   aimDistance: 100
   aimMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 3072
   aimEnemyDistance: 40
   isAimSkill: 1
   dashDistance: 8

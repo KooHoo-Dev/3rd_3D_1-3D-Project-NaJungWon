@@ -55,7 +55,7 @@ MonoBehaviour:
   aimDistance: 100
   aimMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 3072
   aimEnemyDistance: 40
   isAimSkill: 1
   zonePrefab: {fileID: 4877221864152722571, guid: 768d077aace449d0b0af07637f373848, type: 3}

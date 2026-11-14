@@ -36,8 +36,8 @@ namespace PROJECT3D
         public int ID;
         public string Name;
         public Sprite Icon;
+        public PassiveSkill Passive; // 패시브 스킬 프리팹 (E / Q 스킬이면 null)
         public UnitSkill UnitSkill;
-        public PassiveSkill Passive; // 새로 추가 : 패시브 스킬 프리팹 (E / Q 스킬이면 null)
         public StatClass SkillStat;
         public float Cooldown; // 쿨타임(초). 공속과 따로
         public string Description;

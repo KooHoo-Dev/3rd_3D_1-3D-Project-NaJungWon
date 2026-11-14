@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-// ===== 새로 추가 : 파일 전체 (패시브 스킬 부모) =====
 namespace PROJECT3D
 {
     // 패시브 스킬의 부모 클래스
@@ -9,8 +8,9 @@ namespace PROJECT3D
     //  - PlayerController.Init이 만들어서 Init(주인, 표 데이터)을 부른다
     public abstract class PassiveSkill : MonoBehaviour
     {
-        protected Player Owner { get; private set; }
-        protected SkillDef Def { get; private set; }
+        // 외부 공개
+        protected Player   Owner { get; private set; } // 패시브 주인
+        protected SkillDef Def   { get; private set; } // 스킬 표 데이터
 
         #region 외부 설정
 
@@ -27,4 +27,3 @@ namespace PROJECT3D
         #endregion
     }
 }
-// ===== 새로 추가 끝 =====

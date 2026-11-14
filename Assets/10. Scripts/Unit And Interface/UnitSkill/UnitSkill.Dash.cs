@@ -10,17 +10,18 @@ namespace PROJECT3D
     //  - 돌진하는 동안 : 중력 X, 무적 (끝나면 다시 중력 적용, 무적 해제)
     public class DashSkill : UnitSkill
     {
-        [Header("돌진")]
-        [SerializeField] private float dashDistance = 8f;        // 최대 돌진 거리
-        [SerializeField] private float dashSpeed = 30f;          // 돌진 속도 (초당 거리)
-        [SerializeField] private HitUnit dashHitPrefab;          // 돌진 범위 공격
+        [Header("돌진 설정")]
+        [SerializeField] private float   dashDistance = 8f;  // 최대 돌진 거리
+        [SerializeField] private float   dashSpeed    = 30f; // 돌진 속도 (초당 거리)
+        [SerializeField] private HitUnit dashHitPrefab;      // 돌진 범위 공격 (SummonHit)
 
-        private CharacterController ownerController;   // 플레이어를 움직일 컨트롤러 (벽 충돌 처리용)
+        // 내부 설정
+        private CharacterController   ownerController; // 플레이어를 움직일 컨트롤러 (벽 충돌 처리용)
         private CharacterController3D ownerMovement;   // 중력 끄기/켜기용
-        private bool isDashing;
-        private Vector3 dashDirection;
-        private float remainDistance;  // 남은 돌진 거리
-        private SummonHit dashHit;     // 이번 돌진에 띄운 범위 공격 (돌진이 끝나면 Finish)
+        private SummonHit             dashHit;         // 이번 돌진에 띄운 범위 공격 (돌진이 끝나면 Finish)
+        private Vector3               dashDirection;   // 이번 돌진 방향
+        private float                 remainDistance;  // 남은 돌진 거리
+        private bool                  isDashing;       // 돌진 중인지
 
         #region UnityMethod
 

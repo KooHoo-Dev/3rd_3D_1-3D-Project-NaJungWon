@@ -55,7 +55,7 @@ MonoBehaviour:
   aimDistance: 100
   aimMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 3072
   aimEnemyDistance: 40
   isAimSkill: 1
   fireBallPrefab: {fileID: 7502496136243878170, guid: 878f8f92636130a4f90f5886a6c32fcc, type: 3}

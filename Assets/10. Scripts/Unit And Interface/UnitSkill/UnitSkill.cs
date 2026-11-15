@@ -63,8 +63,9 @@ namespace PROJECT3D
         {
             if (cooldownTimer > 0f || IsCasting) return false;
 
-            // 쿨타임 = 테이블 쿨타임 / 플레이어 공속 배율
-            Cooldown = (OwnerStat.AttackSpeed <= 0f) ? BaseCooldown : BaseCooldown / OwnerStat.AttackSpeed;
+            // [변경] 쿨타임 = 테이블 쿨타임 / 공속이 오른 비율 (지금 공속 / 캐릭터 기본 공속)
+            //        최종 공속으로 바로 나누면 기본 공속이 1이 아닌 직업(마법사 0.8)은 시작부터 쿨타임이 길어진다
+            Cooldown = BaseCooldown / GetAttackSpeedRate();
             cooldownTimer = Cooldown;
 
             // 바로 쓰지 않고 애니메이션 / 딜레이 후에 쓴다 (설정이 없으면 바로)
@@ -74,6 +75,20 @@ namespace PROJECT3D
             hasDelayedAimRay = MakeScreenCenterRay(out delayedAimRay);
             StartDelay();
             return true;
+        }
+
+        // 새로 추가 : 공속이 오른 비율 (지금 공속 / 캐릭터 기본 공속). 처음에는 직업과 상관없이 1
+        private float GetAttackSpeedRate()
+        {
+            if (OwnerStat.AttackSpeed <= 0f) return 1f;
+
+            Player player = Owner as Player;
+            if (player == null || player.StatHandler == null) return OwnerStat.AttackSpeed; // 플레이어가 아니면 지금 공속 그대로
+
+            float baseAttackSpeed = player.StatHandler.ChrStat.AttackSpeed; // 캐릭터 기본 공속 (테이블 값)
+            if (baseAttackSpeed <= 0f) return OwnerStat.AttackSpeed;
+
+            return OwnerStat.AttackSpeed / baseAttackSpeed;
         }
 
         // 공격 시점이 되면 실제 스킬 사용

@@ -18,11 +18,16 @@ namespace PROJECT3D
         [Header("피격 판정 (원통)")]
         [SerializeField] private float hurtRadius = 0.5f;            // 원통 반경
         [SerializeField] private float hurtHalfHeight = 1f;          // 원통 절반 높이
+        [SerializeField] private Vector3 hurtTilt = Vector3.zero;    // 새로 추가 : 원통 기울기 (도, 몸 기준. x = 앞뒤로 숙임, z = 좌우로 기울임)
         [SerializeField] private Color hurtGizmoColor = Color.red;   // 씬 화면에 그릴 색
         [field: SerializeField] public Transform HitPivot { get; private set; }
 
         public float HurtRadius => hurtRadius;
         public float HurtHalfHeight => hurtHalfHeight;
+
+        // 새로 추가 : 피격 원통의 회전 = 몸 정면 방향(Y 회전) + 기울기
+        //  몹은 이동 방향으로 몸(transform)을 돌리므로, 이동하면 피격 원통도 같이 돈다
+        public Quaternion HurtRotation => Quaternion.Euler(0f, transform.eulerAngles.y, 0f) * Quaternion.Euler(hurtTilt);
 
         // 피격 원통의 중심
         public Vector3 HitCenter => HitPivot != null ? HitPivot.position : transform.position;
@@ -40,7 +45,9 @@ namespace PROJECT3D
         protected virtual void OnDrawGizmos()
         {
             Gizmos.color = hurtGizmoColor;
-            HitGizmo.DrawCylinder(HitCenter, hurtRadius, hurtHalfHeight);
+            Gizmos.matrix = Matrix4x4.TRS(HitCenter, HurtRotation, Vector3.one); // [변경] 원통 회전(정면 방향 + 기울기) 반영
+            HitGizmo.DrawCylinder(Vector3.zero, hurtRadius, hurtHalfHeight);
+            Gizmos.matrix = Matrix4x4.identity; // 새로 추가 : 다른 Gizmo에 영향 없게 되돌린다
         }
 
         #endregion
@@ -83,22 +90,32 @@ namespace PROJECT3D
         // rotation = 공격 범위의 회전, depth = 앞뒤 절반 두께 (둘 다 Cube만 사용)
         public bool IsHitBy(Vector3 center, float radius, HitShape info, float height, Quaternion rotation, float depth)
         {
+            Quaternion hurtRotation = HurtRotation; // 새로 추가
             Vector3 toMe = HitCenter - center;
 
-            // 사각형 판정
-            // 내 위치를 공격 범위 기준 좌표로 바꾸면 회전 없는 상자로 비교할 수 있다
-            //  x(좌우) = 반경, y(위아래) = 높이, z(앞뒤) = 두께 (각각 절반 길이)
+            // [변경] 사각형 판정 : 공격 상자와 내 피격 원통을 감싼 상자(OBB)가 겹치는지 (분리축 검사)
+            //  두 상자의 면 방향 6개 축에 각각 그림자(투영)를 내려서, 한 축이라도 안 겹치면 안 맞은 것
+            //  공격 상자 절반 크기 : x(좌우) = 반경, y(위아래) = 높이, z(앞뒤) = 두께
+            //  내 상자 절반 크기 : 원통 반경 / 절반 높이 / 원통 반경 (회전 = 정면 방향 + 기울기)
+            //  (모서리끼리 비스듬히 닿는 축 9개는 생략 → 모서리 근처에서 아주 조금 넉넉하게 맞을 수 있다)
             if (info == HitShape.Cube)
             {
-                Vector3 local = Quaternion.Inverse(rotation) * toMe;
-                return Mathf.Abs(local.x) <= radius + hurtRadius
-                       && Mathf.Abs(local.y) <= height + hurtHalfHeight
-                       && Mathf.Abs(local.z) <= depth + hurtRadius; // 앞뒤 두께 + 내 몸 두께
+                Vector3 attackHalf = new Vector3(radius, height, depth);
+                Vector3 hurtHalf = new Vector3(hurtRadius, hurtHalfHeight, hurtRadius);
+                if (IsSeparated(rotation * Vector3.right, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
+                if (IsSeparated(rotation * Vector3.up, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
+                if (IsSeparated(rotation * Vector3.forward, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
+                if (IsSeparated(hurtRotation * Vector3.right, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
+                if (IsSeparated(hurtRotation * Vector3.up, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
+                if (IsSeparated(hurtRotation * Vector3.forward, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
+                return true;
             }
 
-            float dy = Mathf.Abs(toMe.y);      // 높이차
-            toMe.y = 0f;
-            float dxz = toMe.magnitude;        // 바닥 평면 거리
+            // [변경] 원 / 원통 판정 : 공격 중심을 내 원통 기준 좌표로 바꿔서 비교 (원통이 기울어도 맞게)
+            //  (원통 공격은 공격 쪽 기울기는 보지 않는다. 내 원통 기울기가 작을 때 거의 같다)
+            Vector3 local = Quaternion.Inverse(hurtRotation) * toMe;
+            float dy = Mathf.Abs(local.y);                                // 원통 축 방향 거리 (높이차)
+            float dxz = new Vector2(local.x, local.z).magnitude;          // 원통 축에서 떨어진 거리
 
             if (info == HitShape.Column)
                 return dxz <= radius + hurtRadius && dy <= height + hurtHalfHeight;
@@ -107,6 +124,20 @@ namespace PROJECT3D
             float outY = Mathf.Max(0f, dy - hurtHalfHeight);   // 원통 위/아래 바깥으로 나간 거리
             return outXZ * outXZ + outY * outY <= radius * radius;
         }
+
+        // ===== 새로 추가 : OBB 분리축 검사 =====
+        // axis 방향으로 두 상자의 그림자 길이 합보다 중심 거리가 길면 떨어져 있다 (= 안 겹침)
+        private static bool IsSeparated(Vector3 axis, Vector3 centerGap, Quaternion rotationA, Vector3 halfA, Quaternion rotationB, Vector3 halfB)
+        {
+            float shadowA = Mathf.Abs(Vector3.Dot(rotationA * Vector3.right, axis)) * halfA.x
+                          + Mathf.Abs(Vector3.Dot(rotationA * Vector3.up, axis)) * halfA.y
+                          + Mathf.Abs(Vector3.Dot(rotationA * Vector3.forward, axis)) * halfA.z;
+            float shadowB = Mathf.Abs(Vector3.Dot(rotationB * Vector3.right, axis)) * halfB.x
+                          + Mathf.Abs(Vector3.Dot(rotationB * Vector3.up, axis)) * halfB.y
+                          + Mathf.Abs(Vector3.Dot(rotationB * Vector3.forward, axis)) * halfB.z;
+            return Mathf.Abs(Vector3.Dot(centerGap, axis)) > shadowA + shadowB;
+        }
+        // ===== 새로 추가 끝 =====
 
         #endregion
 

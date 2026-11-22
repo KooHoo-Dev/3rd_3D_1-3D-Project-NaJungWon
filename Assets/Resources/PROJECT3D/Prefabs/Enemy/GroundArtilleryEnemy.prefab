@@ -1890,6 +1890,7 @@ MonoBehaviour:
   <FirePivot>k__BackingField: {fileID: 4463608718966953231}
   hurtRadius: 1
   hurtHalfHeight: 1
+  hurtTilt: {x: 0, y: 0, z: 0}
   hurtGizmoColor: {r: 1, g: 0, b: 0, a: 1}
   <HitPivot>k__BackingField: {fileID: 5766442050276086996}
   resist: 0
@@ -1911,17 +1912,11 @@ MonoBehaviour:
   separationDistance: 1.5
   attack: {fileID: -2248784464880298634}
   attackRange: 20
-  attackDelay: 0.5
   contactInterval: 1
   contactDamageRate: 1
   moveSmooth: 4
   turnSpeed: 10
   yOffset: 0
-  snapRayHeight: 2
-  snapRayDistance: 10
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 1024
   heightSpeedRatio: 4
   bodyTilt: {fileID: 8482480477799443212}
   riseDuration: 1

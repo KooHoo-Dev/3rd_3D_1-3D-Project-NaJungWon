@@ -8911,6 +8911,8 @@ GameObject:
   m_Component:
   - component: {fileID: 543962244}
   - component: {fileID: 543962245}
+  - component: {fileID: 543962246}
+  - component: {fileID: 543962247}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -8961,6 +8963,34 @@ MonoBehaviour:
   inGameUI: {fileID: 1855322247}
   gameOverPanel: {fileID: 1987489244}
   structureManager: {fileID: 1273905685}
+--- !u!114 &543962246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543962243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dc268a11b5e80342862ae84f29d3536, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.FrameCounter
+  turnOffVSync: 1
+  interval: 1
+  fontSize: 24
+--- !u!114 &543962247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543962243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31e1100f10fdde6419828a81ded8137a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.FrameLogger
+  interval: 1
 --- !u!1 &545622506
 GameObject:
   m_ObjectHideFlags: 0

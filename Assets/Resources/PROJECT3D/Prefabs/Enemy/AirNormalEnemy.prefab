@@ -1205,8 +1205,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.AirDummyEnemy
   <HeadUpPivot>k__BackingField: {fileID: 854087654683539381}
   <FirePivot>k__BackingField: {fileID: 7292342760701291443}
-  hurtRadius: 0.6
-  hurtHalfHeight: 0.5
+  hurtRadius: 0.4
+  hurtHalfHeight: 0.8
+  hurtTilt: {x: 70, y: 0, z: 0}
   hurtGizmoColor: {r: 1, g: 0, b: 0, a: 1}
   <HitPivot>k__BackingField: {fileID: 7051532274283518063}
   resist: 0
@@ -1228,17 +1229,11 @@ MonoBehaviour:
   separationDistance: 1.5
   attack: {fileID: 1589413552306792074}
   attackRange: 9
-  attackDelay: 0.5
   contactInterval: 1
   contactDamageRate: 1
   moveSmooth: 8
   turnSpeed: 10
   yOffset: 0
-  snapRayHeight: 2
-  snapRayDistance: 15
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 1024
   heightSpeedRatio: 2
   bodyTilt: {fileID: 0}
   riseDuration: 1
@@ -1247,10 +1242,6 @@ MonoBehaviour:
   abovePlayer: 2
   flyClearance: 1
   lookAhead: 1
-  surfaceRayHeight: 50
-  surfaceMask:
-    serializedVersion: 2
-    m_Bits: 3072
 --- !u!114 &1589413552306792074
 MonoBehaviour:
   m_ObjectHideFlags: 0

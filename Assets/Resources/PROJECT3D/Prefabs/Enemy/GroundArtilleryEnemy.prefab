@@ -1888,9 +1888,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PROJECT3D.Enemy
   <HeadUpPivot>k__BackingField: {fileID: 1044192442761244810}
   <FirePivot>k__BackingField: {fileID: 4463608718966953231}
-  hurtRadius: 1
-  hurtHalfHeight: 1
-  hurtTilt: {x: 0, y: 0, z: 0}
+  hurtRadius: 0.8
+  hurtHalfHeight: 1.5
+  hurtTilt: {x: 70, y: 0, z: 0}
   hurtGizmoColor: {r: 1, g: 0, b: 0, a: 1}
   <HitPivot>k__BackingField: {fileID: 5766442050276086996}
   resist: 0

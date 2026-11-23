@@ -11,7 +11,6 @@ namespace PROJECT3D
     {
         // 지금 켜져 있는 구슬 목록 (자석용)
         private static readonly List<ExpOrb> activeOrbs = new List<ExpOrb>();
-        public static int ActiveCount => activeOrbs.Count; // 새로 추가 : 필드에 있는 구슬 수 (프레임 측정용)
 
         [SerializeField] private float startSpeed = 5f;     // 빨려 들어가기 시작할 때 속도
         [SerializeField] private float acceleration = 30f;  // 초당 속도 증가량 (점점 빨라져서 결국 따라잡는다)

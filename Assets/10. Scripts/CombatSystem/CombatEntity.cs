@@ -88,44 +88,79 @@ namespace PROJECT3D
         }
 
         // rotation = 공격 범위의 회전, depth = 앞뒤 절반 두께 (둘 다 Cube만 사용)
+        // 공격 모양(info)에 따라 셋 중 하나로 검사한다. 계산은 모양마다 아래 함수에 나눠 둠
         public bool IsHitBy(Vector3 center, float radius, HitShape info, float height, Quaternion rotation, float depth)
         {
-            Quaternion hurtRotation = HurtRotation; // 새로 추가
-            Vector3 toMe = HitCenter - center;
+            Vector3 toMe = HitCenter - center; // 공격 중심 → 내 원통 중심
+            Quaternion hurtRotation = HurtRotation;
 
-            // [변경] 사각형 판정 : 공격 상자와 내 피격 원통을 감싼 상자(OBB)가 겹치는지 (분리축 검사)
-            //  두 상자의 면 방향 6개 축에 각각 그림자(투영)를 내려서, 한 축이라도 안 겹치면 안 맞은 것
-            //  공격 상자 절반 크기 : x(좌우) = 반경, y(위아래) = 높이, z(앞뒤) = 두께
-            //  내 상자 절반 크기 : 원통 반경 / 절반 높이 / 원통 반경 (회전 = 정면 방향 + 기울기)
-            //  (모서리끼리 비스듬히 닿는 축 9개는 생략 → 모서리 근처에서 아주 조금 넉넉하게 맞을 수 있다)
-            if (info == HitShape.Cube)
-            {
-                Vector3 attackHalf = new Vector3(radius, height, depth);
-                Vector3 hurtHalf = new Vector3(hurtRadius, hurtHalfHeight, hurtRadius);
-                if (IsSeparated(rotation * Vector3.right, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
-                if (IsSeparated(rotation * Vector3.up, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
-                if (IsSeparated(rotation * Vector3.forward, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
-                if (IsSeparated(hurtRotation * Vector3.right, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
-                if (IsSeparated(hurtRotation * Vector3.up, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
-                if (IsSeparated(hurtRotation * Vector3.forward, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
-                return true;
-            }
+            if (info == HitShape.Cube) return IsHitByCube(toMe, radius, height, depth, rotation, hurtRotation);
+            if (info == HitShape.Column) return IsHitByColumn(toMe, radius, height, hurtRotation);
+            return IsHitBySphere(toMe, radius, hurtRotation);
+        }
 
-            // [변경] 원 / 원통 판정 : 공격 중심을 내 원통 기준 좌표로 바꿔서 비교 (원통이 기울어도 맞게)
-            //  (원통 공격은 공격 쪽 기울기는 보지 않는다. 내 원통 기울기가 작을 때 거의 같다)
+        // 사각형 공격 : 공격 상자와 내 피격 원통을 감싼 상자(OBB)가 겹치는지 (분리축 검사)
+        //  두 상자의 면 방향 6개 축에 각각 그림자(투영)를 내려서, 한 축이라도 안 겹치면 안 맞은 것
+        //  공격 상자 절반 크기 : x(좌우) = 반경, y(위아래) = 높이, z(앞뒤) = 두께
+        //  내 상자 절반 크기 : 원통 반경 / 절반 높이 / 원통 반경 (회전 = 정면 방향 + 기울기)
+        //  (모서리끼리 비스듬히 닿는 축 9개는 생략 → 모서리 근처에서 아주 조금 넉넉하게 맞을 수 있다)
+        private bool IsHitByCube(Vector3 toMe, float radius, float height, float depth, Quaternion rotation, Quaternion hurtRotation)
+        {
+            Vector3 attackHalf = new Vector3(radius, height, depth);
+            Vector3 hurtHalf = new Vector3(hurtRadius, hurtHalfHeight, hurtRadius);
+            if (IsSeparated(rotation * Vector3.right, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
+            if (IsSeparated(rotation * Vector3.up, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
+            if (IsSeparated(rotation * Vector3.forward, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
+            if (IsSeparated(hurtRotation * Vector3.right, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
+            if (IsSeparated(hurtRotation * Vector3.up, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
+            if (IsSeparated(hurtRotation * Vector3.forward, toMe, rotation, attackHalf, hurtRotation, hurtHalf)) return false;
+            return true;
+        }
+
+        // 구 공격 : 공격 중심을 내 원통 기준 좌표로 바꿔서, 원통 바깥으로 나간 거리를 공격 반경과 비교 (원통이 기울어도 맞게)
+        private bool IsHitBySphere(Vector3 toMe, float radius, Quaternion hurtRotation)
+        {
             Vector3 local = Quaternion.Inverse(hurtRotation) * toMe;
-            float dy = Mathf.Abs(local.y);                                // 원통 축 방향 거리 (높이차)
-            float dxz = new Vector2(local.x, local.z).magnitude;          // 원통 축에서 떨어진 거리
-
-            if (info == HitShape.Column)
-                return dxz <= radius + hurtRadius && dy <= height + hurtHalfHeight;
+            float dy = Mathf.Abs(local.y);                          // 원통 축 방향 거리 (높이차)
+            float dxz = new Vector2(local.x, local.z).magnitude;    // 원통 축에서 떨어진 거리
 
             float outXZ = Mathf.Max(0f, dxz - hurtRadius);     // 원통 옆면 바깥으로 나간 거리
             float outY = Mathf.Max(0f, dy - hurtHalfHeight);   // 원통 위/아래 바깥으로 나간 거리
             return outXZ * outXZ + outY * outY <= radius * radius;
         }
 
-        // ===== 새로 추가 : OBB 분리축 검사 =====
+        // 기둥 공격
+        // 기둥 공격은 늘 세로로 서 있고, 내 원통은 눕거나 기울 수 있다(hurtTilt). 높이와 바닥 평면을 나눠서 본다
+        //  1. 높이 : 내 원통이 세로로 차지하는 절반 높이를 구해, 기둥 높이와 겹치는지
+        //  2. 바닥 평면 : 위에서 내려다본 내 원통 축(선분)과 기둥 중심 사이 가장 가까운 거리 ≤ 기둥 반경 + 내 반경
+        //  세운 원통(기울기 0)이면 예전 계산과 똑같고, 눕힌 원통은 위에서 볼 때 머리 · 꼬리 끝 모서리만 조금 둥글게 본다
+        //  toMe = 기둥 중심 → 내 원통 중심, columnHalfHeight = 기둥 절반 높이
+        private bool IsHitByColumn(Vector3 toMe, float columnRadius, float columnHalfHeight, Quaternion hurtRotation)
+        {
+            Vector3 axis = hurtRotation * Vector3.up; // 내 원통 축 방향 (길이 1)
+
+            // 1. 높이 겹침
+            float upAmount = Mathf.Abs(axis.y);                        // 축이 위를 향한 정도 (세움 = 1, 눕힘 = 0)
+            float sideAmount = Mathf.Sqrt(1f - upAmount * upAmount);   // 축이 옆으로 누운 정도
+            float myHalfHeight = upAmount * hurtHalfHeight + sideAmount * hurtRadius; // 내 원통이 세로로 차지하는 절반 높이
+            if (Mathf.Abs(toMe.y) > columnHalfHeight + myHalfHeight) return false;
+
+            // 2. 바닥 평면 거리 (위에서 내려다본 모양)
+            Vector2 center = new Vector2(toMe.x, toMe.z);                     // 기둥 중심 → 내 원통 중심
+            Vector2 halfAxis = new Vector2(axis.x, axis.z) * hurtHalfHeight;  // 위에서 본 내 축 선분의 절반 (세운 원통이면 0)
+
+            // 내 축 선분(center - halfAxis ~ center + halfAxis) 위에서 기둥 중심(원점)과 가장 가까운 점
+            float t = 0f;
+            float lengthSqr = halfAxis.sqrMagnitude;
+            if (lengthSqr > 0.0001f)
+                t = Mathf.Clamp(-Vector2.Dot(center, halfAxis) / lengthSqr, -1f, 1f);
+            Vector2 closest = center + halfAxis * t;
+
+            float reach = columnRadius + hurtRadius;
+            return closest.sqrMagnitude <= reach * reach;
+        }
+
+        // OBB 분리축 검사
         // axis 방향으로 두 상자의 그림자 길이 합보다 중심 거리가 길면 떨어져 있다 (= 안 겹침)
         private static bool IsSeparated(Vector3 axis, Vector3 centerGap, Quaternion rotationA, Vector3 halfA, Quaternion rotationB, Vector3 halfB)
         {
@@ -137,7 +172,6 @@ namespace PROJECT3D
                           + Mathf.Abs(Vector3.Dot(rotationB * Vector3.forward, axis)) * halfB.z;
             return Mathf.Abs(Vector3.Dot(centerGap, axis)) > shadowA + shadowB;
         }
-        // ===== 새로 추가 끝 =====
 
         #endregion
 
